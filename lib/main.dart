@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_radio_player/flutter_radio_player.dart';
 
 void main() {
   runApp(MyApp());
@@ -41,12 +45,32 @@ class MyHomePage extends StatefulWidget {
 
   final String title;
 
+  var playerState = FlutterRadioPlayer.flutter_radio_paused;
+  var volume = 0.8;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
+  FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    initRadioService();
+  }
+
+  Future<void> initRadioService() async {
+    try {
+      await _flutterRadioPlayer.init("Radio Sai", "radiosai", "http://stream.radiosai.net:8000", "false");
+    } on PlatformException {
+      print("Execption while registering");
+    }
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -95,6 +119,41 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             Text(
               'You have pushed the button this many times:',
+            ),
+            StreamBuilder(
+              stream: _flutterRadioPlayer.isPlayingStream,
+              initialData: widget.playerState,
+              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                String returnData = snapshot.data;
+                print("object data: " + returnData);
+                switch(returnData) {
+                  case FlutterRadioPlayer.flutter_radio_stopped:
+                    return RaisedButton(
+                      child: Text('Start'),
+                      onPressed: () async {
+                        await initRadioService();
+                      },
+                    );
+                    break;
+                  case FlutterRadioPlayer.flutter_radio_loading:
+                    return Text("Loading stream..");
+                  case FlutterRadioPlayer.flutter_radio_error:
+                    return RaisedButton(
+                      child: Text("Retry ?"),
+                      onPressed: () async {
+                        await initRadioService();
+                      },
+                    );
+                    break;
+                  default:
+                    return RaisedButton(
+                      child: Text("Pause/Play"),
+                      onPressed: () async {
+                        await _flutterRadioPlayer.playOrPause();
+                      },
+                    );
+                }
+              },
             ),
             Text(
               '$_counter',
