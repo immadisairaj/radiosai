@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamSelect extends StatelessWidget {
@@ -57,6 +58,26 @@ class StreamList extends StatefulWidget {
 }
 
 class _StreamList extends State<StreamList> {
+
+  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  Future<int> _streamIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _streamIndex = _prefs.then((SharedPreferences prefs) {return (prefs.getInt('stream') ?? 0);});
+  }
+
+  Future<void> setStream(int index) async {
+    final SharedPreferences prefs = await _prefs;
+    final int streamIndex = index;
+    setState(() {
+      _streamIndex = prefs.setInt('stream', streamIndex).then((bool success) {
+        return streamIndex;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
@@ -70,10 +91,17 @@ class _StreamList extends State<StreamList> {
       itemBuilder: (context, index) {
         return Padding(
           padding: EdgeInsets.all(8),
-          child: Card(
-              child: Text(MyConstants.of(context).streamName[index]),
+          child: GestureDetector(
+            onTap: () async {
+            // TODO: add the stream
+            setStream(index);
+            // print(index);
+          },
+            child: Card(
+                child: Text(MyConstants.of(context).streamName[index]),
+              ),
             ),
-          );
+        );
       },
     );
   }
