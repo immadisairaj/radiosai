@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_radio_player/flutter_radio_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:radiosai/views/stream_player.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamSelect extends StatelessWidget {
+  StreamSelect(this.flutterRadioPlayer);
+  FlutterRadioPlayer flutterRadioPlayer;
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -28,7 +31,7 @@ class StreamSelect extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            StreamList(),
+            StreamList(flutterRadioPlayer: flutterRadioPlayer),
             SizedBox(height: 12),
           ],
         ),
@@ -52,7 +55,9 @@ class DraggingHandle extends StatelessWidget {
 }
 
 class StreamList extends StatefulWidget {
-  StreamList({Key key}) : super(key: key);
+  StreamList({Key key, this.flutterRadioPlayer}) : super(key: key);
+
+  FlutterRadioPlayer flutterRadioPlayer;
 
   @override
   _StreamList createState() => _StreamList(); 
@@ -90,6 +95,7 @@ class _StreamList extends State<StreamList> {
             // TODO: add the stream
             setStream(index);
             // TODO: Have to replace with smooth transition
+            widget.flutterRadioPlayer.stop();
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(

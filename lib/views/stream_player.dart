@@ -146,7 +146,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
             builder: (context, scrollController) {
               return SingleChildScrollView(
                 controller: scrollController,
-                child: StreamSelect(),
+                child: StreamSelect(_flutterRadioPlayer),
               );
             },
           ),
