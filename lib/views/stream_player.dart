@@ -123,6 +123,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                                 // TODO: add loading widget
                                   return Text("Loading stream..");
                                 case FlutterRadioPlayer.flutter_radio_error:
+                                // doesn't handle error state
                                   // TODO: add notify to retry or check internet or so
                                   return Text('Retry');
                                   break;
