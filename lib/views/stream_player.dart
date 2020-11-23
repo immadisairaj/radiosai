@@ -24,8 +24,9 @@ class StreamPlayer extends StatefulWidget {
   _StreamPlayer createState() => _StreamPlayer();
 }
 
-class _StreamPlayer extends State<StreamPlayer> {
-  int _counter = 0;
+class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMixin {
+  AnimationController _animationController;
+  bool isPlaying = false;
 
   FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
 
@@ -33,6 +34,7 @@ class _StreamPlayer extends State<StreamPlayer> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
 
   Future<void> initRadioService() async {
@@ -52,6 +54,19 @@ class _StreamPlayer extends State<StreamPlayer> {
     await _flutterRadioPlayer.stop();
   }
 
+  void _handleOnPressed() {
+    setState(() async {
+      isPlaying = !isPlaying;
+      if(isPlaying) {
+        _animationController.forward().then((value) => initRadioService());
+        //await initRadioService();
+      } else {
+        _animationController.reverse().then((value) => stopRadioService());
+        // await stopRadioService();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,6 +83,20 @@ class _StreamPlayer extends State<StreamPlayer> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
+                Opacity(
+                  opacity: 0.7,
+                  child: IconButton(
+                    iconSize: 90,
+                    color: Colors.white,
+                    icon: AnimatedIcon(
+                      icon: AnimatedIcons.play_pause,
+                      progress: _animationController,
+                    ),
+                    onPressed: () async {
+                      _handleOnPressed();
+                    },
+                  )
+                ),
                 StreamBuilder(
                   stream: _flutterRadioPlayer.isPlayingStream,
                   initialData: widget.playerState,
@@ -79,47 +108,17 @@ class _StreamPlayer extends State<StreamPlayer> {
                         _flutterRadioPlayer.play();
                         return Text('Loading stream..'); // TODO: add loading widget
                       case FlutterRadioPlayer.flutter_radio_stopped:
-                        return IconButton(
-                          icon: Icon(Icons.play_arrow),
-                          onPressed: () async {
-                            await initRadioService();
-                          },
-                        );
+                        return Text('Play');
                         break;
                       case FlutterRadioPlayer.flutter_radio_loading:
                       // TODO: add loading widget
                         return Text("Loading stream..");
                       case FlutterRadioPlayer.flutter_radio_error:
                         // TODO: add notify to retry or check internet or so
-                        return IconButton(
-                          icon: Icon(Icons.play_arrow),
-                          onPressed: () async {
-                            await initRadioService();
-                          },
-                        );
+                        return Text('Retry');
                         break;
-                      // case FlutterRadioPlayer.flutter_radio_paused:
-                      //   setState(() async {
-                      //       await playRadioService();
-                      //     });
-                        // return Text("Playing");
-                      //case FlutterRadioPlayer.flutter_radio_playing:
                       default:
-                        // playRadioService();
-                        return IconButton(
-                          icon: snapshot.data == FlutterRadioPlayer.flutter_radio_playing
-                            ? Icon(Icons.pause)
-                            : Icon(Icons.play_arrow),
-                          onPressed: () async {
-                            if(snapshot.data == FlutterRadioPlayer.flutter_radio_playing)
-                              await stopRadioService();
-                            else {
-                              if(snapshot.data != FlutterRadioPlayer.flutter_radio_stopped)
-                                await initRadioService();
-                              await _flutterRadioPlayer.play();
-                            }
-                          },
-                        );
+                        return Text('Playing');
                     }
                   },
                 ),
