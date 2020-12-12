@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_radio_player/flutter_radio_player.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:radiosai/views/stream_player.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamList extends StatefulWidget {

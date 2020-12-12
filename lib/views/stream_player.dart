@@ -7,6 +7,71 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_select.dart';
+// Test audio_service and just_audio
+import 'package:audio_service/audio_service.dart';
+import 'package:just_audio/just_audio.dart';
+
+// Test audio_service and just_audio
+void _entrypoint() async => AudioServiceBackground.run(() => AudioPlayerTask());
+
+class AudioPlayerTask extends BackgroundAudioTask {
+  var _player = AudioPlayer();
+
+  @override
+  Future<void> onStart(Map<String, dynamic> params) async {
+    // final mediaItem = MediaItem(
+    //   id: 'radiosai',
+    //   album: 'Radio Sai',
+    //   title: params['title']);
+      print(params['title']);
+      // AudioServiceBackground.setMediaItem(mediaItem);
+
+      // _player.playerStateStream.listen((playerState) {
+      //   AudioServiceBackground.setState(
+      //     controls: [
+      //       playerState.playing ? MediaControl.pause : MediaControl.play
+      //     ],
+      //     processingState: {
+      //       ProcessingState.none: AudioProcessingState.none,
+      //       ProcessingState.loading: AudioProcessingState.connecting,
+      //       ProcessingState.buffering: AudioProcessingState.buffering,
+      //       ProcessingState.ready: AudioProcessingState.ready,
+      //       ProcessingState.completed: AudioProcessingState.completed,
+      //     }[playerState.processingState],
+      //     playing: playerState.playing,
+      //   );
+      // });
+      _player.play();
+      await _player.setUrl(params['link']);
+    return super.onStart(params);
+  }
+
+  @override
+  Future onCustomAction(String name, arguments) async {
+    if(name == 'stream') {
+      await _player.setUrl(arguments);
+    }
+    return super.onCustomAction(name, arguments);
+  }
+
+  @override
+  Future<void> onPlay() {
+    _player.play();
+    return super.onPlay();
+  }
+
+  @override
+  Future<void> onPause() {
+    _player.stop();
+    return super.onPause();
+  }
+
+  @override
+  Future<void> onStop() {
+    _player.stop();
+    return super.onStop();
+  }
+}
 
 class StreamPlayer extends StatefulWidget {
   StreamPlayer({Key key}) : super(key: key);
@@ -28,6 +93,8 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
   FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
 
+  var _player = AudioPlayer();
+
   @override
   void initState() {
     // TODO: implement initState
@@ -48,9 +115,24 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
   Future<void> initRadioService(int index) async {
     try {
-      await _flutterRadioPlayer.init("Radio Sai", "radiosai", MyConstants.of(context).streamLink[index], "false");
-      await _flutterRadioPlayer.play();
-    } on PlatformException {
+      // await _flutterRadioPlayer.init("Radio Sai", "radiosai", MyConstants.of(context).streamLink[index], "false");
+      // await _flutterRadioPlayer.play();
+      // Test audio_service and just_audio
+      Map<String, dynamic> params = new Map();
+      params['title'] = MyConstants.of(context).streamName[index];
+      params['link'] = MyConstants.of(context).streamLink[index];
+      print(params['title']);
+      await AudioService.start(backgroundTaskEntrypoint: _entrypoint,
+        params: params,
+        androidNotificationChannelName: 'radiosai',
+        androidNotificationIcon: 'mipmap/ic_launcher',
+        androidNotificationColor: 0xFF000000,
+        androidEnableQueue: false);
+      // await _player.setUrl(params['link']);
+      // _player.play();
+      // await AudioService.customAction('stream', MyConstants.of(context).streamLink[index]);
+      // AudioService.play();
+    } on Exception {
       print("Execption while registering");
     }
   }
@@ -60,7 +142,10 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   }
 
   Future<void> stopRadioService() async {
-    await _flutterRadioPlayer.stop();
+    // await _flutterRadioPlayer.stop();
+    // Test audio_service and just_audio
+    _player.stop();
+    await AudioService.stop();
   }
 
   void _handleOnPressed(int index) {

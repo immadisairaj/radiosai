@@ -32,6 +32,8 @@ dependencies:
   shared_preferences: '>=0.5.12+4'
   sliding_up_panel: ^1.0.2
   flutter_launcher_icons: ^0.8.1
+  audio_service: ^0.15.3
+  just_audio: ^0.5.7
 
 flutter_icons:
   image_path: assets/radiosai-logo.jpg
