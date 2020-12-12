@@ -50,11 +50,15 @@ class _StreamList extends State<StreamList> {
             child: GestureDetector(
               onTap: () async {
               setStream(index);
-              await widget.flutterRadioPlayer.isPlaying()
-              .then((value) {
-                widget.flutterRadioPlayer.stop();
-              })
-              .then((value) => widget.panelController.close());
+              try {
+                await widget.flutterRadioPlayer.isPlaying()
+                .then((value) {
+                  widget.flutterRadioPlayer.stop();
+                })
+                .then((value) => widget.panelController.close());
+              } catch(Exception) {
+                widget.panelController.close();
+              }
             },
               child: Card(
                 elevation: 1.8,

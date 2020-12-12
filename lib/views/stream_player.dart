@@ -89,12 +89,16 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         controller: _panelController,
         onPanelClosed: () {
           setState(() async {
-            await _flutterRadioPlayer.isPlaying()
-            .then((value) {
-              if(!value) {
-                updateStreamIndex();
-              }
-            });
+            try{
+              await _flutterRadioPlayer.isPlaying()
+              .then((value) {
+                if(!value) {
+                  updateStreamIndex();
+                }
+              });
+            } catch(Exception) {
+              updateStreamIndex();
+            }
           });
         },
         collapsed: GestureDetector(
