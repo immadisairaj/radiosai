@@ -14,9 +14,9 @@ class StreamList extends StatefulWidget {
               this.animationController,}) : super(key: key);
 
   // FlutterRadioPlayer flutterRadioPlayer;
-  AudioPlayer audioPlayer;
-  PanelController panelController;
-  AnimationController animationController;
+  final AudioPlayer audioPlayer;
+  final PanelController panelController;
+  final AnimationController animationController;
 
   @override
   _StreamList createState() => _StreamList(); 
@@ -32,14 +32,14 @@ class _StreamList extends State<StreamList> {
           stream: _streamBloc.pressedCount,
           builder: (context, snapshot) {
             int streamIndex = snapshot.data;
-            return slide(context, _streamBloc, streamIndex);
+            return slide(_streamBloc, streamIndex);
           },
         );
       },
     );
   }
 
-  Widget slide(BuildContext context, StreamBloc _streamBloc, int streamIndex) {
+  Widget slide(StreamBloc _streamBloc, int streamIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(

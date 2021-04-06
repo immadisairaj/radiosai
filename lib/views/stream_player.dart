@@ -103,14 +103,14 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
           stream: _streamBloc.pressedCount,
           builder: (context, snapshot) {
             int streamIndex = snapshot.data;
-            return player(context, _streamBloc, streamIndex, radius);
+            return player(streamIndex, radius);
           },
         );
       },
     );
   }
 
-  Widget player(BuildContext context, StreamBloc _streamBloc, int streamIndex, BorderRadiusGeometry radius) {
+  Widget player(int streamIndex, BorderRadiusGeometry radius) {
     return Scaffold(
       body: SlidingUpPanel(
         borderRadius: radius,
@@ -118,7 +118,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         controller: _panelController,
         onPanelClosed: () {
           setState(() {
-            if(_tempStreamIndex != streamIndex) updateStreamIndex();
+            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex();
           });
         },
         collapsed: GestureDetector(
@@ -173,7 +173,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   Text(
-                    MyConstants.of(context).streamName[streamIndex],
+                    MyConstants.of(context).streamName[streamIndex ?? 0],
                   ),
                   Opacity(
                     opacity: 0.7,
@@ -185,7 +185,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                         progress: _animationController,
                       ),
                       onPressed: () async {
-                        _handleOnPressed(streamIndex);
+                        if(streamIndex != null) _handleOnPressed(streamIndex);
                       },
                     )
                   ),
@@ -224,14 +224,14 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
                       if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
                         return Text('Loading stream..');
-                      } else if(!playing) {
+                      } else if(playing != null && !playing) {
                         return Text('Play');
                       } else if(processingState == ProcessingState.completed) {
                         return Text('Playing');
-                      } else if(playing) {
+                      } else if(playing != null && playing) {
                         return Text('Playing');
                       }
-                      return Text('Error');
+                      return Text('Retry');
                     },
                   ),
                 ],
