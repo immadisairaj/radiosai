@@ -10,39 +10,28 @@ import 'package:radiosai/views/stream_select.dart';
 // Test audio_service and just_audio
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:audio_session/audio_session.dart';
 
 // Test audio_service and just_audio
 void _entrypoint() async => AudioServiceBackground.run(() => AudioPlayerTask());
-
+// TODO: fix the whole audio service task
 class AudioPlayerTask extends BackgroundAudioTask {
-  var _player = AudioPlayer();
+  AudioPlayer _player = new AudioPlayer();
+  // AudioProcessingState _skipState;
+  // late StreamSubscription<PlaybackEvent> _eventSubscription;
 
   @override
   Future<void> onStart(Map<String, dynamic> params) async {
-    // final mediaItem = MediaItem(
-    //   id: 'radiosai',
-    //   album: 'Radio Sai',
-    //   title: params['title']);
-      print(params['title']);
-      // AudioServiceBackground.setMediaItem(mediaItem);
+    
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration.speech());
 
-      // _player.playerStateStream.listen((playerState) {
-      //   AudioServiceBackground.setState(
-      //     controls: [
-      //       playerState.playing ? MediaControl.pause : MediaControl.play
-      //     ],
-      //     processingState: {
-      //       ProcessingState.none: AudioProcessingState.none,
-      //       ProcessingState.loading: AudioProcessingState.connecting,
-      //       ProcessingState.buffering: AudioProcessingState.buffering,
-      //       ProcessingState.ready: AudioProcessingState.ready,
-      //       ProcessingState.completed: AudioProcessingState.completed,
-      //     }[playerState.processingState],
-      //     playing: playerState.playing,
-      //   );
-      // });
-      _player.play();
-      await _player.setUrl(params['link']);
+    // _player.currentIndexStream.listen((index) {
+    //   if(index != null) AudioServiceBackground.setMediaItem(queue[index]);
+    // });
+     
+    // _eventSubscription = _player.playbackEventStream.listen((event) {broadcastState()});
+    // _player.setAudioSource(AudioSource.uri(Uri.parse(MyConstants.of(context).streamLink[index])));
     return super.onStart(params);
   }
 
@@ -93,12 +82,19 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
   FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
 
-  var _player = AudioPlayer();
+  AudioPlayer _player;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+
+    // Test just_audio
+    _player = AudioPlayer();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+    ));
+
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     _streamIndex = _prefs.then((SharedPreferences prefs) {return (prefs.getInt('stream') ?? 0);});
   }
@@ -114,20 +110,34 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   }
 
   Future<void> initRadioService(int index) async {
+
+    // Test just_audio
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration.speech());
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
+
     try {
+      // Test just_audio
+      _player.setAudioSource(AudioSource.uri(Uri.parse(MyConstants.of(context).streamLink[index])));
+      _player.play();
+
       // await _flutterRadioPlayer.init("Radio Sai", "radiosai", MyConstants.of(context).streamLink[index], "false");
       // await _flutterRadioPlayer.play();
-      // Test audio_service and just_audio
-      Map<String, dynamic> params = new Map();
-      params['title'] = MyConstants.of(context).streamName[index];
-      params['link'] = MyConstants.of(context).streamLink[index];
-      print(params['title']);
-      await AudioService.start(backgroundTaskEntrypoint: _entrypoint,
-        params: params,
-        androidNotificationChannelName: 'radiosai',
-        androidNotificationIcon: 'mipmap/ic_launcher',
-        androidNotificationColor: 0xFF000000,
-        androidEnableQueue: false);
+
+      // // Test audio_service and just_audio
+      // Map<String, dynamic> params = new Map();
+      // params['title'] = MyConstants.of(context).streamName[index];
+      // params['link'] = MyConstants.of(context).streamLink[index];
+      // print(params['title']);
+      // await AudioService.start(backgroundTaskEntrypoint: _entrypoint,
+      //   params: params,
+      //   androidNotificationChannelName: 'radiosai',
+      //   androidNotificationIcon: 'mipmap/ic_launcher',
+      //   androidNotificationColor: 0xFF000000,
+      //   androidEnableQueue: false);
       // await _player.setUrl(params['link']);
       // _player.play();
       // await AudioService.customAction('stream', MyConstants.of(context).streamLink[index]);
@@ -138,14 +148,18 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   }
 
   Future<void> playRadioService() async {
-    await _flutterRadioPlayer.play();
+    // await _flutterRadioPlayer.play();
+
+    // Test just_audio
+    await _player.play();
   }
 
   Future<void> stopRadioService() async {
     // await _flutterRadioPlayer.stop();
     // Test audio_service and just_audio
-    _player.stop();
-    await AudioService.stop();
+    await _player.stop();
+    // await AudioService.stop();
+    // _player.dispose(); TODO: add dispose in dispose function
   }
 
   void _handleOnPressed(int index) {
@@ -173,14 +187,21 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         backdropEnabled: true,
         controller: _panelController,
         onPanelClosed: () {
-          setState(() async {
-            await _flutterRadioPlayer.isPlaying()
-            .then((value) {
-              if(!value) {
-                updateStreamIndex();
-              }
-            });
-          });
+          // TODO: fix the functionality of updating stream
+          updateStreamIndex()
+            .then((value) => setState(() {}));
+          // setState(() {
+          //   // await _player.playing
+          //   // .then((value) {
+          //     // if(_player.playing) {
+          //     try {
+          //       updateStreamIndex();
+          //     } catch(Exception) {
+          //       updateStreamIndex();
+          //     }
+          //     // }
+          //   // });
+          // });
         },
         collapsed: GestureDetector(
           onTap: () {
@@ -216,6 +237,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         ),
         panel: StreamList(
           flutterRadioPlayer: _flutterRadioPlayer,
+          audioPlayer: _player,
           panelController: _panelController,
           animationController: _animationController,
         ),
@@ -259,30 +281,54 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                                 },
                               )
                             ),
-                            StreamBuilder(
-                              stream: _flutterRadioPlayer.isPlayingStream,
-                              initialData: widget.playerState,
-                              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                                String returnData = snapshot.data;
-                                print("object data: " + returnData);
-                                switch(returnData) {
-                                  case FlutterRadioPlayer.flutter_radio_paused:
-                                    _flutterRadioPlayer.play();
-                                    return Text('Loading stream..'); // TODO: add loading widget
-                                  case FlutterRadioPlayer.flutter_radio_stopped:
-                                    return Text('Play');
-                                    break;
-                                  case FlutterRadioPlayer.flutter_radio_loading:
-                                  // TODO: add loading widget
-                                    return Text("Loading stream..");
-                                  case FlutterRadioPlayer.flutter_radio_error:
-                                  // doesn't handle error state
-                                    // TODO: add notify to retry or check internet or so
-                                    return Text('Retry');
-                                    break;
-                                  default:
-                                    return Text('Playing');
+                            // StreamBuilder(
+                            //   stream: _flutterRadioPlayer.isPlayingStream,
+                            //   initialData: widget.playerState,
+                            //   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                            //     String returnData = snapshot.data;
+                            //     print("object data: " + returnData);
+                            //     switch(returnData) {
+                            //       case FlutterRadioPlayer.flutter_radio_paused:
+                            //         _flutterRadioPlayer.play();
+                            //         return Text('Loading stream..'); // TODO: add loading widget
+                            //       case FlutterRadioPlayer.flutter_radio_stopped:
+                            //         return Text('Play');
+                            //         break;
+                            //       case FlutterRadioPlayer.flutter_radio_loading:
+                            //       // TODO: add loading widget
+                            //         return Text("Loading stream..");
+                            //       case FlutterRadioPlayer.flutter_radio_error:
+                            //       // doesn't handle error state
+                            //         // TODO: add notify to retry or check internet or so
+                            //         return Text('Retry');
+                            //         break;
+                            //       default:
+                            //         return Text('Playing');
+                            //     }
+                            //   },
+                            // ),
+
+                            // Test just_audio
+                            StreamBuilder<PlayerState>(
+                              stream: _player.playerStateStream,
+                              builder: (context, snapshot) {
+                                final playerState = snapshot.data;
+                                final processingState = playerState?.processingState;
+                                final playing = playerState?.playing;
+                                if (processingState == ProcessingState.loading ||
+                                    processingState == ProcessingState.buffering) {
+                                  return Container(
+                                    margin: EdgeInsets.all(8.0),
+                                    width: 64.0,
+                                    height: 64.0,
+                                    child: CircularProgressIndicator(),
+                                  );
+                                } else if (playing != true) {
+                                  return Text('Play');
+                                } else if (processingState != ProcessingState.completed) {
+                                  return Text('Playing!');
                                 }
+                                return Text('Error');
                               },
                             ),
                           ],
