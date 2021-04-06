@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_radio_player/flutter_radio_player.dart';
+// import 'package:flutter_radio_player/flutter_radio_player.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamList extends StatefulWidget {
-  StreamList({Key key, this.flutterRadioPlayer,
+  StreamList({Key key,
+              // this.flutterRadioPlayer,
+              this.audioPlayer,
               this.panelController,
               this.animationController,}) : super(key: key);
 
-  FlutterRadioPlayer flutterRadioPlayer;
+  // FlutterRadioPlayer flutterRadioPlayer;
+  AudioPlayer audioPlayer;
   PanelController panelController;
   AnimationController animationController;
 
@@ -51,17 +55,19 @@ class _StreamList extends State<StreamList> {
             padding: EdgeInsets.all(8),
             child: GestureDetector(
               onTap: () async {
-              _streamBloc.incrementCounter.add(index);
-              try {
-                await widget.flutterRadioPlayer.isPlaying()
-                .then((value) {
-                  widget.flutterRadioPlayer.stop();
-                })
-                .then((value) => widget.panelController.close());
-              } catch(Exception) {
-                widget.panelController.close();
-              }
-            },
+                _streamBloc.incrementCounter.add(index);
+                try {
+                  // await widget.flutterRadioPlayer.isPlaying()
+                  // .then((value) {
+                  //   widget.flutterRadioPlayer.stop();
+                  // })
+                  // .then((value) => widget.panelController.close());
+                  if(widget.audioPlayer.playing) widget.audioPlayer.stop();
+                  widget.panelController.close();
+                } catch(Exception) {
+                  widget.panelController.close();
+                }
+              },
               child: Card(
                 elevation: 1.8,
                 child: Center(
