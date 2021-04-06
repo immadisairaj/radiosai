@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_radio_player/flutter_radio_player.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:radiosai/views/stream_player.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamList extends StatefulWidget {
@@ -20,20 +20,22 @@ class StreamList extends StatefulWidget {
 
 class _StreamList extends State<StreamList> {
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-
-  Future<void> setStream(int index) async {
-    final SharedPreferences prefs = await _prefs;
-    final int streamIndex = index;
-    setState(() {
-      prefs.setInt('stream', streamIndex).then((bool success) {
-        return streamIndex;
-      });
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    return Consumer<StreamBloc>(
+      builder: (context, _streamBloc, child) {
+        return StreamBuilder<int>(
+          stream: _streamBloc.pressedCount,
+          builder: (context, snapshot) {
+            int streamIndex = snapshot.data;
+            return slide(context, _streamBloc, streamIndex);
+          },
+        );
+      },
+    );
+  }
+
+  Widget slide(BuildContext context, StreamBloc _streamBloc, int streamIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(
@@ -49,7 +51,7 @@ class _StreamList extends State<StreamList> {
             padding: EdgeInsets.all(8),
             child: GestureDetector(
               onTap: () async {
-              setStream(index);
+              _streamBloc.incrementCounter.add(index);
               try {
                 await widget.flutterRadioPlayer.isPlaying()
                 .then((value) {

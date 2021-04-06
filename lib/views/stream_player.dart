@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_radio_player/flutter_radio_player.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_select.dart';
@@ -21,9 +22,6 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   AnimationController _animationController;
   bool isPlaying = false;
 
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<int> _streamIndex;
-
   PanelController _panelController = new PanelController();
 
   FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
@@ -33,12 +31,10 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     // TODO: implement initState
     super.initState();
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    _streamIndex = _prefs.then((SharedPreferences prefs) {return (prefs.getInt('stream') ?? 0);});
   }
 
-  Future<void> updateStreamIndex() async {
+  void updateStreamIndex() {
     setState(() {
-      _streamIndex = _prefs.then((SharedPreferences prefs) {return (prefs.getInt('stream') ?? 0);});
       if(isPlaying == true) {
         isPlaying = !isPlaying;
         _animationController.reverse().then((value) => stopRadioService());
@@ -68,10 +64,8 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
       isPlaying = !isPlaying;
       if(isPlaying) {
         _animationController.forward().then((value) => initRadioService(index));
-        //await initRadioService();
       } else {
         _animationController.reverse().then((value) => stopRadioService());
-        // await stopRadioService();
       }
     });
   }
@@ -82,23 +76,28 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
       topLeft: Radius.circular(24.0),
       topRight: Radius.circular(24.0),
     );
+    return Consumer<StreamBloc>(
+      builder: (context, _streamBloc, child) {
+        return StreamBuilder<int>(
+          stream: _streamBloc.pressedCount,
+          builder: (context, snapshot) {
+            int streamIndex = snapshot.data;
+            return player(context, _streamBloc, streamIndex, radius);
+          },
+        );
+      },
+    );
+  }
+
+  Widget player(BuildContext context, StreamBloc _streamBloc, int streamIndex, BorderRadiusGeometry radius) {
     return Scaffold(
       body: SlidingUpPanel(
         borderRadius: radius,
         backdropEnabled: true,
         controller: _panelController,
         onPanelClosed: () {
-          setState(() async {
-            try{
-              await _flutterRadioPlayer.isPlaying()
-              .then((value) {
-                if(!value) {
-                  updateStreamIndex();
-                }
-              });
-            } catch(Exception) {
-              updateStreamIndex();
-            }
+          setState(() {
+            updateStreamIndex();
           });
         },
         collapsed: GestureDetector(
@@ -148,67 +147,53 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
               ),
             ),
             Center(
-              child: FutureBuilder<int>(
-                future: _streamIndex,
-                builder: (BuildContext context, AsyncSnapshot<int> snapshotInt) {
-                  switch(snapshotInt.connectionState) {
-                    case ConnectionState.waiting:
-                      return const CircularProgressIndicator();
-                    default:
-                      if(snapshotInt.hasError) {
-                        return Text('Error');
-                      } else {
-                        return Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Text(
-                              MyConstants.of(context).streamName[snapshotInt.data],
-                            ),
-                            Opacity(
-                              opacity: 0.7,
-                              child: IconButton(
-                                iconSize: 90,
-                                color: Colors.white,
-                                icon: AnimatedIcon(
-                                  icon: AnimatedIcons.play_pause,
-                                  progress: _animationController,
-                                ),
-                                onPressed: () async {
-                                  _handleOnPressed(snapshotInt.data);
-                                },
-                              )
-                            ),
-                            StreamBuilder(
-                              stream: _flutterRadioPlayer.isPlayingStream,
-                              initialData: widget.playerState,
-                              builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                                String returnData = snapshot.data;
-                                print("object data: " + returnData);
-                                switch(returnData) {
-                                  case FlutterRadioPlayer.flutter_radio_paused:
-                                    _flutterRadioPlayer.play();
-                                    return Text('Loading stream..'); // TODO: add loading widget
-                                  case FlutterRadioPlayer.flutter_radio_stopped:
-                                    return Text('Play');
-                                    break;
-                                  case FlutterRadioPlayer.flutter_radio_loading:
-                                  // TODO: add loading widget
-                                    return Text("Loading stream..");
-                                  case FlutterRadioPlayer.flutter_radio_error:
-                                  // doesn't handle error state
-                                    // TODO: add notify to retry or check internet or so
-                                    return Text('Retry');
-                                    break;
-                                  default:
-                                    return Text('Playing');
-                                }
-                              },
-                            ),
-                          ],
-                        );
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    MyConstants.of(context).streamName[streamIndex],
+                  ),
+                  Opacity(
+                    opacity: 0.7,
+                    child: IconButton(
+                      iconSize: 90,
+                      color: Colors.white,
+                      icon: AnimatedIcon(
+                        icon: AnimatedIcons.play_pause,
+                        progress: _animationController,
+                      ),
+                      onPressed: () async {
+                        _handleOnPressed(streamIndex);
+                      },
+                    )
+                  ),
+                  StreamBuilder(
+                    stream: _flutterRadioPlayer.isPlayingStream,
+                    initialData: widget.playerState,
+                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      String returnData = snapshot.data;
+                      print("object data: " + returnData);
+                      switch(returnData) {
+                        case FlutterRadioPlayer.flutter_radio_paused:
+                          _flutterRadioPlayer.play();
+                          return Text('Loading stream..'); // TODO: add loading widget
+                        case FlutterRadioPlayer.flutter_radio_stopped:
+                          return Text('Play');
+                          break;
+                        case FlutterRadioPlayer.flutter_radio_loading:
+                        // TODO: add loading widget
+                          return Text("Loading stream..");
+                        case FlutterRadioPlayer.flutter_radio_error:
+                        // doesn't handle error state
+                          // TODO: add notify to retry or check internet or so
+                          return Text('Retry');
+                          break;
+                        default:
+                          return Text('Playing');
                       }
-                  }
-                },
+                    },
+                  ),
+                ],
               ),
             ),
           ],
