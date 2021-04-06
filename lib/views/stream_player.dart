@@ -28,6 +28,8 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   // FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
   AudioPlayer _player;
 
+  int _tempStreamIndex = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -53,6 +55,9 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         Uri.parse(MyConstants.of(context).streamLink[index])
       ));
       _player.play();
+      setState(() {
+        _tempStreamIndex = index;
+      });
     } on PlatformException {
       print("Execption while registering");
     }
@@ -66,7 +71,13 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   Future<void> stopRadioService() async {
     // await _flutterRadioPlayer.stop();
     _player.stop();
-    // TODO: add _player.dispose() in dispose
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _player.dispose();
   }
 
   void _handleOnPressed(int index) {
@@ -107,7 +118,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         controller: _panelController,
         onPanelClosed: () {
           setState(() {
-            updateStreamIndex();
+            if(_tempStreamIndex != streamIndex) updateStreamIndex();
           });
         },
         collapsed: GestureDetector(
@@ -213,9 +224,11 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
                       if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
                         return Text('Loading stream..');
-                      } else if(playing != true) {
+                      } else if(!playing) {
                         return Text('Play');
                       } else if(processingState == ProcessingState.completed) {
+                        return Text('Playing');
+                      } else if(playing) {
                         return Text('Playing');
                       }
                       return Text('Error');

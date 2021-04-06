@@ -55,16 +55,20 @@ class _StreamList extends State<StreamList> {
             padding: EdgeInsets.all(8),
             child: GestureDetector(
               onTap: () async {
-                _streamBloc.incrementCounter.add(index);
-                try {
-                  // await widget.flutterRadioPlayer.isPlaying()
-                  // .then((value) {
-                  //   widget.flutterRadioPlayer.stop();
-                  // })
-                  // .then((value) => widget.panelController.close());
-                  if(widget.audioPlayer.playing) widget.audioPlayer.stop();
-                  widget.panelController.close();
-                } catch(Exception) {
+                if(index != streamIndex) {
+                  _streamBloc.incrementCounter.add(index);
+                  try {
+                    // await widget.flutterRadioPlayer.isPlaying()
+                    // .then((value) {
+                    //   widget.flutterRadioPlayer.stop();
+                    // })
+                    // .then((value) => widget.panelController.close());
+                    if(widget.audioPlayer.playing) widget.audioPlayer.stop();
+                    widget.panelController.close();
+                  } catch(Exception) {
+                    widget.panelController.close();
+                  }
+                } else {
                   widget.panelController.close();
                 }
               },
