@@ -36,6 +36,7 @@ dependencies:
   rxdart: ^0.26.0
   provider: ^4.0.0
   audio_service: ^0.17.0
+  path_provider: ^2.0.1
 
 flutter_icons:
   image_path: assets/radiosai-logo.jpg
@@ -60,7 +61,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
       - assets/sai_listens.jpg
-      - assets/sai_listens_box.jpg
+      - assets/sai_listens_notification.jpg
       - assets/radiosai-logo.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

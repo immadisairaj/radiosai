@@ -1,5 +1,9 @@
+import 'dart:io';
+
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 
 class AudioPlayerTask extends BackgroundAudioTask {
   final _player = AudioPlayer();
@@ -8,12 +12,13 @@ class AudioPlayerTask extends BackgroundAudioTask {
   Future<void> onStart(Map<String, dynamic> params) async {
     // TODO: implement onStart
     
+    String path = await getNotificationImage();
+    
     final mediaItem = MediaItem(
       id: params['audioSource'],
       album: "Radio Sai Global Harmony",
       title: params['audioName'],
-      // TODO: make the below link to store and call the absolute path
-      artUri: Uri.parse('https://i.pinimg.com/originals/aa/64/21/aa6421dc59f3a6163f9cf1f32dfe7943.jpg'),
+      artUri: Uri.parse('file://$path'),
     );
     // Tell the UI and media notification what we're playing.
     AudioServiceBackground.setMediaItem(mediaItem);
@@ -65,6 +70,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
     // TODO: implement onPause
     _player.pause();
     return super.onPause();
+  }
+
+  Future<String> getNotificationImage() async {
+    String path = await getFilePath();
+    File file = File(path);
+    bool fileExists = file.existsSync();
+    if(fileExists) return path;
+    final byteData = await rootBundle.load('assets/sai_listens_notification.jpg');
+    file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+    return path;
+  }
+
+  Future<String> getFilePath() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    String filePath = '$appDocPath/sai_listens_notification.jpg';
+    return filePath;
   }
   
 }
