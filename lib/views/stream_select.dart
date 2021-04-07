@@ -9,12 +9,12 @@ import 'package:radiosai/constants/constants.dart';
 class StreamList extends StatefulWidget {
   StreamList({Key key,
               // this.flutterRadioPlayer,
-              this.audioPlayer,
+              // this.audioPlayer,
               this.panelController,
               this.animationController,}) : super(key: key);
 
   // FlutterRadioPlayer flutterRadioPlayer;
-  final AudioPlayer audioPlayer;
+  // final AudioPlayer audioPlayer;
   final PanelController panelController;
   final AnimationController animationController;
 
@@ -63,7 +63,7 @@ class _StreamList extends State<StreamList> {
                     //   widget.flutterRadioPlayer.stop();
                     // })
                     // .then((value) => widget.panelController.close());
-                    if(widget.audioPlayer.playing) widget.audioPlayer.stop();
+                    // if(widget.audioPlayer.playing) widget.audioPlayer.stop();
                     widget.panelController.close();
                   } catch(Exception) {
                     widget.panelController.close();

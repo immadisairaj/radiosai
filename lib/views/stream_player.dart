@@ -1,14 +1,19 @@
 import 'dart:async';
 
+import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_radio_player/flutter_radio_player.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:radiosai/audio-source/audio_player_task.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_select.dart';
+
+void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 
 class StreamPlayer extends StatefulWidget {
   StreamPlayer({Key key}) : super(key: key);
@@ -26,7 +31,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   PanelController _panelController = new PanelController();
 
   // FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
-  AudioPlayer _player;
+  // AudioPlayer _player;
 
   int _tempStreamIndex = 0;
 
@@ -34,7 +39,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
   void initState() {
     // TODO: implement initState
     super.initState();
-    _player = AudioPlayer();
+    // _player = AudioPlayer();
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
 
@@ -51,10 +56,18 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     try {
       // await _flutterRadioPlayer.init("Radio Sai", "radiosai", MyConstants.of(context).streamLink[index], "false");
       // await _flutterRadioPlayer.play();
-      _player.setAudioSource(AudioSource.uri(
-        Uri.parse(MyConstants.of(context).streamLink[index])
-      ));
-      _player.play();
+    
+      // _player.setAudioSource(AudioSource.uri(
+      //   Uri.parse(MyConstants.of(context).streamLink[index])
+      // ));
+      // _player.play();
+      
+      Map<String, dynamic> _params = {
+        'audioSource': MyConstants.of(context).streamLink[index],
+        'audioName': MyConstants.of(context).streamName[index],
+      };
+      await AudioService.start(backgroundTaskEntrypoint: _entrypoint, params: _params);
+
       setState(() {
         _tempStreamIndex = index;
       });
@@ -65,23 +78,30 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
 
   Future<void> playRadioService() async {
     // await _flutterRadioPlayer.play();
-    _player.play();
+    
+    // _player.play();
+    
+    await AudioService.play();
   }
 
   Future<void> stopRadioService() async {
     // await _flutterRadioPlayer.stop();
-    _player.stop();
+    
+    // _player.stop();
+    
+    await AudioService.stop();
   }
 
   @override
-  void dispose() {
+  void dispose() async {
     // TODO: implement dispose
+    await AudioService.stop();
     super.dispose();
-    _player.dispose();
+    // _player.dispose();
   }
 
   void _handleOnPressed(int index) {
-    setState(() async {
+    setState(() {
       isPlaying = !isPlaying;
       if(isPlaying) {
         _animationController.forward().then((value) => initRadioService(index));
@@ -155,7 +175,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         ),
         panel: StreamList(
           // flutterRadioPlayer: _flutterRadioPlayer,
-          audioPlayer: _player,
+          // audioPlayer: _player,
           panelController: _panelController,
           animationController: _animationController,
         ),
@@ -215,23 +235,32 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                   //     }
                   //   },
                   // ),
-                  StreamBuilder<PlayerState>(
-                    stream: _player.playerStateStream,
+                  StreamBuilder<AudioProcessingState>(
+                    stream: AudioService.playbackStateStream
+                            .map((state) => state.processingState),
                     builder: (context, snapshot) {
                       final playerState = snapshot.data;
-                      final processingState = playerState?.processingState;
-                      final playing = playerState?.playing;
-
-                      if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
-                        return Text('Loading stream..');
-                      } else if(playing != null && !playing) {
-                        return Text('Play');
-                      } else if(processingState == ProcessingState.completed) {
-                        return Text('Playing');
-                      } else if(playing != null && playing) {
-                        return Text('Playing');
+                      final processingState = playerState ?? AudioProcessingState.none;
+                      switch(processingState) {
+                        case AudioProcessingState.none: return Text('Play');
+                        case AudioProcessingState.ready: return Text('Playing');
+                        case AudioProcessingState.buffering:
+                        case AudioProcessingState.connecting: return Text('Loading stream..');
+                        case AudioProcessingState.error: return Text('Error.. retry');
+                        default: return Text('${describeEnum(processingState)}'); 
                       }
-                      return Text('Retry');
+                      // final playing = playerState?.playing;
+
+                      // if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
+                      //   return Text('Loading stream..');
+                      // } else if(playing != null && !playing) {
+                      //   return Text('Play');
+                      // } else if(processingState == ProcessingState.completed) {
+                      //   return Text('Playing');
+                      // } else if(playing != null && playing) {
+                      //   return Text('Playing');
+                      // }
+                      // return Text('Retry');
                     },
                   ),
                 ],

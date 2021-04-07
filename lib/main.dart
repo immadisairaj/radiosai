@@ -1,3 +1,4 @@
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_player.dart';
@@ -28,7 +29,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.deepOrange,
         ),
-        home: StreamPlayer(),
+        home: AudioServiceWidget(child: StreamPlayer()),
       ),
     );
   }
