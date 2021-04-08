@@ -1,6 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
-import 'package:radiosai/bloc/playing_bloc.dart';
+import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_player.dart';
 import 'package:provider/provider.dart';
@@ -23,9 +23,9 @@ class MyApp extends StatelessWidget {
           create: (_) => StreamBloc(),
           dispose: (_, StreamBloc streamBloc) => streamBloc.dispose(),
         ),
-        Provider<PlayingBloc>(
-          create: (_) => PlayingBloc(false),
-          dispose: (_, PlayingBloc playingBloc) => playingBloc.dispose(),
+        Provider<LoadingStreamBloc>(
+          create: (_) => LoadingStreamBloc(false),
+          dispose: (_, LoadingStreamBloc loadingStreamBloc) => loadingStreamBloc.dispose(),
         ),
       ],
       child: MaterialApp(

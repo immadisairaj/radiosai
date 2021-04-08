@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio-source/audio_player_task.dart';
-import 'package:radiosai/bloc/playing_bloc.dart';
+import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
@@ -68,6 +68,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         'audioSource': MyConstants.of(context).streamLink[index],
         'audioName': MyConstants.of(context).streamName[index],
       };
+      await AudioService.connect();
       await AudioService.start(backgroundTaskEntrypoint: _entrypoint, params: _params);
 
       setState(() {
@@ -102,7 +103,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     // _player.dispose();
   }
 
-  void _handleOnPressed(int index, bool isPlaying) {
+  void _handleOnPressed(int index, bool isPlaying) async {
     // setState(() {
       // isPlaying = !isPlaying;
       if(!isPlaying) {
@@ -135,14 +136,14 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
           stream: _streamBloc.indexStream,
           builder: (context, snapshot) {
             int streamIndex = snapshot.data;
-            return Consumer<PlayingBloc>(
-              builder: (context, _playingBloc, child) {
+            return Consumer<LoadingStreamBloc>(
+              builder: (context, _loadingBloc, child) {
                 return StreamBuilder<bool>(
-                  stream: _playingBloc.playingStream,
+                  stream: _loadingBloc.loadingStream,
                   builder: (context, snapshot) {
-                    bool playingState = snapshot.data;
-                    if(playingState != null) _handlePlayingState(playingState);
-                    return mainPlayer(streamIndex, radius, playingState, _playingBloc);
+                    bool loadingState = snapshot.data ?? false;
+                    // if(playingState != null) _handlePlayingState(playingState);
+                    return mainPlayer(streamIndex, radius, loadingState, _loadingBloc);
                   },
                 );
               },
@@ -153,7 +154,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     );
   }
 
-  Widget mainPlayer(int streamIndex, BorderRadiusGeometry radius, bool playingState, PlayingBloc _playingBloc) {
+  Widget mainPlayer(int streamIndex, BorderRadiusGeometry radius, bool loadingState, LoadingStreamBloc _loadingBloc) {
     return Scaffold(
       body: SlidingUpPanel(
         borderRadius: radius,
@@ -161,7 +162,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         controller: _panelController,
         onPanelClosed: () {
           setState(() {
-            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(playingState);
+            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(loadingState);
           });
         },
         collapsed: GestureDetector(
@@ -214,7 +215,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
             Container(
               color: Color(0X2F000000),
               child: Center(
-                child: playingDisplay(streamIndex, playingState, _playingBloc),
+                child: playingDisplay(streamIndex, loadingState, _loadingBloc),
               ),
             ),
           ],
@@ -223,108 +224,128 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     );
   }
 
-  Widget playingDisplay(int streamIndex, bool playingState, PlayingBloc _playingBloc) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          MyConstants.of(context).streamName[streamIndex ?? 0],
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
-        Opacity(
-          opacity: 0.7,
-          child: IconButton(
-            iconSize: 90,
-            color: Colors.white,
-            icon: AnimatedIcon(
-              icon: AnimatedIcons.play_pause,
-              progress: _animationController,
-            ),
-            onPressed: () async {
-              if(streamIndex != null) _handleOnPressed(streamIndex, playingState);
-            },
-          )
-        ),
-        // StreamBuilder(
-        //   stream: _flutterRadioPlayer.isPlayingStream,
-        //   initialData: widget.playerState,
-        //   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        //     String returnData = snapshot.data;
-        //     print("object data: " + returnData);
-        //     switch(returnData) {
-        //       case FlutterRadioPlayer.flutter_radio_paused:
-        //         _flutterRadioPlayer.play();
-        //         return Text('Loading stream..'); // TODO: add loading widget
-        //       case FlutterRadioPlayer.flutter_radio_stopped:
-        //         return Text('Play');
-        //         break;
-        //       case FlutterRadioPlayer.flutter_radio_loading:
-        //       // TODO: add loading widget
-        //         return Text("Loading stream..");
-        //       case FlutterRadioPlayer.flutter_radio_error:
-        //       // doesn't handle error state
-        //         // TODO: add notify to retry or check internet or so
-        //         return Text('Retry');
-        //         break;
-        //       default:
-        //         return Text('Playing');
-        //     }
-        //   },
-        // ),
-        StreamBuilder<AudioProcessingState>(
-          stream: AudioService.playbackStateStream
-                  .map((state) => state.processingState),
-          builder: (context, snapshot) {
-            final playerState = snapshot.data;
-            final processingState = playerState ?? AudioProcessingState.none;
-            String displayText = '';
-            switch(processingState) {
-              case AudioProcessingState.none:
-                _playingBloc.changePlayingState.add(false);
-                displayText = 'Play';
-                break;
-              case AudioProcessingState.ready:
-                _playingBloc.changePlayingState.add(true);
-                displayText = 'Playing';
-                break;
-              case AudioProcessingState.buffering:
-              case AudioProcessingState.connecting:
-                _playingBloc.changePlayingState.add(false);
-                displayText = 'Loading stream..';
-                break;
-              case AudioProcessingState.error:
-                _playingBloc.changePlayingState.add(false);
-                displayText = 'Error.. retry';
-                break;
-              default:
-                _playingBloc.changePlayingState.add(false);
-                displayText = '${describeEnum(processingState)}'; 
-            }
-            return Text(
-              displayText,
+  Widget playingDisplay(int streamIndex, bool loadingState, LoadingStreamBloc _loadingBloc) {
+    return StreamBuilder<bool>(
+      stream: AudioService.playbackStateStream
+              .map((state) => state.playing)
+              .distinct(),
+      builder: (context, snapshot) {
+        final playing = snapshot.data ?? false;
+        _handlePlayingState(playing);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              MyConstants.of(context).streamName[streamIndex ?? 0],
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 20,
               ),
-            );
-            // final playing = playerState?.playing;
+            ),
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                if(loadingState)
+                  SizedBox(
+                    height: 80,
+                    width: 80,
+                    child: CircularProgressIndicator(),
+                  ),
+                Opacity(
+                  opacity: 0.7,
+                  child: IconButton(
+                    iconSize: 90,
+                    color: Colors.white,
+                    icon: AnimatedIcon(
+                      icon: AnimatedIcons.play_pause,
+                      progress: _animationController,
+                    ),
+                    onPressed: () async {
+                      if(streamIndex != null) _handleOnPressed(streamIndex, playing);
+                    },
+                  )
+                ),
+              ],
+            ),
+            // StreamBuilder(
+            //   stream: _flutterRadioPlayer.isPlayingStream,
+            //   initialData: widget.playerState,
+            //   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            //     String returnData = snapshot.data;
+            //     print("object data: " + returnData);
+            //     switch(returnData) {
+            //       case FlutterRadioPlayer.flutter_radio_paused:
+            //         _flutterRadioPlayer.play();
+            //         return Text('Loading stream..'); // TODO: add loading widget
+            //       case FlutterRadioPlayer.flutter_radio_stopped:
+            //         return Text('Play');
+            //         break;
+            //       case FlutterRadioPlayer.flutter_radio_loading:
+            //       // TODO: add loading widget
+            //         return Text("Loading stream..");
+            //       case FlutterRadioPlayer.flutter_radio_error:
+            //       // doesn't handle error state
+            //         // TODO: add notify to retry or check internet or so
+            //         return Text('Retry');
+            //         break;
+            //       default:
+            //         return Text('Playing');
+            //     }
+            //   },
+            // ),
+            StreamBuilder<AudioProcessingState>(
+              stream: AudioService.playbackStateStream
+                      .map((state) => state.processingState),
+              builder: (context, snapshot) {
+                final playerState = snapshot.data;
+                final processingState = playerState ?? AudioProcessingState.none;
+                String displayText = '';
+                switch(processingState) {
+                  case AudioProcessingState.none:
+                    _loadingBloc.changeLoadingState.add(false);
+                    displayText = 'Play';
+                    break;
+                  case AudioProcessingState.ready:
+                    _loadingBloc.changeLoadingState.add(false);
+                    displayText = playing ? 'Playing' : 'Play';
+                    break;
+                  case AudioProcessingState.buffering:
+                  case AudioProcessingState.connecting:
+                    _loadingBloc.changeLoadingState.add(true);
+                    displayText = 'Loading stream..';
+                    break;
+                  case AudioProcessingState.error:
+                    _loadingBloc.changeLoadingState.add(false);
+                    displayText = 'Error.. retry';
+                    break;
+                  default:
+                    _loadingBloc.changeLoadingState.add(false);
+                    displayText = '${describeEnum(processingState)}'; 
+                }
+                return Text(
+                  displayText,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
+                );
+                // final playing = playerState?.playing;
 
-            // if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
-            //   return Text('Loading stream..');
-            // } else if(playing != null && !playing) {
-            //   return Text('Play');
-            // } else if(processingState == ProcessingState.completed) {
-            //   return Text('Playing');
-            // } else if(playing != null && playing) {
-            //   return Text('Playing');
-            // }
-            // return Text('Retry');
-          },
-        ),
-      ],
+                // if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
+                //   return Text('Loading stream..');
+                // } else if(playing != null && !playing) {
+                //   return Text('Play');
+                // } else if(processingState == ProcessingState.completed) {
+                //   return Text('Playing');
+                // } else if(playing != null && playing) {
+                //   return Text('Playing');
+                // }
+                // return Text('Retry');
+              },
+            ),
+          ],
+        );
+      }
     );
   }
 }
