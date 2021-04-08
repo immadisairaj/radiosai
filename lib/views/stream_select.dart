@@ -53,29 +53,36 @@ class _StreamList extends State<StreamList> {
         itemBuilder: (context, index) {
           return Padding(
             padding: EdgeInsets.all(8),
-            child: GestureDetector(
-              onTap: () async {
-                if(index != streamIndex) {
-                  _streamBloc.changeStreamIndex.add(index);
-                  try {
-                    // await widget.flutterRadioPlayer.isPlaying()
-                    // .then((value) {
-                    //   widget.flutterRadioPlayer.stop();
-                    // })
-                    // .then((value) => widget.panelController.close());
-                    // if(widget.audioPlayer.playing) widget.audioPlayer.stop();
-                    widget.panelController.close();
-                  } catch(Exception) {
+            child: Card(
+              elevation: 1.4,
+              shadowColor: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(8.0),
+                onTap: () async {
+                  if(index != streamIndex) {
+                    _streamBloc.changeStreamIndex.add(index);
+                    try {
+                      // await widget.flutterRadioPlayer.isPlaying()
+                      // .then((value) {
+                      //   widget.flutterRadioPlayer.stop();
+                      // })
+                      // .then((value) => widget.panelController.close());
+                      // if(widget.audioPlayer.playing) widget.audioPlayer.stop();
+                      widget.panelController.close();
+                    } catch(Exception) {
+                      widget.panelController.close();
+                    }
+                  } else {
                     widget.panelController.close();
                   }
-                } else {
-                  widget.panelController.close();
-                }
-              },
-              child: Card(
-                elevation: 1.8,
-                child: Center(
-                  child: Text(MyConstants.of(context).streamName[index]),
+                },
+                child: Container(
+                  child: Center(
+                    child: Text(MyConstants.of(context).streamName[index]),
+                  ),
                 ),
               ),
             ),

@@ -211,8 +211,11 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                 image: AssetImage('assets/sai_listens.jpg'),
               ),
             ),
-            Center(
-              child: playingDisplay(streamIndex, playingState, _playingBloc),
+            Container(
+              color: Color(0X2F000000),
+              child: Center(
+                child: playingDisplay(streamIndex, playingState, _playingBloc),
+              ),
             ),
           ],
         ),
@@ -226,6 +229,10 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
       children: <Widget>[
         Text(
           MyConstants.of(context).streamName[streamIndex ?? 0],
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
         ),
         Opacity(
           opacity: 0.7,
@@ -273,24 +280,36 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
           builder: (context, snapshot) {
             final playerState = snapshot.data;
             final processingState = playerState ?? AudioProcessingState.none;
+            String displayText = '';
             switch(processingState) {
               case AudioProcessingState.none:
                 _playingBloc.changePlayingState.add(false);
-                return Text('Play');
+                displayText = 'Play';
+                break;
               case AudioProcessingState.ready:
                 _playingBloc.changePlayingState.add(true);
-                return Text('Playing');
+                displayText = 'Playing';
+                break;
               case AudioProcessingState.buffering:
               case AudioProcessingState.connecting:
                 _playingBloc.changePlayingState.add(false);
-                return Text('Loading stream..');
+                displayText = 'Loading stream..';
+                break;
               case AudioProcessingState.error:
                 _playingBloc.changePlayingState.add(false);
-                return Text('Error.. retry');
+                displayText = 'Error.. retry';
+                break;
               default:
                 _playingBloc.changePlayingState.add(false);
-                return Text('${describeEnum(processingState)}'); 
+                displayText = '${describeEnum(processingState)}'; 
             }
+            return Text(
+              displayText,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+              ),
+            );
             // final playing = playerState?.playing;
 
             // if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
