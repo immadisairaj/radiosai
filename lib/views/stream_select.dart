@@ -29,7 +29,7 @@ class _StreamList extends State<StreamList> {
     return Consumer<StreamBloc>(
       builder: (context, _streamBloc, child) {
         return StreamBuilder<int>(
-          stream: _streamBloc.pressedCount,
+          stream: _streamBloc.indexStream,
           builder: (context, snapshot) {
             int streamIndex = snapshot.data;
             return slide(_streamBloc, streamIndex);
@@ -56,7 +56,7 @@ class _StreamList extends State<StreamList> {
             child: GestureDetector(
               onTap: () async {
                 if(index != streamIndex) {
-                  _streamBloc.incrementCounter.add(index);
+                  _streamBloc.changeStreamIndex.add(index);
                   try {
                     // await widget.flutterRadioPlayer.isPlaying()
                     // .then((value) {

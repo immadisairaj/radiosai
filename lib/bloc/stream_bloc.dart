@@ -18,13 +18,13 @@ class StreamBloc {
     });
   }
 
-  final _indexStream = BehaviorSubject<int>.seeded(1);
-  Stream get pressedCount => _indexStream.stream;
+  final _indexStream = BehaviorSubject<int>.seeded(0);
+  Stream get indexStream => _indexStream.stream;
   Sink get _addValue => _indexStream.sink;
 
   StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
-  StreamSink get incrementCounter => _actionController.sink;
+  StreamSink get changeStreamIndex => _actionController.sink;
 
   void _changeStream(data) async {
     if (data == null) {
