@@ -38,7 +38,8 @@ class AudioPlayerTask extends BackgroundAudioTask {
         // Tell clients what buttons/controls should be enabled in the
         // current state.
         controls: [
-          playerState.playing ? MediaControl.stop : MediaControl.play
+          playerState.playing ? MediaControl.pause : MediaControl.play,
+          MediaControl.stop
         ],
       );
     });
