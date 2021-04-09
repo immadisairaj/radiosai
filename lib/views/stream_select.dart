@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-// import 'package:flutter_radio_player/flutter_radio_player.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamList extends StatefulWidget {
   StreamList({Key key,
-              // this.flutterRadioPlayer,
-              // this.audioPlayer,
+              this.loadingStreamBloc,
               this.panelController,
               this.animationController,}) : super(key: key);
 
-  // FlutterRadioPlayer flutterRadioPlayer;
-  // final AudioPlayer audioPlayer;
+  final LoadingStreamBloc loadingStreamBloc;
   final PanelController panelController;
   final AnimationController animationController;
 
@@ -31,15 +28,21 @@ class _StreamList extends State<StreamList> {
         return StreamBuilder<int>(
           stream: _streamBloc.indexStream,
           builder: (context, snapshot) {
-            int streamIndex = snapshot.data;
-            return slide(_streamBloc, streamIndex);
+            int streamIndex = snapshot.data ?? 0;
+            return StreamBuilder<bool>(
+              stream: widget.loadingStreamBloc.loadingStream,
+              builder: (context, snapshot) {
+                bool isLoading = snapshot.data ?? false;
+                return slide(_streamBloc, streamIndex, isLoading);
+              },
+            );
           },
         );
       },
     );
   }
 
-  Widget slide(StreamBloc _streamBloc, int streamIndex) {
+  Widget slide(StreamBloc _streamBloc, int streamIndex, bool isLoading) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(
@@ -62,15 +65,9 @@ class _StreamList extends State<StreamList> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(8.0),
                 onTap: () async {
-                  if(index != streamIndex) {
+                  if(index != streamIndex && !isLoading) {
                     _streamBloc.changeStreamIndex.add(index);
                     try {
-                      // await widget.flutterRadioPlayer.isPlaying()
-                      // .then((value) {
-                      //   widget.flutterRadioPlayer.stop();
-                      // })
-                      // .then((value) => widget.panelController.close());
-                      // if(widget.audioPlayer.playing) widget.audioPlayer.stop();
                       widget.panelController.close();
                     } catch(Exception) {
                       widget.panelController.close();

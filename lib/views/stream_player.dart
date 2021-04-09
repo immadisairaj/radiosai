@@ -4,8 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-// import 'package:flutter_radio_player/flutter_radio_player.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio-source/audio_player_task.dart';
 import 'package:radiosai/bloc/loading_stream_bloc.dart';
@@ -19,57 +17,37 @@ void _entrypoint() => AudioServiceBackground.run(() => AudioPlayerTask());
 class StreamPlayer extends StatefulWidget {
   StreamPlayer({Key key}) : super(key: key);
 
-  // var playerState = FlutterRadioPlayer.flutter_radio_stopped;
-
   @override
   _StreamPlayer createState() => _StreamPlayer();
 }
 
 class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMixin {
   AnimationController _animationController;
-  // bool isPlaying = false;
 
   PanelController _panelController = new PanelController();
-
-  // FlutterRadioPlayer _flutterRadioPlayer = new FlutterRadioPlayer();
-  // AudioPlayer _player;
 
   int _tempStreamIndex = 0;
 
   @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
-    // _player = AudioPlayer();
     _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    super.initState();
   }
 
-  void updateStreamIndex(bool isPlaying) {
-    // setState(() {
-      if(isPlaying == true) {
-        // isPlaying = !isPlaying;
-        // _animationController.reverse().then((value) => stopRadioService());
-        stopRadioService();
-      }
-    // });
+  void updateStreamIndex(bool isPlaying, bool isLoading) {
+    if(isPlaying && !isLoading) {
+      stopRadioService();
+    }
   }
 
-  Future<void> initRadioService(int index) async {
+  void initRadioService(int index) {
     try {
-      // await _flutterRadioPlayer.init("Radio Sai", "radiosai", MyConstants.of(context).streamLink[index], "false");
-      // await _flutterRadioPlayer.play();
-    
-      // _player.setAudioSource(AudioSource.uri(
-      //   Uri.parse(MyConstants.of(context).streamLink[index])
-      // ));
-      // _player.play();
-      
       Map<String, dynamic> _params = {
         'audioSource': MyConstants.of(context).streamLink[index],
         'audioName': MyConstants.of(context).streamName[index],
       };
-      await AudioService.connect();
-      await AudioService.start(
+      AudioService.connect();
+      AudioService.start(
         backgroundTaskEntrypoint: _entrypoint,
         params: _params,
         androidStopForegroundOnPause: true,
@@ -83,41 +61,29 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     }
   }
 
-  Future<void> playRadioService() async {
-    // await _flutterRadioPlayer.play();
-    
-    // _player.play();
-    
-    await AudioService.play();
+  void playRadioService() {
+    AudioService.play();
   }
 
   Future<void> stopRadioService() async {
-    // await _flutterRadioPlayer.stop();
-    
-    // _player.stop();
-    
     await AudioService.stop();
   }
 
   @override
   void dispose() async {
-    // TODO: implement dispose
     await AudioService.stop();
     super.dispose();
-    // _player.dispose();
   }
 
-  void _handleOnPressed(int index, bool isPlaying) async {
-    // setState(() {
-      // isPlaying = !isPlaying;
-      if(!isPlaying) {
-        // _animationController.forward().then((value) => initRadioService(index));
-        initRadioService(index);
-      } else {
-        // _animationController.reverse().then((value) => stopRadioService());
-        stopRadioService();
-      }
-    // });
+  void _handleOnPressed(int index, bool isPlaying, bool isLoading, LoadingStreamBloc loadingStreamBloc) {
+    if(!isPlaying) {
+      loadingStreamBloc.changeLoadingState.add(true);
+      initRadioService(index);
+      if(!isLoading) playRadioService();
+    } else {
+      loadingStreamBloc.changeLoadingState.add(false);
+      stopRadioService();
+    }
   }
 
   void _handlePlayingState(bool isPlaying) {
@@ -174,7 +140,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
         controller: _panelController,
         onPanelClosed: () {
           setState(() {
-            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(isPlaying);
+            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(isPlaying, loadingState);
           });
         },
         collapsed: GestureDetector(
@@ -210,8 +176,7 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
           ),
         ),
         panel: StreamList(
-          // flutterRadioPlayer: _flutterRadioPlayer,
-          // audioPlayer: _player,
+          loadingStreamBloc: _loadingBloc,
           panelController: _panelController,
           animationController: _animationController,
         ),
@@ -266,38 +231,12 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                   progress: _animationController,
                 ),
                 onPressed: () async {
-                  if(streamIndex != null) _handleOnPressed(streamIndex, isPlaying);
+                  if(streamIndex != null) _handleOnPressed(streamIndex, isPlaying, loadingState, _loadingBloc);
                 },
               )
             ),
           ],
         ),
-        // StreamBuilder(
-        //   stream: _flutterRadioPlayer.isPlayingStream,
-        //   initialData: widget.playerState,
-        //   builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        //     String returnData = snapshot.data;
-        //     print("object data: " + returnData);
-        //     switch(returnData) {
-        //       case FlutterRadioPlayer.flutter_radio_paused:
-        //         _flutterRadioPlayer.play();
-        //         return Text('Loading stream..'); // TODO: add loading widget
-        //       case FlutterRadioPlayer.flutter_radio_stopped:
-        //         return Text('Play');
-        //         break;
-        //       case FlutterRadioPlayer.flutter_radio_loading:
-        //       // TODO: add loading widget
-        //         return Text("Loading stream..");
-        //       case FlutterRadioPlayer.flutter_radio_error:
-        //       // doesn't handle error state
-        //         // TODO: add notify to retry or check internet or so
-        //         return Text('Retry');
-        //         break;
-        //       default:
-        //         return Text('Playing');
-        //     }
-        //   },
-        // ),
         StreamBuilder<AudioProcessingState>(
           stream: AudioService.playbackStateStream
                   .map((state) => state.processingState),
@@ -307,16 +246,22 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
             String displayText = '';
             switch(processingState) {
               case AudioProcessingState.none:
-                _loadingBloc.changeLoadingState.add(false);
                 displayText = 'Play';
                 break;
               case AudioProcessingState.ready:
                 _loadingBloc.changeLoadingState.add(false);
                 displayText = isPlaying ? 'Playing' : 'Play';
                 break;
+              case AudioProcessingState.completed:
+              case AudioProcessingState.stopped:
+                displayText = '${describeEnum(processingState)}';
+                _loadingBloc.changeLoadingState.add(false);
+                break;
               case AudioProcessingState.buffering:
-              case AudioProcessingState.connecting:
                 _loadingBloc.changeLoadingState.add(true);
+                displayText = 'Buffering';
+                break;
+              case AudioProcessingState.connecting:
                 displayText = 'Loading stream..';
                 break;
               case AudioProcessingState.error:
@@ -334,18 +279,6 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                 fontSize: 15,
               ),
             );
-            // final playing = playerState?.playing;
-
-            // if(processingState == ProcessingState.buffering || processingState == ProcessingState.loading) {
-            //   return Text('Loading stream..');
-            // } else if(playing != null && !playing) {
-            //   return Text('Play');
-            // } else if(processingState == ProcessingState.completed) {
-            //   return Text('Playing');
-            // } else if(playing != null && playing) {
-            //   return Text('Playing');
-            // }
-            // return Text('Retry');
           },
         ),
       ],
