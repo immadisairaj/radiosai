@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class StreamList extends StatefulWidget {
   StreamList({Key key,
-              this.loadingStreamBloc,
               this.panelController,
               this.animationController,}) : super(key: key);
 
-  final LoadingStreamBloc loadingStreamBloc;
   final PanelController panelController;
   final AnimationController animationController;
 
@@ -29,20 +26,14 @@ class _StreamList extends State<StreamList> {
           stream: _streamBloc.indexStream,
           builder: (context, snapshot) {
             int streamIndex = snapshot.data ?? 0;
-            return StreamBuilder<bool>(
-              stream: widget.loadingStreamBloc.loadingStream,
-              builder: (context, snapshot) {
-                bool isLoading = snapshot.data ?? false;
-                return slide(_streamBloc, streamIndex, isLoading);
-              },
-            );
+            return slide(_streamBloc, streamIndex);
           },
         );
       },
     );
   }
 
-  Widget slide(StreamBloc _streamBloc, int streamIndex, bool isLoading) {
+  Widget slide(StreamBloc _streamBloc, int streamIndex) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(
@@ -65,16 +56,10 @@ class _StreamList extends State<StreamList> {
               child: InkWell(
                 borderRadius: BorderRadius.circular(8.0),
                 onTap: () async {
-                  if(index != streamIndex && !isLoading) {
+                  if(index != streamIndex) {
                     _streamBloc.changeStreamIndex.add(index);
-                    try {
-                      widget.panelController.close();
-                    } catch(Exception) {
-                      widget.panelController.close();
-                    }
-                  } else {
-                    widget.panelController.close();
                   }
+                  widget.panelController.close();
                 },
                 child: Container(
                   child: Center(

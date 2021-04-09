@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio-source/audio_player_task.dart';
-import 'package:radiosai/bloc/internet_connection_status.dart';
 import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -35,11 +34,6 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     super.initState();
   }
 
-  void updateStreamIndex(bool isPlaying, bool isLoading) {
-    if(isPlaying && !isLoading) {
-      stopRadioService();
-    }
-  }
 
   void initRadioService(int index) {
     try {
@@ -146,7 +140,10 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
             controller: _panelController,
             onPanelClosed: () {
               setState(() {
-                if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(isPlaying, loadingState);
+                if(streamIndex != null && _tempStreamIndex != streamIndex) {
+                  _loadingBloc.changeLoadingState.add(false);
+                  stopRadioService();
+                }
               });
             },
             collapsed: GestureDetector(
@@ -182,7 +179,6 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
               ),
             ),
             panel: StreamList(
-              loadingStreamBloc: _loadingBloc,
               panelController: _panelController,
               animationController: _animationController,
             ),

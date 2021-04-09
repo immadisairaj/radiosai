@@ -44,11 +44,10 @@ class AudioPlayerTask extends BackgroundAudioTask {
       );
     });
     
-    _player.setAudioSource(AudioSource.uri(
+    _player.play();
+    await _player.setAudioSource(AudioSource.uri(
       Uri.parse(params['audioSource'])
-    ), preload: false);
-    await _player.load();
-    await _player.play();
+    ));
     return super.onStart(params);
   }
 
