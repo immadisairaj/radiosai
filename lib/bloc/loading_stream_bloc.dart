@@ -13,7 +13,6 @@ class LoadingStreamBloc {
   Sink get _addValue => _loadingStream.sink;
 
   StreamController _actionController = StreamController();
-  void get resetCount => _actionController.sink.add(null);
   StreamSink get changeLoadingState => _actionController.sink;
 
   void _changeStream(data) async {

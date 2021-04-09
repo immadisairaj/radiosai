@@ -4,8 +4,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio-source/audio_player_task.dart';
+import 'package:radiosai/bloc/internet_connection_status.dart';
 import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/bloc/stream_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
@@ -23,7 +25,6 @@ class StreamPlayer extends StatefulWidget {
 
 class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMixin {
   AnimationController _animationController;
-
   PanelController _panelController = new PanelController();
 
   int _tempStreamIndex = 0;
@@ -75,11 +76,13 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     super.dispose();
   }
 
-  void _handleOnPressed(int index, bool isPlaying, bool isLoading, LoadingStreamBloc loadingStreamBloc) {
+  void _handleOnPressed(int index, bool isPlaying, bool isLoading, LoadingStreamBloc loadingStreamBloc, bool hasInternet) {
     if(!isPlaying) {
-      loadingStreamBloc.changeLoadingState.add(true);
-      initRadioService(index);
-      if(!isLoading) playRadioService();
+      if(hasInternet) {
+        loadingStreamBloc.changeLoadingState.add(true);
+        initRadioService(index);
+        if(!isLoading) playRadioService();
+      }
     } else {
       loadingStreamBloc.changeLoadingState.add(false);
       stopRadioService();
@@ -119,7 +122,8 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                       builder: (context, snapshot) {
                         final isPlaying = snapshot.data ?? false;
                         _handlePlayingState(isPlaying);
-                        return mainPlayer(streamIndex, radius, isPlaying, loadingState, _loadingBloc);
+                        bool hasInternet = Provider.of<InternetConnectionStatus>(context) == InternetConnectionStatus.connected;
+                        return mainPlayer(streamIndex, radius, isPlaying, loadingState, _loadingBloc, hasInternet);
                       }
                     );
                   },
@@ -132,76 +136,110 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
     );
   }
 
-  Widget mainPlayer(int streamIndex, BorderRadiusGeometry radius, bool isPlaying, bool loadingState, LoadingStreamBloc _loadingBloc) {
+  Widget mainPlayer(int streamIndex, BorderRadiusGeometry radius, bool isPlaying, bool loadingState, LoadingStreamBloc _loadingBloc, bool hasInternet) {
     return Scaffold(
-      body: SlidingUpPanel(
-        borderRadius: radius,
-        backdropEnabled: true,
-        controller: _panelController,
-        onPanelClosed: () {
-          setState(() {
-            if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(isPlaying, loadingState);
-          });
-        },
-        collapsed: GestureDetector(
-          onTap: () {
-            _panelController.open();
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: radius,
+      body: Stack(
+        children: [
+          SlidingUpPanel(
+            borderRadius: radius,
+            backdropEnabled: true,
+            controller: _panelController,
+            onPanelClosed: () {
+              setState(() {
+                if(streamIndex != null && _tempStreamIndex != streamIndex) updateStreamIndex(isPlaying, loadingState);
+              });
+            },
+            collapsed: GestureDetector(
+              onTap: () {
+                _panelController.open();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: radius,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(height: 12),
+                    Container(
+                      height: 5,
+                      width: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                    Text(
+                      'Select Stream',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 12),
+                  ],
+                ),
+              ),
             ),
-            child: Column(
+            panel: StreamList(
+              loadingStreamBloc: _loadingBloc,
+              panelController: _panelController,
+              animationController: _animationController,
+            ),
+            body: Stack(
               children: [
-                SizedBox(height: 12),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height,
+                  child: Image(
+                    fit: BoxFit.fitHeight,
+                    image: AssetImage('assets/sai_listens.jpg'),
+                  ),
+                ),
                 Container(
-                  height: 5,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(16),
+                  color: Color(0X2F000000),
+                  child: Center(
+                    child: playingDisplay(streamIndex, isPlaying, loadingState, _loadingBloc, hasInternet),
                   ),
                 ),
-                SizedBox(height: 12),
-                Text(
-                  'Select Stream',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 12),
               ],
             ),
           ),
-        ),
-        panel: StreamList(
-          loadingStreamBloc: _loadingBloc,
-          panelController: _panelController,
-          animationController: _animationController,
-        ),
-        body: Stack(
-          children: [
-            SizedBox(
-              height: MediaQuery.of(context).size.height,
-              child: Image(
-                fit: BoxFit.fitHeight,
-                image: AssetImage('assets/sai_listens.jpg'),
+          AnimatedOpacity(
+            opacity: hasInternet ? 0.0 : 1.0,
+            duration: Duration(milliseconds: 500),
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
+                child: Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.red,
+                    ),
+                    padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
+                    child: Text(
+                      'No Internet, please check your connection',
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
-            Container(
-              color: Color(0X2F000000),
-              child: Center(
-                child: playingDisplay(streamIndex, isPlaying, loadingState, _loadingBloc),
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget playingDisplay(int streamIndex, bool isPlaying, bool loadingState, LoadingStreamBloc _loadingBloc) {
+  Widget playingDisplay(int streamIndex, bool isPlaying, bool loadingState, LoadingStreamBloc _loadingBloc,bool hasInternet) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -231,7 +269,9 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
                   progress: _animationController,
                 ),
                 onPressed: () async {
-                  if(streamIndex != null) _handleOnPressed(streamIndex, isPlaying, loadingState, _loadingBloc);
+                  if(streamIndex != null) {
+                    _handleOnPressed(streamIndex, isPlaying, loadingState, _loadingBloc, hasInternet);
+                  }
                 },
               )
             ),
@@ -260,9 +300,17 @@ class _StreamPlayer extends State<StreamPlayer> with SingleTickerProviderStateMi
               case AudioProcessingState.buffering:
                 _loadingBloc.changeLoadingState.add(true);
                 displayText = 'Buffering';
+                if(!hasInternet) {
+                  _loadingBloc.changeLoadingState.add(false);
+                  stopRadioService();
+                }
                 break;
               case AudioProcessingState.connecting:
                 displayText = 'Loading stream..';
+                if(!hasInternet) {
+                  _loadingBloc.changeLoadingState.add(false);
+                  stopRadioService();
+                }
                 break;
               case AudioProcessingState.error:
                 _loadingBloc.changeLoadingState.add(false);

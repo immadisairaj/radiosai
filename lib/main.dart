@@ -1,5 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/bloc/internet_connection_status.dart';
 import 'package:radiosai/bloc/loading_stream_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/views/stream_player.dart';
@@ -26,6 +28,11 @@ class MyApp extends StatelessWidget {
         Provider<LoadingStreamBloc>(
           create: (_) => LoadingStreamBloc(false),
           dispose: (_, LoadingStreamBloc loadingStreamBloc) => loadingStreamBloc.dispose(),
+        ),
+        StreamProvider<InternetConnectionStatus>(
+          create: (context) {
+            return InternetConnectionService().connectionController.stream;
+          },
         ),
       ],
       child: MaterialApp(
