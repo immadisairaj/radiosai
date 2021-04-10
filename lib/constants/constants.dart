@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
 class MyConstants extends InheritedWidget {
-  static MyConstants of(BuildContext context) => context.dependOnInheritedWidgetOfExactType<MyConstants>();
+  static MyConstants of(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<MyConstants>();
 
-  const MyConstants({Widget child, Key key}): super(key: key, child: child);
+  const MyConstants({Widget child, Key key}) : super(key: key, child: child);
 
-  final List<String> streamLink = const [
+  // The list of radio sai stream sources
+  final List<String> radioStreamLink = const [
     'http://stream.radiosai.net:8002',
     'http://stream.radiosai.net:8004',
     'http://stream.radiosai.net:8006',
@@ -14,7 +16,8 @@ class MyConstants extends InheritedWidget {
     'http://stream.radiosai.net:8020'
   ];
 
-  final List<String> streamName = const [
+  // The list of radio sai stream source names
+  final List<String> radioStreamName = const [
     'Asia Stream',
     'Africa Stream',
     'America Stream',

@@ -2,14 +2,19 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class StreamBloc {
+class RadioIndexBloc {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
   int _index;
+  // key for shared preferences
+  final _indexKey = 'radioIndex';
 
-  StreamBloc() {
+  // Initialize the stream for radio index:
+  // index of radio sai streams.
+  // Uses, shared preferences to store the stream
+  RadioIndexBloc() {
     prefs.then((value) {
-      if(value.get('stream') != null) {
-        _index = value.getInt('stream') ?? 0;
+      if (value.get(_indexKey) != null) {
+        _index = value.getInt(_indexKey) ?? 0;
       } else {
         _index = 0;
       }
@@ -18,13 +23,16 @@ class StreamBloc {
     });
   }
 
+  // sets 0 as default value
   final _indexStream = BehaviorSubject<int>.seeded(0);
-  Stream get indexStream => _indexStream.stream;
+  // returns the stream to update anything based on values changed
+  Stream get radioIndexStream => _indexStream.stream;
   Sink get _addValue => _indexStream.sink;
 
   StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
-  StreamSink get changeStreamIndex => _actionController.sink;
+  // call the function changeRadioIndex.add(value) to change the value
+  StreamSink get changeRadioIndex => _actionController.sink;
 
   void _changeStream(data) async {
     if (data == null) {
@@ -34,7 +42,7 @@ class StreamBloc {
     }
     _addValue.add(_index);
     prefs.then((value) {
-      value.setInt('stream', _index);
+      value.setInt(_indexKey, _index);
     });
   }
 

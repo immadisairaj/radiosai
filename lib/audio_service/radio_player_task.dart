@@ -5,15 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
-class AudioPlayerTask extends BackgroundAudioTask {
+class RadioPlayerTask extends BackgroundAudioTask {
   final _player = AudioPlayer();
 
   @override
   Future<void> onStart(Map<String, dynamic> params) async {
-    // TODO: implement onStart
-    
+    // Get the path of image for artUri in notification
     String path = await getNotificationImage();
-    
+
+    // Set media item to tell the clients what is playing
     final mediaItem = MediaItem(
       id: params['audioSource'],
       album: "Radio Sai Global Harmony",
@@ -43,24 +43,24 @@ class AudioPlayerTask extends BackgroundAudioTask {
         ],
       );
     });
-    
+
+    // start playing before loading so that we can stop the player before itself
     _player.play();
-    await _player.setAudioSource(AudioSource.uri(
-      Uri.parse(params['audioSource'])
-    ));
+    // setting the player source and when loads, it automatically plays
+    await _player
+        .setAudioSource(AudioSource.uri(Uri.parse(params['audioSource'])));
     return super.onStart(params);
   }
 
   @override
   Future<void> onPlay() {
-    // TODO: implement onPlay
+    // TODO: check if we can seek after pause and implement
     _player.play();
     return super.onPlay();
   }
 
   @override
   Future<void> onStop() {
-    // TODO: implement onStop
     _player.stop();
     _player.dispose();
     return super.onStop();
@@ -68,27 +68,32 @@ class AudioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPause() {
-    // TODO: implement onPause
     _player.pause();
     return super.onPause();
   }
 
+  // Get notification image stored in file,
+  // if not stored, then store the image
   Future<String> getNotificationImage() async {
     String path = await getFilePath();
     File file = File(path);
     bool fileExists = file.existsSync();
-    if(fileExists) return path;
-    final byteData = await rootBundle.load('assets/sai_listens_notification.jpg');
+    // if the image already exists, return the path
+    if (fileExists) return path;
+    // store the image into path from assets then return the path
+    final byteData =
+        await rootBundle.load('assets/sai_listens_notification.jpg');
+    // if file is not created, create to write into the file
     file.create(recursive: true);
     await file.writeAsBytes(byteData.buffer.asUint8List());
     return path;
   }
 
+  // Get the file path of the notification image
   Future<String> getFilePath() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;
     String filePath = '$appDocPath/sai_listens_notification.jpg';
     return filePath;
   }
-  
 }
