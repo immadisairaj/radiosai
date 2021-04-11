@@ -2,11 +2,8 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/radio_player_task.dart';
 import 'package:radiosai/bloc/radio_loading_bloc.dart';
-import 'package:radiosai/bloc/radio_index_bloc.dart';
 import 'package:radiosai/widgets/internet_alert.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
@@ -17,7 +14,20 @@ import 'package:radiosai/screens/radio/radio_stream_select.dart';
 void _entrypoint() => AudioServiceBackground.run(() => RadioPlayerTask());
 
 class RadioPlayer extends StatefulWidget {
-  RadioPlayer({Key key}) : super(key: key);
+  RadioPlayer({Key key,
+        this.radius,
+        this.radioStreamIndex,
+        this.isPlaying,
+        this.loadingState,
+        this.radioLoadingBloc,
+        this.hasInternet}) : super(key: key);
+
+  final BorderRadiusGeometry radius;
+  final int radioStreamIndex;
+  final bool isPlaying;
+  final bool loadingState;
+  final RadioLoadingBloc radioLoadingBloc;
+  final bool hasInternet;
 
   @override
   _RadioPlayer createState() => _RadioPlayer();
@@ -51,84 +61,27 @@ class _RadioPlayer extends State<RadioPlayer>
 
   @override
   Widget build(BuildContext context) {
-    // border radius used for sliding panel
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topLeft: Radius.circular(24.0),
-      topRight: Radius.circular(24.0),
-    );
-    // Consumers of all the providers to get the stream of data
-    return Consumer<RadioIndexBloc>(
-      // listen to change of radio stream index
-      builder: (context, _radioIndexBloc, child) {
-        return StreamBuilder<int>(
-          stream: _radioIndexBloc.radioIndexStream,
-          builder: (context, snapshot) {
-            int radioStreamIndex = snapshot.data ?? 0;
-            // listen to change of radio player loading state
-            return Consumer<RadioLoadingBloc>(
-              builder: (context, _radioLoadingBloc, child) {
-                return StreamBuilder<bool>(
-                  stream: _radioLoadingBloc.radioLoadingStream,
-                  builder: (context, snapshot) {
-                    bool loadingState = snapshot.data ?? false;
-                    // listen to change of playing state from audio service
-                    return StreamBuilder<bool>(
-                        stream: AudioService.playbackStateStream
-                            .map((state) => state.playing)
-                            .distinct(),
-                        builder: (context, snapshot) {
-                          final isPlaying = snapshot.data ?? false;
-                          // handle the pause and play button
-                          _handlePlayingState(isPlaying);
-                          // get the data of the internet connectivity change
-                          bool hasInternet =
-                              Provider.of<InternetConnectionStatus>(context) ==
-                                  InternetConnectionStatus.connected;
-                          return radioPlayerWidget(
-                              radius,
-                              radioStreamIndex,
-                              isPlaying,
-                              loadingState,
-                              _radioLoadingBloc,
-                              hasInternet);
-                        });
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // main radio player widget after all streams
-  Widget radioPlayerWidget(
-      BorderRadiusGeometry radius,
-      int streamIndex,
-      bool isPlaying,
-      bool loadingState,
-      RadioLoadingBloc radioLoadingBloc,
-      bool hasInternet) {
+    // handle the pause and play button
+    _handlePlayingState(widget.isPlaying);
     return Scaffold(
       // using stack to show notification alert when there is no internet
       body: Stack(
         children: [
           SlidingUpPanel(
-            borderRadius: radius,
+            borderRadius: widget.radius,
             backdropEnabled: true,
             controller: _panelController,
             onPanelClosed: () {
               // handle if the stream is updated when panel is closed
               setState(() {
                 // if the the index is changed, stop the radio service
-                if (_tempRadioStreamIndex != streamIndex) {
-                  radioLoadingBloc.changeLoadingState.add(false);
+                if (_tempRadioStreamIndex != widget.radioStreamIndex) {
+                  widget.radioLoadingBloc.changeLoadingState.add(false);
                   stopRadioService();
                 }
               });
             },
-            collapsed: slidingPanelCollapsed(radius),
+            collapsed: slidingPanelCollapsed(widget.radius),
             panel: RadioStreamSelect(
               panelController: _panelController,
             ),
@@ -144,19 +97,20 @@ class _RadioPlayer extends State<RadioPlayer>
                 Container(
                   color: Color(0X2F000000),
                   child: Center(
-                    child: playerDisplay(streamIndex, isPlaying, loadingState,
-                        radioLoadingBloc, hasInternet),
+                    child: playerDisplay(widget.radioStreamIndex, widget.isPlaying, widget.loadingState,
+                        widget.radioLoadingBloc, widget.hasInternet),
                   ),
                 ),
               ],
             ),
           ),
-          InternetAlert(hasInternet: hasInternet),
+          InternetAlert(hasInternet: widget.hasInternet),
         ],
       ),
     );
   }
 
+  // main radio player widget after all streams
   Widget slidingPanelCollapsed(BorderRadiusGeometry radius) {
     return GestureDetector(
       onTap: () {
@@ -336,6 +290,10 @@ class _RadioPlayer extends State<RadioPlayer>
         loadingStreamBloc.changeLoadingState.add(true);
         initRadioService(index);
         if (!isLoading) playRadioService();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text('Try to play after connecting to the Internet'),
+        ));
       }
     } else {
       loadingStreamBloc.changeLoadingState.add(false);
