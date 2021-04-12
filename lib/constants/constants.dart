@@ -26,6 +26,16 @@ class MyConstants extends InheritedWidget {
     'Telugu Stream',
   ];
 
+  // TODO: change the list to exact titles
+  // The list of items in the top menu bar
+  final List<String> menuTitles = const [
+    'Schedule',
+    'Sai Inspires',
+    'Vedam',
+    'Other Programs',
+    'Settings',
+  ];
+
   @override
   bool updateShouldNotify(MyConstants oldWidget) => false;
 }

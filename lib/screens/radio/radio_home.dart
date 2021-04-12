@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio_index_bloc.dart';
 import 'package:radiosai/bloc/radio_loading_bloc.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
+import 'package:radiosai/widgets/top_menu.dart';
 
 class RadioHome extends StatefulWidget {
   RadioHome({
@@ -23,20 +24,7 @@ class _RadioHome extends State<RadioHome> {
       body: Stack(
         children: [
           displayRadioPlayer(),
-          // TODO: add widget for menu
-          // Align(
-          //   alignment: Alignment.topRight,
-          //   child: Padding(
-          //     padding: EdgeInsets.only(
-          //       top: MediaQuery.of(context).size.height * 0.05,
-          //       right: MediaQuery.of(context).size.width * 0.08,
-          //     ),
-          //     child: Icon(
-          //       Icons.more_vert,
-          //       color: Colors.white,
-          //     ),
-          //   ),
-          // ),
+          TopMenu(),
         ],
       ),
     );
