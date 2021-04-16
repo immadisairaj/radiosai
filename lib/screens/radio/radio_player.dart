@@ -90,7 +90,7 @@ class _RadioPlayer extends State<RadioPlayer>
                 SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: Image(
-                    fit: BoxFit.fitHeight,
+                    fit: BoxFit.cover,
                     image: AssetImage('assets/sai_listens.jpg'),
                   ),
                 ),
@@ -291,9 +291,10 @@ class _RadioPlayer extends State<RadioPlayer>
         initRadioService(index);
         if (!isLoading) playRadioService();
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Try to play after connecting to the Internet'),
-        ));
+        // TODO: handle play when no internet
+        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        //   content: Text('Try to play after connecting to the Internet'),
+        // ));
       }
     } else {
       loadingStreamBloc.changeLoadingState.add(false);

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 
 class TopMenu extends StatefulWidget {
   TopMenu({
@@ -16,6 +17,7 @@ class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    List<String> menuTitles = MyConstants.of(context).menuTitles;
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
@@ -36,8 +38,7 @@ class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
               offset: const Offset(-10, 10),
               itemBuilder: (context) {
                 // Takes list of data from constants
-                return MyConstants.of(context)
-                    .menuTitles
+                return menuTitles
                     .map<PopupMenuEntry<String>>((value) {
                   return PopupMenuItem<String>(
                     value: value,
@@ -49,6 +50,12 @@ class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
               },
               onSelected: (value) {
                 // TODO: implement on select of menu
+                switch(value) {
+                  // TODO: don't hardcode this and maybe add enum
+                  case 'Sai Inspires':
+                    Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => SaiInspires()));
+                }
               },
             ),
           ),

@@ -4,7 +4,7 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:radiosai/bloc/internet_status.dart';
 import 'package:radiosai/bloc/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
-import 'package:radiosai/screens/radio/radio_home.dart';
+import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio_index_bloc.dart';
 
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.deepOrange,
         ),
-        home: AudioServiceWidget(child: RadioHome()),
+        home: AudioServiceWidget(child: Home()),
       ),
     );
   }
