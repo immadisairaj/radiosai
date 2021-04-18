@@ -27,6 +27,9 @@ class _SaiInspires extends State<SaiInspires> {
   String imageFinalUrl;
   String finalUrl;
 
+  // String _dateText = ''; // date text id is 'Head'
+  // String _contentText = ''; // content text id is 'Content'
+
   @override
   void initState() {
 
@@ -63,14 +66,34 @@ class _SaiInspires extends State<SaiInspires> {
                   child: Image.network(imageFinalUrl),
                 ),
               ),
-              // TODO: try changing WevView to InAppWebView for larger text
+              // Padding(
+              //   padding: EdgeInsets.only(left: 10, right: 10),
+              //   child: Text(_dateText),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.all(10),
+              //   child: Text('Thought of the Day'),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.only(left: 10, right: 10),
+              //   child: Text(_contentText),
+              // ),
+              // Padding(
+              //   padding: EdgeInsets.all(10),
+              //   child: Text('-BABA'),
+              // ),
+              // TODO: hide the webview after plugin upgrade and display
+              // or add zoom effect for temporary
               Expanded(
                 child: WebView(
                   initialUrl: finalUrl,
                   javascriptMode: JavascriptMode.unrestricted,
-                  onPageFinished: (url) async {
+                  onPageFinished: (url) {
                     _webViewController.evaluateJavascript(
-                      "document.body.style.zoom = 0.7; document.getElementById('Home').remove(); document.getElementById('Official').remove()"
+                      "document.body.style.zoom = 0.7;"
+                      "document.getElementById('Home').remove();"
+                      "document.getElementById('Official').remove();"
+                      // "<meta name=\"viewport\" content=\"width=device-width\">"
                     );
                   },
                   onWebViewCreated: (controller) {

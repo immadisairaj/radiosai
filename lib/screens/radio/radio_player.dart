@@ -64,6 +64,7 @@ class _RadioPlayer extends State<RadioPlayer>
     // handle the pause and play button
     _handlePlayingState(widget.isPlaying);
     return Scaffold(
+      backgroundColor: Colors.transparent,
       // using stack to show notification alert when there is no internet
       body: Stack(
         children: [
@@ -85,23 +86,19 @@ class _RadioPlayer extends State<RadioPlayer>
             panel: RadioStreamSelect(
               panelController: _panelController,
             ),
-            body: Stack(
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: Image(
-                    fit: BoxFit.cover,
-                    image: AssetImage('assets/sai_listens.jpg'),
-                  ),
+            parallaxEnabled: true,
+            parallaxOffset: 0.5,
+            body: Align(
+              alignment: Alignment.bottomCenter,
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.22,
+                width: MediaQuery.of(context).size.width,
+                child: Container(
+                  color: Colors.black54,
+                  child: playerDisplay(widget.radioStreamIndex, widget.isPlaying, widget.loadingState,
+                      widget.radioLoadingBloc, widget.hasInternet),
                 ),
-                Container(
-                  color: Color(0X2F000000),
-                  child: Center(
-                    child: playerDisplay(widget.radioStreamIndex, widget.isPlaying, widget.loadingState,
-                        widget.radioLoadingBloc, widget.hasInternet),
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
           InternetAlert(hasInternet: widget.hasInternet),
@@ -150,43 +147,60 @@ class _RadioPlayer extends State<RadioPlayer>
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     // TODO: change all the numbers to use based on media query
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(
-          MyConstants.of(context).radioStreamName[streamIndex ?? 0],
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(bottom: 90),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0),
+                child: Text(
+                  MyConstants.of(context).radioStreamName[streamIndex ?? 0],
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // circular progress used to show the loading state
+                    if (loadingState)
+                      SizedBox(
+                        height: 40,
+                        width: 40,
+                        child: CircularProgressIndicator(),
+                      ),
+                    IconButton(
+                      splashRadius: 24,
+                      splashColor: Theme.of(context).primaryColor,
+                      highlightColor: Theme.of(context).primaryColor,
+                      iconSize: 40,
+                      color: Colors.white,
+                      icon: AnimatedIcon(
+                        icon: AnimatedIcons.play_pause,
+                        progress: _pausePlayController,
+                      ),
+                      onPressed: () async {
+                        if (streamIndex != null) {
+                          _handleOnPressed(streamIndex, isPlaying, loadingState,
+                              radioLoadingBloc, hasInternet);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        Stack(
-          alignment: Alignment.center,
-          children: [
-            // circular progress used to show the loading state
-            if (loadingState)
-              SizedBox(
-                height: 80,
-                width: 80,
-                child: CircularProgressIndicator(),
-              ),
-            Opacity(
-                opacity: 0.7,
-                child: IconButton(
-                  iconSize: 90,
-                  color: Colors.white,
-                  icon: AnimatedIcon(
-                    icon: AnimatedIcons.play_pause,
-                    progress: _pausePlayController,
-                  ),
-                  onPressed: () async {
-                    if (streamIndex != null) {
-                      _handleOnPressed(streamIndex, isPlaying, loadingState,
-                          radioLoadingBloc, hasInternet);
-                    }
-                  },
-                )),
-          ],
-        ),
+        // Hiding the text below as other functions are dependent on this
         // Display the status of audio player in text
         StreamBuilder<AudioProcessingState>(
           stream: AudioService.playbackStateStream
@@ -239,7 +253,7 @@ class _RadioPlayer extends State<RadioPlayer>
               displayText,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 1,
               ),
             );
           },

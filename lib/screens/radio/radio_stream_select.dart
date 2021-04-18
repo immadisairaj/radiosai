@@ -34,7 +34,6 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
 
   Widget slide(RadioIndexBloc _radioIndexBloc, int index) {
     return Padding(
-      // TODO: change the number 25 to automatic scale (or keep it as it is)
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(
         gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
@@ -50,6 +49,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
             child: Card(
               elevation: 1.4,
               shadowColor: Theme.of(context).primaryColor,
+              color: (widgetIndex == index) ? Theme.of(context).primaryColor : null,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
