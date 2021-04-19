@@ -17,9 +17,7 @@ class SaiInspires extends StatefulWidget {
 class _SaiInspires extends State<SaiInspires> {
   WebViewController _webViewController;
   
-  // final String baseUrl = 'http://media.radiosai.org/sai_inspires';
   final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
-  // final String baseUrl = 'https://www.radiosai.org/pages/calthought2.asp';
   final String baseUrl = 'https://www.radiosai.org/pages/ThoughtText.asp';
 
   final DateTime now = DateTime.now();
@@ -27,8 +25,8 @@ class _SaiInspires extends State<SaiInspires> {
   String imageFinalUrl;
   String finalUrl;
 
-  // String _dateText = ''; // date text id is 'Head'
-  // String _contentText = ''; // content text id is 'Content'
+  String _dateText = ''; // date text id is 'Head'
+  String _contentText = ''; // content text id is 'Content'
 
   @override
   void initState() {
@@ -56,7 +54,7 @@ class _SaiInspires extends State<SaiInspires> {
         color: Colors.white,
         child: Padding(
           padding: const EdgeInsets.only(top: 10),
-          // TODO: add loading progress
+          // TODO: add loading progress for the whole screen
           child: Column(
             children: [
               Padding(
@@ -66,40 +64,53 @@ class _SaiInspires extends State<SaiInspires> {
                   child: Image.network(imageFinalUrl),
                 ),
               ),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 10, right: 10),
-              //   child: Text(_dateText),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.all(10),
-              //   child: Text('Thought of the Day'),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.only(left: 10, right: 10),
-              //   child: Text(_contentText),
-              // ),
-              // Padding(
-              //   padding: EdgeInsets.all(10),
-              //   child: Text('-BABA'),
-              // ),
-              // TODO: hide the webview after plugin upgrade and display
-              // or add zoom effect for temporary
-              Expanded(
-                child: WebView(
-                  initialUrl: finalUrl,
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onPageFinished: (url) {
-                    _webViewController.evaluateJavascript(
-                      "document.body.style.zoom = 0.7;"
-                      "document.getElementById('Home').remove();"
-                      "document.getElementById('Official').remove();"
-                      // "<meta name=\"viewport\" content=\"width=device-width\">"
-                    );
-                  },
-                  onWebViewCreated: (controller) {
-                    _webViewController = controller;
-                  },
-                ),
+              Stack(
+                children: [
+                  // hide the webview behind the container to get content using JS
+                  Positioned.fill(
+                    child: WebView(
+                      initialUrl: finalUrl,
+                      javascriptMode: JavascriptMode.unrestricted,
+                      onPageFinished: (url) async {
+                        String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
+                        String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
+                        setState(() {
+                          _dateText = dateText;
+                          _contentText = contentText;
+                        });
+                      },
+                      onWebViewCreated: (controller) {
+                        _webViewController = controller;
+                      },
+                    ),
+                  ),
+                  // container displays above the webview to make the webview hidden
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    color: Colors.white,
+                    // TODO: change the UI of the text
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Text(_dateText),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text('THOUGHT OF THE DAY'),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Text(_contentText),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text('-BABA'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -109,10 +120,8 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   _updateURL(DateTime date) async {
-    // String formattedDate = DateFormat('yyyyMMdd').format(now);
     String imageFormattedDate = DateFormat('yyyyMMdd').format(date);
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
-    // String finalUrl = '$baseUrl/${now.year}/SI_$formattedDate.htm';
     imageFinalUrl = '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
     finalUrl = '$baseUrl?mydate=$formattedDate';
     if(_webViewController != null) await _webViewController.loadUrl(finalUrl);
@@ -121,7 +130,7 @@ class _SaiInspires extends State<SaiInspires> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      // Sai Inspires started on 1st May 2010
+      // Sai Inspires started on 19th Feb 2011
       firstDate: DateTime(2011, 2, 19),
       initialDate: selectedDate,
       lastDate: now,

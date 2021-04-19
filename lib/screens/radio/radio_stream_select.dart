@@ -60,12 +60,13 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   // to avoid unnecessary update of streams
                   if (widgetIndex != index) {
                     _radioIndexBloc.changeRadioIndex.add(widgetIndex);
+                    // close the panel if different stream is selected
+                    widget.panelController.close();
                   }
-                  // close the panel and update handling is done in the player
-                  widget.panelController.close();
                 },
                 child: Container(
                   child: Center(
+                    // TODO: change the text style when selected or no
                     child: Text(MyConstants.of(context).radioStreamName[widgetIndex]),
                   ),
                 ),
