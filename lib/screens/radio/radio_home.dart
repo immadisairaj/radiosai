@@ -29,8 +29,10 @@ class _RadioHome extends State<RadioHome> {
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             child: Image(
               fit: BoxFit.cover,
+              alignment: Alignment(0, -1),
               image: AssetImage('assets/sai_listens.jpg'),
             ),
           ),
