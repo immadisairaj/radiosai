@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class SaiInspires extends StatefulWidget {
@@ -151,7 +152,7 @@ class _SaiInspires extends State<SaiInspires> {
               Container(
                 color: Colors.white,
                 child: Center(
-                  child: CircularProgressIndicator(),
+                  child: _showLoading(),
                 ),
               ),
           ],
@@ -185,6 +186,66 @@ class _SaiInspires extends State<SaiInspires> {
         _updateURL(selectedDate);
       });
     }
+  }
+
+  Widget _showLoading() {
+    return Padding(
+      padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey[300],
+        highlightColor: Colors.grey[100],
+        enabled: true,
+        child: Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width * 0.5,
+              height: MediaQuery.of(context).size.height * 0.4,
+              color: Colors.white,
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 20, bottom: 10),
+              child: Container(
+                width: double.infinity,
+                height: 8,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                height: 8,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                height: 8,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                height: 8,
+                color: Colors.white,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Container(
+                width: double.infinity,
+                height: 8,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
 }
