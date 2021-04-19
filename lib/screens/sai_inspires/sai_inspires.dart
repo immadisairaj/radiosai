@@ -25,6 +25,8 @@ class _SaiInspires extends State<SaiInspires> {
   String imageFinalUrl;
   String finalUrl;
 
+  bool _isLoading = true;
+
   String _dateText = ''; // date text id is 'Head'
   String _contentText = ''; // content text id is 'Content'
 
@@ -51,74 +53,114 @@ class _SaiInspires extends State<SaiInspires> {
         ],
       ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.only(top: 10),
-          // TODO: add loading progress for the whole screen
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.all(10),
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  child: Image.network(imageFinalUrl),
-                ),
-              ),
-              Stack(
-                children: [
-                  // hide the webview behind the container to get content using JS
-                  Positioned.fill(
-                    child: WebView(
-                      initialUrl: finalUrl,
-                      javascriptMode: JavascriptMode.unrestricted,
-                      onPageFinished: (url) async {
-                        String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
-                        String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
-                        setState(() {
-                          _dateText = dateText;
-                          _contentText = contentText;
-                        });
-                      },
-                      onWebViewCreated: (controller) {
-                        _webViewController = controller;
-                      },
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: Image.network(imageFinalUrl),
+                      ),
                     ),
-                  ),
-                  // container displays above the webview to make the webview hidden
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    color: Colors.white,
-                    // TODO: change the UI of the text
-                    child: Column(
+                    Stack(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(left: 10, right: 10),
-                          child: Text(_dateText),
+                        // hide the webview behind the container to get content using JS
+                        Positioned.fill(
+                          child: WebView(
+                            initialUrl: finalUrl,
+                            javascriptMode: JavascriptMode.unrestricted,
+                            onPageFinished: (url) async {
+                              // get the data to show at the top
+                              String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
+                              String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
+                              
+                              // Trim the data to remove unnecessary content
+                              dateText = dateText.replaceAll('"', '');
+                              dateText = dateText.trim();
+                              contentText = contentText.substring(4);
+                              contentText = contentText.replaceAll('"', '');
+                              contentText = contentText.trim();
+                              setState(() {
+                                _dateText = dateText;
+                                _contentText = contentText;
+                                _isLoading = false;
+                              });
+                            },
+                            onWebViewCreated: (controller) {
+                              _webViewController = controller;
+                            },
+                          ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text('THOUGHT OF THE DAY'),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 10, right: 10),
-                          child: Text(_contentText),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Text('-BABA'),
+                        // container displays above the webview to make the webview hidden
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          color: Colors.white,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 20, right: 20, top: 8),
+                            child: Column(
+                              children: [
+                                Align(
+                                  alignment: Alignment(1, 0),
+                                  child: Text(
+                                    _dateText,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'THOUGHT OF THE DAY',
+                                    style: TextStyle(
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  _contentText,
+                                  textAlign: TextAlign.justify,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0, bottom: 20),
+                                  child: Align(
+                                    alignment: Alignment(1, 0),
+                                    child: Text(
+                                      '-BABA',
+                                      
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            // Shown when it is loading
+            // TODO: change it to swipe loading behaviour
+            if (_isLoading)
+              Container(
+                color: Colors.white,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+          ],
         ),
       ),
     );
   }
 
+  // update the URL after picking the new date
   _updateURL(DateTime date) async {
     String imageFormattedDate = DateFormat('yyyyMMdd').format(date);
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
@@ -127,6 +169,7 @@ class _SaiInspires extends State<SaiInspires> {
     if(_webViewController != null) await _webViewController.loadUrl(finalUrl);
   }
 
+  // select the date and update the url
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -137,6 +180,7 @@ class _SaiInspires extends State<SaiInspires> {
     );
     if(picked != null && picked != selectedDate) {
       setState(() {
+        _isLoading = true;
         selectedDate = picked;
         _updateURL(selectedDate);
       });
