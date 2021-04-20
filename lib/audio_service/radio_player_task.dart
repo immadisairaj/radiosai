@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
 class RadioPlayerTask extends BackgroundAudioTask {
+  // audio player uses just_audio
   final _player = AudioPlayer();
 
   @override
@@ -54,7 +55,6 @@ class RadioPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onPlay() {
-    // TODO: check if we can seek after pause and implement
     _player.play();
     return super.onPlay();
   }
@@ -70,6 +70,12 @@ class RadioPlayerTask extends BackgroundAudioTask {
   Future<void> onPause() {
     _player.pause();
     return super.onPause();
+  }
+
+  @override
+  Future<void> onTaskRemoved() {
+    onStop();
+    return super.onTaskRemoved();
   }
 
   // Get notification image stored in file,

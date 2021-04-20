@@ -58,6 +58,7 @@ class _SaiInspires extends State<SaiInspires> {
         color: Colors.white,
         child: Stack(
           children: [
+            // TODO: add refresh option?
             SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(top: 5),
@@ -72,39 +73,15 @@ class _SaiInspires extends State<SaiInspires> {
                     ),
                     Stack(
                       children: [
-                        // hide the webview behind the container to get content using JS
-                        Positioned.fill(
-                          child: WebView(
-                            initialUrl: finalUrl,
-                            javascriptMode: JavascriptMode.unrestricted,
-                            onPageFinished: (url) async {
-                              // get the data to show at the top
-                              String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
-                              String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
-                              
-                              // Trim the data to remove unnecessary content
-                              dateText = dateText.replaceAll('"', '');
-                              dateText = dateText.trim();
-                              contentText = contentText.substring(4);
-                              contentText = contentText.replaceAll('"', '');
-                              contentText = contentText.trim();
-                              setState(() {
-                                _dateText = dateText;
-                                _contentText = contentText;
-                                _isLoading = false;
-                              });
-                            },
-                            onWebViewCreated: (controller) {
-                              _webViewController = controller;
-                            },
-                          ),
-                        ),
+                        // hide the webview behind the container and get content using JS
+                        _hiddenWebView(),
                         // container displays above the webview to make the webview hidden
                         Container(
                           width: MediaQuery.of(context).size.width,
                           color: Colors.white,
                           child: Padding(
                             padding: const EdgeInsets.only(left: 20, right: 20, top: 8),
+                            // TODO: update text sizes
                             child: Column(
                               children: [
                                 Align(
@@ -147,7 +124,6 @@ class _SaiInspires extends State<SaiInspires> {
               ),
             ),
             // Shown when it is loading
-            // TODO: change it to swipe loading behaviour
             if (_isLoading)
               Container(
                 color: Colors.white,
@@ -155,6 +131,7 @@ class _SaiInspires extends State<SaiInspires> {
                   child: _showLoading(),
                 ),
               ),
+            // TODO: add try again (or something) when not able to get data (eg: if no internet)
           ],
         ),
       ),
@@ -188,6 +165,7 @@ class _SaiInspires extends State<SaiInspires> {
     }
   }
 
+  // Shimmer effect while loading the content
   Widget _showLoading() {
     return Padding(
       padding: EdgeInsets.only(top: 30, left: 20, right: 20),
@@ -244,6 +222,36 @@ class _SaiInspires extends State<SaiInspires> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // hide the webview behind the container and get content using JS
+  Widget _hiddenWebView() {
+    return Positioned.fill(
+      child: WebView(
+        initialUrl: finalUrl,
+        javascriptMode: JavascriptMode.unrestricted,
+        onPageFinished: (url) async {
+          // get the data to show at the top
+          String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
+          String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
+          
+          // Trim the data to remove unnecessary content
+          dateText = dateText.replaceAll('"', '');
+          dateText = dateText.trim();
+          contentText = contentText.substring(4);
+          contentText = contentText.replaceAll('"', '');
+          contentText = contentText.trim();
+          setState(() {
+            _dateText = dateText;
+            _contentText = contentText;
+            _isLoading = false;
+          });
+        },
+        onWebViewCreated: (controller) {
+          _webViewController = controller;
+        },
       ),
     );
   }
