@@ -49,7 +49,9 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
             child: Card(
               elevation: 1.4,
               shadowColor: Theme.of(context).primaryColor,
-              color: (widgetIndex == index) ? Theme.of(context).primaryColor : null,
+              color: (widgetIndex == index)
+                  ? Theme.of(context).primaryColor
+                  : null,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -67,7 +69,8 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                 child: Container(
                   child: Center(
                     // TODO: change the text style when selected or no
-                    child: Text(MyConstants.of(context).radioStreamName[widgetIndex]),
+                    child: Text(
+                        MyConstants.of(context).radioStreamName[widgetIndex]),
                   ),
                 ),
               ),

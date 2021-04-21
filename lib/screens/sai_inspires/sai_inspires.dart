@@ -17,7 +17,7 @@ class SaiInspires extends StatefulWidget {
 
 class _SaiInspires extends State<SaiInspires> {
   WebViewController _webViewController;
-  
+
   final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
   final String baseUrl = 'https://www.radiosai.org/pages/ThoughtText.asp';
 
@@ -33,7 +33,6 @@ class _SaiInspires extends State<SaiInspires> {
 
   @override
   void initState() {
-
     selectedDate = now;
     _updateURL(selectedDate);
 
@@ -80,7 +79,8 @@ class _SaiInspires extends State<SaiInspires> {
                           width: MediaQuery.of(context).size.width,
                           color: Colors.white,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 20, right: 20, top: 8),
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 8),
                             // TODO: update text sizes
                             child: Column(
                               children: [
@@ -104,12 +104,12 @@ class _SaiInspires extends State<SaiInspires> {
                                   textAlign: TextAlign.justify,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.only(top: 8.0, bottom: 20),
+                                  padding: const EdgeInsets.only(
+                                      top: 8.0, bottom: 20),
                                   child: Align(
                                     alignment: Alignment(1, 0),
                                     child: Text(
                                       '-BABA',
-                                      
                                     ),
                                   ),
                                 ),
@@ -142,9 +142,10 @@ class _SaiInspires extends State<SaiInspires> {
   _updateURL(DateTime date) async {
     String imageFormattedDate = DateFormat('yyyyMMdd').format(date);
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
-    imageFinalUrl = '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
+    imageFinalUrl =
+        '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
     finalUrl = '$baseUrl?mydate=$formattedDate';
-    if(_webViewController != null) await _webViewController.loadUrl(finalUrl);
+    if (_webViewController != null) await _webViewController.loadUrl(finalUrl);
   }
 
   // select the date and update the url
@@ -156,7 +157,7 @@ class _SaiInspires extends State<SaiInspires> {
       initialDate: selectedDate,
       lastDate: now,
     );
-    if(picked != null && picked != selectedDate) {
+    if (picked != null && picked != selectedDate) {
       setState(() {
         _isLoading = true;
         selectedDate = picked;
@@ -234,9 +235,11 @@ class _SaiInspires extends State<SaiInspires> {
         javascriptMode: JavascriptMode.unrestricted,
         onPageFinished: (url) async {
           // get the data to show at the top
-          String dateText = await _webViewController.evaluateJavascript("document.getElementById('Head').textContent");
-          String contentText = await _webViewController.evaluateJavascript("document.getElementById('Content').textContent");
-          
+          String dateText = await _webViewController.evaluateJavascript(
+              "document.getElementById('Head').textContent");
+          String contentText = await _webViewController.evaluateJavascript(
+              "document.getElementById('Content').textContent");
+
           // Trim the data to remove unnecessary content
           dateText = dateText.replaceAll('"', '');
           dateText = dateText.trim();
@@ -255,5 +258,4 @@ class _SaiInspires extends State<SaiInspires> {
       ),
     );
   }
-
 }

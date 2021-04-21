@@ -14,13 +14,15 @@ import 'package:radiosai/screens/radio/radio_stream_select.dart';
 void _entrypoint() => AudioServiceBackground.run(() => RadioPlayerTask());
 
 class RadioPlayer extends StatefulWidget {
-  RadioPlayer({Key key,
-        this.radius,
-        this.radioStreamIndex,
-        this.isPlaying,
-        this.loadingState,
-        this.radioLoadingBloc,
-        this.hasInternet}) : super(key: key);
+  RadioPlayer(
+      {Key key,
+      this.radius,
+      this.radioStreamIndex,
+      this.isPlaying,
+      this.loadingState,
+      this.radioLoadingBloc,
+      this.hasInternet})
+      : super(key: key);
 
   final BorderRadiusGeometry radius;
   final int radioStreamIndex;
@@ -78,8 +80,10 @@ class _RadioPlayer extends State<RadioPlayer>
             controller: _panelController,
             minHeight: height * 0.1,
             // remove the collapsed widget if the height is small (below 2 lines)
-            collapsed: (height*0.1 >= 50) ? slidingPanelCollapsed(widget.radius) : null,
-            renderPanelSheet: (height*0.1 >= 50) ? true : false,
+            collapsed: (height * 0.1 >= 50)
+                ? slidingPanelCollapsed(widget.radius)
+                : null,
+            renderPanelSheet: (height * 0.1 >= 50) ? true : false,
             panel: RadioStreamSelect(
               panelController: _panelController,
             ),
@@ -92,8 +96,12 @@ class _RadioPlayer extends State<RadioPlayer>
                 width: width,
                 child: Container(
                   color: Colors.black54,
-                  child: playerDisplay(widget.radioStreamIndex, widget.isPlaying, widget.loadingState,
-                      widget.radioLoadingBloc, widget.hasInternet),
+                  child: playerDisplay(
+                      widget.radioStreamIndex,
+                      widget.isPlaying,
+                      widget.loadingState,
+                      widget.radioLoadingBloc,
+                      widget.hasInternet),
                 ),
               ),
             ),
@@ -142,7 +150,7 @@ class _RadioPlayer extends State<RadioPlayer>
   Widget playerDisplay(int streamIndex, bool isPlaying, bool loadingState,
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     double height = MediaQuery.of(context).size.height;
-    double iconSize = (height*0.1 >= 50) ? 40 : 30;
+    double iconSize = (height * 0.1 >= 50) ? 40 : 30;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -239,7 +247,7 @@ class _RadioPlayer extends State<RadioPlayer>
                 break;
               default:
                 loadingUpdate = false;
-                // displayText = '${describeEnum(processingState)}';
+              // displayText = '${describeEnum(processingState)}';
             }
             if (loadingUpdate != null)
               radioLoadingBloc.changeLoadingState.add(loadingUpdate);
@@ -248,7 +256,7 @@ class _RadioPlayer extends State<RadioPlayer>
               // when height > 0, the container has to be transparent
               color: Colors.transparent,
               // adding height to set the player display properly when height is more
-              height: (height*0.1 >= 50) ? height*0.09 : 0,
+              height: (height * 0.1 >= 50) ? height * 0.09 : 0,
               width: 0,
             );
             // return Text(

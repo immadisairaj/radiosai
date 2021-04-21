@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
+import 'package:radiosai/screens/settings/settings.dart';
 
 class TopMenu extends StatefulWidget {
   TopMenu({
@@ -12,7 +13,7 @@ class TopMenu extends StatefulWidget {
   _TopMenu createState() => _TopMenu();
 }
 
-class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
+class _TopMenu extends State<TopMenu> {
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
@@ -38,8 +39,7 @@ class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
               offset: const Offset(-10, 10),
               itemBuilder: (context) {
                 // Takes list of data from constants
-                return menuTitles
-                    .map<PopupMenuEntry<String>>((value) {
+                return menuTitles.map<PopupMenuEntry<String>>((value) {
                   return PopupMenuItem<String>(
                     value: value,
                     child: Text(
@@ -50,11 +50,16 @@ class _TopMenu extends State<TopMenu> with SingleTickerProviderStateMixin {
               },
               onSelected: (value) {
                 // TODO: implement on select of menu
-                switch(value) {
+                switch (value) {
                   // TODO: don't hardcode this and maybe add enum
                   case 'Sai Inspires':
                     Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SaiInspires()));
+                        MaterialPageRoute(builder: (context) => SaiInspires()));
+                    break;
+                  case 'Settings':
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Settings()));
+                    break;
                 }
               },
             ),

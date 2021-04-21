@@ -64,7 +64,8 @@ class _RadioHome extends State<RadioHome> {
                                 final isPlaying = snapshot.data ?? false;
                                 // get the data of the internet connectivity change
                                 bool hasInternet =
-                                    Provider.of<InternetConnectionStatus>(context) ==
+                                    Provider.of<InternetConnectionStatus>(
+                                            context) ==
                                         InternetConnectionStatus.connected;
                                 return RadioPlayer(
                                     radius: radius,
