@@ -2,38 +2,21 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class RadioIndexBloc {
+class InitialRadioIndexBloc {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
   int _index;
-  // key for present shared preferences
-  final _indexKey = 'radioIndex';
   // key for initial radio index shared preferences
   final _initialIndexKey = 'initialRadioIndex';
 
   // Initialize the stream for radio index:
   // index of radio sai streams.
   // Uses, shared preferences to store the stream
-  RadioIndexBloc() {
+  InitialRadioIndexBloc() {
     prefs.then((value) {
-      int openOption;
-      // shared preferences for starting option
-      if(value.get(_initialIndexKey) != null) {
-        openOption = value.getInt(_initialIndexKey) ?? -1;
+      if (value.get(_initialIndexKey) != null) {
+        _index = value.getInt(_initialIndexKey) ?? -1;
       } else {
-        openOption = -1;
-        value.setInt(_initialIndexKey, openOption);
-      }
-
-      // if the user opts recent, open recently closed stream
-      // else, open the selected option
-      if(openOption < 0) {
-        if (value.get(_indexKey) != null) {
-          _index = value.getInt(_indexKey) ?? 0;
-        } else {
-          _index = 0;
-        }
-      } else {
-        _index = openOption;
+        _index = 0;
       }
 
       _actionController.stream.listen(_changeStream);
@@ -44,13 +27,13 @@ class RadioIndexBloc {
   // sets 0 as default value
   final _indexStream = BehaviorSubject<int>.seeded(0);
   // returns the stream to update anything based on values changed
-  Stream get radioIndexStream => _indexStream.stream;
+  Stream get initialRadioIndexStream => _indexStream.stream;
   Sink get _addValue => _indexStream.sink;
 
   StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
   // call the function changeRadioIndex.add(value) to change the value
-  StreamSink get changeRadioIndex => _actionController.sink;
+  StreamSink get changeInitialRadioIndex => _actionController.sink;
 
   void _changeStream(data) async {
     if (data == null) {
@@ -60,7 +43,7 @@ class RadioIndexBloc {
     }
     _addValue.add(_index);
     prefs.then((value) {
-      value.setInt(_indexKey, _index);
+      value.setInt(_initialIndexKey, _index);
     });
   }
 

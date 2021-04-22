@@ -33,11 +33,13 @@ dependencies:
   sliding_up_panel: ^1.0.2
   webview_flutter: ^2.0.4
   shimmer: ^2.0.0
+  flutter_custom_tabs: ^0.6.0
   path_provider: ^2.0.1
   rxdart: ^0.26.0
   provider: ^4.0.0
   internet_connection_checker: ^0.0.1
   intl: ^0.17.0
+  package_info: ^2.0.0
   # Audio packages
   just_audio: ^0.7.3
   audio_service: ^0.17.0

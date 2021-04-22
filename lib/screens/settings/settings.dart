@@ -1,5 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
+import 'package:package_info/package_info.dart';
+import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/screens/settings/starting_radio_stream.dart';
+import 'package:radiosai/widgets/settings_section.dart';
 
 class Settings extends StatefulWidget {
   Settings({
@@ -11,6 +16,27 @@ class Settings extends StatefulWidget {
 }
 
 class _Settings extends State<Settings> {
+  PackageInfo _packageInfo = PackageInfo(
+    appName: '',
+    packageName: '',
+    version: '',
+    buildNumber: '',
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  // Get package information
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,18 +60,11 @@ class _Settings extends State<Settings> {
   }
 
   Widget _generalSection() {
-    return _sectionBuild(
-      'General Settings',
-      Column(
+    return SettingsSection(
+      title: 'General Settings',
+      child: Column(
         children: [
-          ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
-            title: Text('Starting radio stream'),
-            subtitle: Text('Recently played'),
-            onTap: () {
-              // TODO: add chromable link to the website
-            },
-          ),
+          StartingRadioStream(),
         ],
       ),
     );
@@ -53,16 +72,17 @@ class _Settings extends State<Settings> {
 
   Widget _aboutSection() {
     // TODO: remove hardcoding later
-    return _sectionBuild(
-      'About',
-      Column(
+    return SettingsSection(
+      title: 'About',
+      child: Column(
         children: [
           ListTile(
             contentPadding: EdgeInsets.only(left: 10),
             title: Text('About Sai'),
             subtitle: Text('Who is Sri Sathya Sai Baba?'),
             onTap: () {
-              // TODO: add chromable link to the website
+              _launchURL(context,
+                  'http://media.radiosai.org/journals/Portal/bhagavan.htm');
             },
           ),
           ListTile(
@@ -70,20 +90,21 @@ class _Settings extends State<Settings> {
             title: Text('About Radio Sai'),
             subtitle: Text('What is Radio Sai?'),
             onTap: () {
-              // TODO: add chromable link to the website
+              _launchURL(context, 'https://www.radiosai.org');
             },
           ),
           Divider(),
           ListTile(
             contentPadding: EdgeInsets.only(left: 10),
             title: Text('Version'),
-            subtitle: Text('0.0.1'),
+            subtitle: Text('v${_packageInfo.version}'),
             onTap: () {},
           ),
           ListTile(
             contentPadding: EdgeInsets.only(left: 10),
             title: Text('Build time'),
-            subtitle: Text('21/04/2021 19:45'),
+            // get from constants
+            subtitle: Text(MyConstants.of(context).buldTime),
             onTap: () {},
           ),
           Divider(),
@@ -92,7 +113,7 @@ class _Settings extends State<Settings> {
             title: Text('Website'),
             subtitle: Text('https://immadisairaj.me/radiosai'),
             onTap: () {
-              // TODO: add chromable link to the website
+              _launchURL(context, 'https://immadisairaj.me/radiosai');
             },
           ),
           Divider(),
@@ -102,6 +123,8 @@ class _Settings extends State<Settings> {
             onTap: () {
               showLicensePage(
                 context: context,
+                applicationName: _packageInfo.packageName,
+                applicationVersion: _packageInfo.version,
                 // applicationIcon: Image(image: AssetImage('assets/radiosai-logo.jpg')),
                 // TODO: add other app related things
               );
@@ -112,33 +135,30 @@ class _Settings extends State<Settings> {
     );
   }
 
-  // later move this to new class
-  Widget _sectionBuild(String title, Widget builder) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10),
-      child: Card(
-        elevation: 0.2,
-        color: Colors.grey[200],
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
-              builder,
-            ],
-          ),
+  void _launchURL(BuildContext context, String urlString) async {
+    try {
+      await launch(
+        urlString,
+        option: new CustomTabsOption(
+          toolbarColor: Theme.of(context).primaryColor,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+          animation: new CustomTabsAnimation(
+              startEnter: 'slide_up',
+              startExit: 'android:anim/fade_out',
+              endEnter: 'android:anim/fade_in',
+              endExit: 'slide_down'),
+          // if chrome is not available
+          extraCustomTabs: [
+            'org.mozilla.firefox',
+            'com.microsoft.emmx',
+            'com.brave.browser',
+          ],
         ),
-      ),
-    );
+      );
+    } catch (e) {
+      // do nothing as of now
+    }
   }
 }

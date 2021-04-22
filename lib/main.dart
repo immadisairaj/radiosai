@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/bloc/initial_radio_index_bloc.dart';
 import 'package:radiosai/bloc/internet_status.dart';
 import 'package:radiosai/bloc/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
@@ -37,6 +38,11 @@ class MyApp extends StatelessWidget {
           create: (context) {
             return InternetStatus().internetStatusStreamController.stream;
           },
+        ),
+        // stream for initial radio sai stream index
+        Provider<InitialRadioIndexBloc>(
+          create: (_) => InitialRadioIndexBloc(),
+          dispose: (_, InitialRadioIndexBloc initialRadioIndexBloc) => initialRadioIndexBloc.dispose(),
         ),
       ],
       child: MaterialApp(
