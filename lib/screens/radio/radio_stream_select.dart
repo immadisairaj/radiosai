@@ -25,14 +25,14 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
           stream: _radioIndexBloc.radioIndexStream,
           builder: (context, snapshot) {
             int index = snapshot.data ?? 0;
-            return slide(_radioIndexBloc, index);
+            return _slide(_radioIndexBloc, index);
           },
         );
       },
     );
   }
 
-  Widget slide(RadioIndexBloc _radioIndexBloc, int index) {
+  Widget _slide(RadioIndexBloc _radioIndexBloc, int index) {
     return Padding(
       padding: const EdgeInsets.only(top: 25),
       child: GridView.builder(
@@ -70,7 +70,14 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   child: Center(
                     // TODO: change the text style when selected or no
                     child: Text(
-                        MyConstants.of(context).radioStreamName[widgetIndex]),
+                      MyConstants.of(context).radioStreamName[widgetIndex],
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: (widgetIndex == index)
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
                   ),
                 ),
               ),

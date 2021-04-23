@@ -17,9 +17,10 @@ class _Home extends State<Home> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () {
-        // sends the app to background when backpress on home screen 
-        // add a method in MainActivity.kt to support send app to background
-        return MethodChannel('android_app_retain').invokeMethod('sendToBackground');
+        // sends the app to background when backpress on home screen
+        // achieved by adding a method in MainActivity.kt to support send app to background
+        return MethodChannel('android_app_retain')
+            .invokeMethod('sendToBackground');
       },
       child: Scaffold(
         body: Stack(

@@ -46,12 +46,22 @@ class _RadioPlayer extends State<RadioPlayer>
   // change while radio is in playing state
   int _tempRadioStreamIndex = 0;
 
+  // to check if the app is built for first time
+  bool initialBuild = false;
+
   @override
   void initState() {
     // initialize the pause play controller
     _pausePlayController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+
+    // true when the widgets are building
+    initialBuild = true;
     super.initState();
+    // false the value after the build is completed
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      initialBuild = false;
+    });
   }
 
   @override
@@ -79,9 +89,9 @@ class _RadioPlayer extends State<RadioPlayer>
             backdropEnabled: true,
             controller: _panelController,
             minHeight: height * 0.1,
-            // remove the collapsed widget if the height is small (below 2 lines)
+            // remove the collapsed widget if the height is small (below 4 lines)
             collapsed: (height * 0.1 >= 50)
-                ? slidingPanelCollapsed(widget.radius)
+                ? _slidingPanelCollapsed(widget.radius)
                 : null,
             renderPanelSheet: (height * 0.1 >= 50) ? true : false,
             panel: RadioStreamSelect(
@@ -96,7 +106,7 @@ class _RadioPlayer extends State<RadioPlayer>
                 width: width,
                 child: Container(
                   color: Colors.black54,
-                  child: playerDisplay(
+                  child: _playerDisplay(
                       widget.radioStreamIndex,
                       widget.isPlaying,
                       widget.loadingState,
@@ -106,14 +116,15 @@ class _RadioPlayer extends State<RadioPlayer>
               ),
             ),
           ),
-          InternetAlert(hasInternet: widget.hasInternet),
+          // don't build the widget if the app builds for the first time
+          if (!initialBuild) InternetAlert(hasInternet: widget.hasInternet),
         ],
       ),
     );
   }
 
   // main radio player widget after all streams
-  Widget slidingPanelCollapsed(BorderRadiusGeometry radius) {
+  Widget _slidingPanelCollapsed(BorderRadiusGeometry radius) {
     return GestureDetector(
       onTap: () {
         _panelController.open();
@@ -147,7 +158,7 @@ class _RadioPlayer extends State<RadioPlayer>
     );
   }
 
-  Widget playerDisplay(int streamIndex, bool isPlaying, bool loadingState,
+  Widget _playerDisplay(int streamIndex, bool isPlaying, bool loadingState,
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     double height = MediaQuery.of(context).size.height;
     double iconSize = (height * 0.1 >= 50) ? 40 : 30;

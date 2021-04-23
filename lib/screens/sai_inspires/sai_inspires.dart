@@ -57,7 +57,6 @@ class _SaiInspires extends State<SaiInspires> {
         color: Colors.white,
         child: Stack(
           children: [
-            // TODO: add refresh option?
             SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(top: 5),
@@ -88,6 +87,9 @@ class _SaiInspires extends State<SaiInspires> {
                                   alignment: Alignment(1, 0),
                                   child: Text(
                                     _dateText,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                    ),
                                   ),
                                 ),
                                 Padding(
@@ -96,12 +98,16 @@ class _SaiInspires extends State<SaiInspires> {
                                     'THOUGHT OF THE DAY',
                                     style: TextStyle(
                                       color: Colors.red,
+                                      fontSize: 16,
                                     ),
                                   ),
                                 ),
                                 Text(
                                   _contentText,
                                   textAlign: TextAlign.justify,
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                  ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(
@@ -110,6 +116,9 @@ class _SaiInspires extends State<SaiInspires> {
                                     alignment: Alignment(1, 0),
                                     child: Text(
                                       '-BABA',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -123,6 +132,8 @@ class _SaiInspires extends State<SaiInspires> {
                 ),
               ),
             ),
+            // show when no data is retrieved
+            if (_contentText == '') _noData(),
             // Shown when it is loading
             if (_isLoading)
               Container(
@@ -131,7 +142,7 @@ class _SaiInspires extends State<SaiInspires> {
                   child: _showLoading(),
                 ),
               ),
-            // TODO: add try again (or something) when not able to get data (eg: if no internet)
+            // TODO: show if there is no internet
           ],
         ),
       ),
@@ -164,6 +175,40 @@ class _SaiInspires extends State<SaiInspires> {
         _updateURL(selectedDate);
       });
     }
+  }
+
+  // handle when no data is retrieved
+  Widget _noData() {
+    return Container(
+      color: Colors.white,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'No Data Available, try again',
+              style: TextStyle(
+                fontSize: 16,
+              ),
+            ),
+            ElevatedButton(
+              child: Text(
+                'Retry',
+                style: TextStyle(
+                  fontSize: 16,
+                ),
+              ),
+              onPressed: () {
+                setState(() {
+                  _isLoading = true;
+                  _updateURL(selectedDate);
+                });
+              },
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   // Shimmer effect while loading the content
@@ -247,8 +292,14 @@ class _SaiInspires extends State<SaiInspires> {
           contentText = contentText.replaceAll('"', '');
           contentText = contentText.trim();
           setState(() {
+            // set the data
             _dateText = dateText;
             _contentText = contentText;
+
+            // if data is not proper, don't set the image
+            if (contentText == '') imageFinalUrl = '';
+
+            // loading is done
             _isLoading = false;
           });
         },

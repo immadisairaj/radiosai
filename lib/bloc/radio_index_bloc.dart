@@ -17,7 +17,7 @@ class RadioIndexBloc {
     prefs.then((value) {
       int openOption;
       // shared preferences for starting option
-      if(value.get(_initialIndexKey) != null) {
+      if (value.get(_initialIndexKey) != null) {
         openOption = value.getInt(_initialIndexKey) ?? -1;
       } else {
         openOption = -1;
@@ -26,7 +26,7 @@ class RadioIndexBloc {
 
       // if the user opts recent, open recently closed stream
       // else, open the selected option
-      if(openOption < 0) {
+      if (openOption < 0) {
         if (value.get(_indexKey) != null) {
           _index = value.getInt(_indexKey) ?? 0;
         } else {
