@@ -72,7 +72,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                     child: Text(
                       MyConstants.of(context).radioStreamName[widgetIndex],
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 16.5,
                         color: (widgetIndex == index)
                             ? Colors.white
                             : Colors.black,

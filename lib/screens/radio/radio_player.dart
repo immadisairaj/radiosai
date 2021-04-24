@@ -49,6 +49,9 @@ class _RadioPlayer extends State<RadioPlayer>
   // to check if the app is built for first time
   bool initialBuild = false;
 
+  // reduce multiple snackbars when clicking many times
+  bool _isSnackBarActive = false;
+
   @override
   void initState() {
     // initialize the pause play controller
@@ -326,10 +329,15 @@ class _RadioPlayer extends State<RadioPlayer>
         initRadioService(index);
         if (!isLoading) playRadioService();
       } else {
-        // TODO: handle play when no internet
-        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        //   content: Text('Try to play after connecting to the Internet'),
-        // ));
+        if(_isSnackBarActive == false) {
+          _isSnackBarActive = true;
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text('Try to play after connecting to the Internet'),
+            behavior: SnackBarBehavior.floating,
+          )).closed.then((value) {
+            _isSnackBarActive = false;
+          });
+        } // do nothing in else
       }
     } else {
       loadingStreamBloc.changeLoadingState.add(false);

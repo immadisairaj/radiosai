@@ -57,7 +57,8 @@ class _SaiInspires extends State<SaiInspires> {
         color: Colors.white,
         child: Stack(
           children: [
-            SingleChildScrollView(
+            InteractiveViewer(
+              constrained: false,
               child: Padding(
                 padding: const EdgeInsets.only(top: 5),
                 child: Column(
@@ -108,6 +109,7 @@ class _SaiInspires extends State<SaiInspires> {
                                   textAlign: TextAlign.justify,
                                   style: TextStyle(
                                     fontSize: 17,
+                                    height: 1.3,
                                   ),
                                 ),
                                 Padding(
@@ -134,7 +136,7 @@ class _SaiInspires extends State<SaiInspires> {
               ),
             ),
             // show when no data is retrieved
-            if (_contentText == '') _noData(),
+            if (_contentText == 'null') _noData(),
             // Shown when it is loading
             if (_isLoading)
               Container(
@@ -143,7 +145,6 @@ class _SaiInspires extends State<SaiInspires> {
                   child: _showLoading(),
                 ),
               ),
-            // TODO: show if there is no internet
           ],
         ),
       ),
@@ -289,7 +290,7 @@ class _SaiInspires extends State<SaiInspires> {
           // Trim the data to remove unnecessary content
           dateText = dateText.replaceAll('"', '');
           dateText = dateText.trim();
-          contentText = contentText.substring(4);
+          contentText = contentText.replaceAll('\\n', '');
           contentText = contentText.replaceAll('"', '');
           contentText = contentText.trim();
           setState(() {
@@ -298,7 +299,7 @@ class _SaiInspires extends State<SaiInspires> {
             _contentText = contentText;
 
             // if data is not proper, don't set the image
-            if (contentText == '') imageFinalUrl = '';
+            if (contentText == 'null') imageFinalUrl = '';
 
             // loading is done
             _isLoading = false;
