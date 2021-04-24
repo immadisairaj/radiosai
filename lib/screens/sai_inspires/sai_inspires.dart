@@ -66,7 +66,9 @@ class _SaiInspires extends State<SaiInspires> {
                       height: MediaQuery.of(context).size.height * 0.35,
                       child: Padding(
                         padding: EdgeInsets.all(10),
-                        child: Image.network(imageFinalUrl),
+                        child: (imageFinalUrl == '')
+                            ? Container()
+                            : Image.network(imageFinalUrl),
                       ),
                     ),
                     Stack(
@@ -80,7 +82,6 @@ class _SaiInspires extends State<SaiInspires> {
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 left: 20, right: 20, top: 8),
-                            // TODO: update text sizes
                             child: Column(
                               children: [
                                 Align(
@@ -186,7 +187,7 @@ class _SaiInspires extends State<SaiInspires> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'No Data Available, try again',
+              'No Data Available, check your internet and try again',
               style: TextStyle(
                 fontSize: 16,
               ),

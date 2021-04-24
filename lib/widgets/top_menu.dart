@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 import 'package:radiosai/screens/settings/settings.dart';
+import 'package:radiosai/widgets/browser.dart';
 
 class TopMenu extends StatefulWidget {
   TopMenu({
@@ -59,6 +60,14 @@ class _TopMenu extends State<TopMenu> {
                   case 'Settings':
                     Navigator.push(context,
                         MaterialPageRoute(builder: (context) => Settings()));
+                    break;
+                  case 'Schedule':
+                    Browser.launchURL(
+                        context, "https://radiosai.org/program/Index.php");
+                    break;
+                  case 'Audio Archive':
+                    Browser.launchURL(context,
+                        "https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm");
                     break;
                 }
               },

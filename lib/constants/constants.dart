@@ -7,7 +7,7 @@ class MyConstants extends InheritedWidget {
   const MyConstants({Widget child, Key key}) : super(key: key, child: child);
 
   // TODO: change the build time after every build or get a way
-  final String buldTime = '22/04/2021 14:15';
+  final String buldTime = '24/04/2021 10:50 IST';
 
   // The list of radio sai stream sources
   final List<String> radioStreamLink = const [
@@ -34,8 +34,8 @@ class MyConstants extends InheritedWidget {
   final List<String> menuTitles = const [
     'Schedule',
     'Sai Inspires',
-    'Vedam',
-    'Other Programs',
+    // 'Vedam',
+    'Audio Archive',
     'Settings',
   ];
 

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:package_info/package_info.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/settings/starting_radio_stream.dart';
+import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings_section.dart';
 
 class Settings extends StatefulWidget {
@@ -81,7 +81,7 @@ class _Settings extends State<Settings> {
             title: Text('About Sai'),
             subtitle: Text('Who is Sri Sathya Sai Baba?'),
             onTap: () {
-              _launchURL(context,
+              Browser.launchURL(context,
                   'http://media.radiosai.org/journals/Portal/bhagavan.htm');
             },
           ),
@@ -90,7 +90,7 @@ class _Settings extends State<Settings> {
             title: Text('About Radio Sai'),
             subtitle: Text('What is Radio Sai?'),
             onTap: () {
-              _launchURL(context, 'https://www.radiosai.org');
+              Browser.launchURL(context, 'https://www.radiosai.org');
             },
           ),
           Divider(),
@@ -113,7 +113,7 @@ class _Settings extends State<Settings> {
             title: Text('Website'),
             subtitle: Text('https://immadisairaj.me/radiosai'),
             onTap: () {
-              _launchURL(context, 'https://immadisairaj.me/radiosai');
+              Browser.launchURL(context, 'https://immadisairaj.me/radiosai');
             },
           ),
           Divider(),
@@ -133,32 +133,5 @@ class _Settings extends State<Settings> {
         ],
       ),
     );
-  }
-
-  void _launchURL(BuildContext context, String urlString) async {
-    try {
-      await launch(
-        urlString,
-        option: new CustomTabsOption(
-          toolbarColor: Theme.of(context).primaryColor,
-          enableDefaultShare: true,
-          enableUrlBarHiding: true,
-          showPageTitle: true,
-          animation: new CustomTabsAnimation(
-              startEnter: 'slide_up',
-              startExit: 'android:anim/fade_out',
-              endEnter: 'android:anim/fade_in',
-              endExit: 'slide_down'),
-          // if chrome is not available
-          extraCustomTabs: [
-            'org.mozilla.firefox',
-            'com.microsoft.emmx',
-            'com.brave.browser',
-          ],
-        ),
-      );
-    } catch (e) {
-      // do nothing as of now
-    }
   }
 }
