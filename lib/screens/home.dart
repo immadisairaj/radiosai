@@ -13,6 +13,29 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
+
+  @override
+  void initState() {
+    super.initState();
+    // lock orientation to portrait (later maybe can handle landscape?)
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+  }
+
+  @override
+  void dispose() {
+    // setting back to original form after dispose
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

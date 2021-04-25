@@ -122,10 +122,9 @@ class _Settings extends State<Settings> {
             onTap: () {
               showLicensePage(
                 context: context,
-                applicationName: _packageInfo.packageName,
+                applicationName: _packageInfo.appName,
                 applicationVersion: _packageInfo.version,
-                // applicationIcon: Image(image: AssetImage('assets/radiosai-logo.jpg')),
-                // TODO: add other app related things
+                applicationIcon: Image(image: AssetImage('assets/radiosai-logo.jpg')),
               );
             },
           ),
