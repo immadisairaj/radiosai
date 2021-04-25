@@ -1,6 +1,6 @@
-# radiosai
+# Sai Voice
 
-A new Flutter project.
+A radio player which streams audio from Radio Sai Global Harmony.
 
 ## Getting Started
 

@@ -19,6 +19,7 @@ class RadioPlayerTask extends BackgroundAudioTask {
       id: params['audioSource'],
       album: "Radio Sai Global Harmony",
       title: params['audioName'],
+      artist: "Radio Sai",
       artUri: Uri.parse('file://$path'),
     );
     // Tell the UI and media notification what we're playing.
@@ -72,6 +73,7 @@ class RadioPlayerTask extends BackgroundAudioTask {
     return super.onPause();
   }
 
+  // called on swipe of notification (when paused)
   @override
   Future<void> onTaskRemoved() {
     onStop();

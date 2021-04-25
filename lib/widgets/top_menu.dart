@@ -50,7 +50,6 @@ class _TopMenu extends State<TopMenu> {
                 }).toList();
               },
               onSelected: (value) {
-                // TODO: implement on select of menu
                 switch (value) {
                   // TODO: don't hardcode this and maybe add enum
                   case 'Sai Inspires':

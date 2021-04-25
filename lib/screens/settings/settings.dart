@@ -4,7 +4,7 @@ import 'package:package_info/package_info.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/settings/starting_radio_stream.dart';
 import 'package:radiosai/widgets/browser.dart';
-import 'package:radiosai/widgets/settings_section.dart';
+import 'package:radiosai/widgets/settings/settings_section.dart';
 
 class Settings extends StatefulWidget {
   Settings({
@@ -71,7 +71,6 @@ class _Settings extends State<Settings> {
   }
 
   Widget _aboutSection() {
-    // TODO: remove hardcoding later
     return SettingsSection(
       title: 'About',
       child: Column(

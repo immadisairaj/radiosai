@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/radio_index_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
@@ -68,7 +68,6 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                 },
                 child: Container(
                   child: Center(
-                    // TODO: change the text style when selected or no
                     child: Text(
                       MyConstants.of(context).radioStreamName[widgetIndex],
                       style: TextStyle(

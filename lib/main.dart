@@ -1,13 +1,13 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:radiosai/bloc/initial_radio_index_bloc.dart';
+import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/bloc/internet_status.dart';
-import 'package:radiosai/bloc/radio_loading_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/radio_index_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 
 void main() {
   runApp(

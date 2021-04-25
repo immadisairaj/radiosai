@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/radio_index_bloc.dart';
-import 'package:radiosai/bloc/radio_loading_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
 
 class RadioHome extends StatefulWidget {
@@ -25,6 +25,7 @@ class _RadioHome extends State<RadioHome> {
       topRight: Radius.circular(24.0),
     );
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           SizedBox(
@@ -48,6 +49,7 @@ class _RadioHome extends State<RadioHome> {
                 stream: _radioIndexBloc.radioIndexStream,
                 builder: (context, snapshot) {
                   int radioStreamIndex = snapshot.data ?? 0;
+
                   // listen to change of radio player loading state
                   return Consumer<RadioLoadingBloc>(
                     builder: (context, _radioLoadingBloc, child) {
@@ -55,6 +57,7 @@ class _RadioHome extends State<RadioHome> {
                         stream: _radioLoadingBloc.radioLoadingStream,
                         builder: (context, snapshot) {
                           bool loadingState = snapshot.data ?? false;
+
                           // listen to change of playing state from audio service
                           return StreamBuilder<bool>(
                               stream: AudioService.playbackStateStream
@@ -62,6 +65,7 @@ class _RadioHome extends State<RadioHome> {
                                   .distinct(),
                               builder: (context, snapshot) {
                                 final isPlaying = snapshot.data ?? false;
+
                                 // get the data of the internet connectivity change
                                 bool hasInternet =
                                     Provider.of<InternetConnectionStatus>(

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/initial_radio_index_bloc.dart';
+import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 
 final String recentlyPlayed = 'Recently played';

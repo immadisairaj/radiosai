@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:radiosai/audio_service/radio_player_task.dart';
-import 'package:radiosai/bloc/radio_loading_bloc.dart';
+import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/widgets/internet_alert.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
@@ -329,12 +329,19 @@ class _RadioPlayer extends State<RadioPlayer>
         initRadioService(index);
         if (!isLoading) playRadioService();
       } else {
-        if(_isSnackBarActive == false) {
+        // display that the player is trying to load
+        loadingStreamBloc.changeLoadingState.add(true);
+        initRadioService(index);
+        // Show a snack bar that it is unable to play
+        if (_isSnackBarActive == false) {
           _isSnackBarActive = true;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text('Try to play after connecting to the Internet'),
-            behavior: SnackBarBehavior.floating,
-          )).closed.then((value) {
+          ScaffoldMessenger.of(context)
+              .showSnackBar(const SnackBar(
+                content: Text('Try to play after connecting to the Internet'),
+                behavior: SnackBarBehavior.floating,
+              ))
+              .closed
+              .then((value) {
             _isSnackBarActive = false;
           });
         } // do nothing in else
