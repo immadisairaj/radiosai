@@ -2,36 +2,41 @@
 
 A radio player which streams audio from Radio Sai Global Harmony.
 
-Om Sri Sai Ram
+Om Sri Sai Ram :pray:
 
 Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Global Harmony.
 
-Internet is needed for the app to function properly.
+:warning: __Internet is needed for the app to function properly.__
 
-*All the data inside the app is taken from radiosai.org
+_*All the data inside the app is taken from [radiosai.org](https://www.radiosai.org)_
 
-Audio Streams include:
-Asia Stream, Africa Stream, America Stream, Bhajan Stream, Discourse Stream and Telugu Stream.
+__Audio Streams include:__
+- Asia Stream
+- Africa Stream
+- America Stream
+- Bhajan Stream
+- Discourse Stream
+- Telugu Stream.
 
-Smooth: The app is built to keep a smooth and simple user experience. One can change the streams they want to listen to with ease just by sliding the panel up and selecting the new stream.
+__Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
 
-Seemless Listening: It is capable of running in the background until the app is removed from the process. Listen to your favourite stream with just one click after opening the app (an option to set the favourite stream at the start of the app)
+__Seemless Listening:__ It is capable of running in the background until the app is removed from the process. Listen to your favourite radio stream with just one click after opening the app (an option to set the favourite stream at the start of the app)
 
-Media Control: It can handle the audio options from handset to a headset, from lock screen notifications to earphones button click. It also pauses when another player starts and doesn't interrupt any incoming notifications.
+__Media Control:__ It can handle the audio options from a handset to a headset, from lock screen notifications to earphones button click. It also pauses when another player starts and doesn't interrupt any incoming notifications.
 
-Schedule: Look at the radio schedule from within the app.
+__Schedule:__ Look at the radio schedule of different streams from within the app. Redirects to the official website.
 
-Sai Inspires: Thought of the day by Sai Inspires is also present inside the app. One can read it at any text size they want by zooming.
+__Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in.
 
-Free: The app is free for all and will remain the same further. The app will not be having any kind of ads at any point in time.
+__Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
-Open Source: We believe that there is nothing to hide and just like contribute to the betterment of the app. So, the source code of the app is completely open-source and will remain the same in future.
+__Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
 
-Happy Listening.
+> "Sai Ram, and Happy Listening"
 
 ## Future Updates
 
-*I cannot guarantee any of the below. But, I will try my best to include such features in future releases(if I can)
+_*I cannot guarantee any of the below. But, will try my best to include such features in future releases (if I can)_
 
 - Add a player for vedam which supports all media controls
 - Add android auto support
@@ -39,55 +44,65 @@ Happy Listening.
 
 ## Motivation
 
-I am a sai devotee. I like to listen to various bhajans and so liked radio sai very much. I have installed the radio sai app on my device and keep listening to the radio which gives me peace. But, also as an app developer, I didn't like the UI much, which also includes the audio breaking in between and few other components. That is the start of the idea to build such an app. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app while building this.
+I like to listen to various bhajans and which made me fond of radio sai very much. I've installed the app and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
 
-*I do not want to say the radio sai app is bad. They put a great effort into building that app and which is still serving. I just want to say that it's completely your choice to use whichever app is comfortable for you.
+>I am not forcing anyone to use this app and stop using the original application. I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable
 
 ## Screenshots
 
-<!-- TODO: add screenshots -->
+<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500">
 
 ## Architecture
 
 Most of the main features use bloc architecture using providers and streams. The usage of this architecture helps the app no to completely refresh but just helpful for updating the needed components smoothly.
 
+```bash
+lib
+├───audio_service   # audio service related task
+├───bloc            # business logic files related to screens
+│   ├───radio
+│   └───settings
+├───constants       # constants
+├───screens         # all screens
+│   ├───radio
+│   ├───sai_inspires
+│   └───settings
+└───widgets         # widgets related to screens
+    └───settings
+```
+_Above is generated using "tree" command_
+
 ## OpenSource Libraries
 
-### shared_preferenecs
-
+__shared_preferenecs:__
 used to store short data locally like: saving the radio stream while closing the app and displays the same on app start, display the favourite radio stream on app start.
 
-### sliding_up_panel
-
+__sliding_up_panel:__
 used to select a different radio stream by sliding up the panel.
 
-### webview_flutter
-
+__webview_flutter:__
 it is hidden inside the Sai Inspires screen which is used to retrieve the data from the web and display it on the top.
 
-### shimmer
+__shimmer:__
+used to show loading progress in the Sai Inspires screen
 
-used to show loading progress in the Sai Inspires
-
-### flutter_custom_tabs
-
+__flutter_custom_tabs:__
 it is used for redirecting the URL from the app to chrome powered browser
 
-### internet_connection_checker
-
+__internet_connection_checker:__
 used to detect the internet status of the device
 
-### just_audio & audio_service
-
+__just_audio & audio_service:__
 the main base of the app helps play the audio seamlessly with media control
 
-and many other open-source libraries.
+_and many other open-source libraries._
 
-I thank the Open Source community for providing such great libraries and framework which helped me build the application.
+
+Thanks to the Open Source community for providing such great libraries and framework which was very helpful in building the application.
 
 ## Privacy Policy
 
-The Privacy Policy of the app is located in the site [immadisairaj.me/radiosai/privacy_policy.html](https://immadisairaj.me/radiosai/privacy_policy.html)
+The Privacy Policy of the app is in the site: [immadisairaj.me/radiosai/privacy_policy.html](https://immadisairaj.me/radiosai/privacy_policy.html)
 
 ## License
 

@@ -48,7 +48,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                   );
                 }).toList();
               },
-              tooltip: 'radio stream to show on app start',
+              tooltip: 'favourite radio stream to show on app start',
               initialValue: initialRadioStreamIndex,
               offset: const Offset(1, 0),
               onSelected: (value) {
