@@ -91,4 +91,4 @@ The Privacy Policy of the app is located in the site [immadisairaj.me/radiosai/p
 
 ## License
 
-<!-- TODO: add link or something -->
+This project is licensed under the GNU General Public License V2, see the [LICENSE.md](https://github.com/immadisairaj/radiosai/blob/main/LICENSE.md) for more details.
