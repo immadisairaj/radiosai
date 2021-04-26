@@ -87,7 +87,7 @@ I thank the Open Source community for providing such great libraries and framewo
 
 ## Privacy Policy
 
-<!-- TODO: add link or something -->
+The Privacy Policy of the app is located in the site [immadisairaj.me/radiosai/privacy_policy.html](https://immadisairaj.me/radiosai/privacy_policy.html)
 
 ## License
 
