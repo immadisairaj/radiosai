@@ -102,19 +102,35 @@ class _RadioPlayer extends State<RadioPlayer>
             ),
             parallaxEnabled: true,
             parallaxOffset: 0.5,
-            body: Align(
-              alignment: Alignment.bottomCenter,
-              child: SizedBox(
-                height: height * 0.2,
-                width: width,
-                child: Container(
-                  color: Colors.black54,
-                  child: _playerDisplay(
-                      widget.radioStreamIndex,
-                      widget.isPlaying,
-                      widget.loadingState,
-                      widget.radioLoadingBloc,
-                      widget.hasInternet),
+            body: GestureDetector(
+              // swipe the panel when swiping from anywhere in the screen
+              onVerticalDragUpdate: (details) {
+                int sensitivity = 8;
+                if(details.delta.dy < -sensitivity) {
+                  if(height * 0.1 >= 50) {
+                    _panelController.open();
+                  }
+                }
+              },
+              child: Container(
+                height: height,
+                // color is transparent in order for container to occupy the whole height
+                color: Colors.transparent,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    height: height * 0.2,
+                    width: width,
+                    child: Container(
+                      color: Colors.black54,
+                      child: _playerDisplay(
+                          widget.radioStreamIndex,
+                          widget.isPlaying,
+                          widget.loadingState,
+                          widget.radioLoadingBloc,
+                          widget.hasInternet),
+                    ),
+                  ),
                 ),
               ),
             ),

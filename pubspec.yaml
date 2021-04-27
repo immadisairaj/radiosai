@@ -39,6 +39,7 @@ dependencies:
   provider: ^4.0.0
   internet_connection_checker: ^0.0.1
   intl: ^0.17.0
+  url_launcher: ^5.0.1
   package_info: ^2.0.0
   # Audio packages
   just_audio: ^0.7.3

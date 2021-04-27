@@ -5,6 +5,7 @@ import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/settings/starting_radio_stream.dart';
 import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
   Settings({
@@ -16,6 +17,7 @@ class Settings extends StatefulWidget {
 }
 
 class _Settings extends State<Settings> {
+  // empty package info before initPackageInfo
   PackageInfo _packageInfo = PackageInfo(
     appName: '',
     packageName: '',
@@ -47,12 +49,16 @@ class _Settings extends State<Settings> {
         color: Colors.white,
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              _generalSection(),
-              _aboutSection(),
-            ],
+          child: Padding(
+            padding: EdgeInsets.only(bottom: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                _generalSection(),
+                _aboutSection(),
+                _moreDetailsSection(),
+              ],
+            ),
           ),
         ),
       ),
@@ -106,13 +112,45 @@ class _Settings extends State<Settings> {
             subtitle: Text(MyConstants.of(context).buldTime),
             onTap: () {},
           ),
-          Divider(),
+        ],
+      ),
+    );
+  }
+
+  Widget _moreDetailsSection() {
+    return SettingsSection(
+      title: 'More details',
+      child: Column(
+        children: [
           ListTile(
             contentPadding: EdgeInsets.only(left: 10),
             title: Text('Website'),
             subtitle: Text('https://immadisairaj.me/radiosai'),
             onTap: () {
               Browser.launchURL(context, 'https://immadisairaj.me/radiosai');
+            },
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.only(left: 10),
+            title: Text('Contact'),
+            // use url_launcher for mail option because
+            // flutter_custom_tabs doesn't support mailto
+            onTap: () async {
+              final urlString = 'mailto:immadirajendra.sai@gmail.com';
+              try{
+                if(await canLaunch(urlString)) {
+                  await launch(urlString);
+                }
+              } catch(e) {
+                // do nothing
+              }
+            },
+          ),
+          ListTile(
+            contentPadding: EdgeInsets.only(left: 10),
+            title: Text('Privacy Policy'),
+            onTap: () {
+              Browser.launchURL(context, 'https://immadisairaj.me/radiosai/privacy_policy.html');
             },
           ),
           Divider(),

@@ -38,6 +38,7 @@ __Open Source:__ We believe that there is nothing to hide and like you to experi
 
 _*I cannot guarantee any of the below. But, will try my best to include such features in future releases (if I can)_
 
+- Add dark theme
 - Add a player for vedam which supports all media controls
 - Add android auto support
 - Add google chrome cast support
