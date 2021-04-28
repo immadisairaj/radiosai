@@ -82,62 +82,71 @@ class _RadioPlayer extends State<RadioPlayer>
     _handleRadioStreamChange(widget.radioStreamIndex);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      // using stack to show notification alert when there is no internet
-      body: Stack(
-        children: [
-          SlidingUpPanel(
-            borderRadius: widget.radius,
-            backdropEnabled: true,
-            controller: _panelController,
-            minHeight: height * 0.1,
-            // remove the collapsed widget if the height is small (below 4 lines)
-            collapsed: (height * 0.1 >= 50)
-                ? _slidingPanelCollapsed(widget.radius)
-                : null,
-            renderPanelSheet: (height * 0.1 >= 50) ? true : false,
-            panel: RadioStreamSelect(
-              panelController: _panelController,
-            ),
-            parallaxEnabled: true,
-            parallaxOffset: 0.5,
-            body: GestureDetector(
-              // swipe the panel when swiping from anywhere in the screen
-              onVerticalDragUpdate: (details) {
-                int sensitivity = 8;
-                if(details.delta.dy < -sensitivity) {
-                  if(height * 0.1 >= 50) {
-                    _panelController.open();
+    return WillPopScope(
+      onWillPop: () {
+        if (_panelController.isPanelOpen) return _panelController.close();
+        // sends the app to background when backpress on home screen
+        // achieved by adding a method in MainActivity.kt to support send app to background
+        return MethodChannel('android_app_retain')
+            .invokeMethod('sendToBackground');
+      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        // using stack to show notification alert when there is no internet
+        body: Stack(
+          children: [
+            SlidingUpPanel(
+              borderRadius: widget.radius,
+              backdropEnabled: true,
+              controller: _panelController,
+              minHeight: height * 0.1,
+              // remove the collapsed widget if the height is small (below 4 lines)
+              collapsed: (height * 0.1 >= 50)
+                  ? _slidingPanelCollapsed(widget.radius)
+                  : null,
+              renderPanelSheet: (height * 0.1 >= 50) ? true : false,
+              panel: RadioStreamSelect(
+                panelController: _panelController,
+              ),
+              parallaxEnabled: true,
+              parallaxOffset: 0.5,
+              body: GestureDetector(
+                // swipe the panel when swiping from anywhere in the screen
+                onVerticalDragUpdate: (details) {
+                  int sensitivity = 8;
+                  if (details.delta.dy < -sensitivity) {
+                    if (height * 0.1 >= 50) {
+                      _panelController.open();
+                    }
                   }
-                }
-              },
-              child: Container(
-                height: height,
-                // color is transparent in order for container to occupy the whole height
-                color: Colors.transparent,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: SizedBox(
-                    height: height * 0.2,
-                    width: width,
-                    child: Container(
-                      color: Colors.black54,
-                      child: _playerDisplay(
-                          widget.radioStreamIndex,
-                          widget.isPlaying,
-                          widget.loadingState,
-                          widget.radioLoadingBloc,
-                          widget.hasInternet),
+                },
+                child: Container(
+                  height: height,
+                  // color is transparent in order for container to occupy the whole height
+                  color: Colors.transparent,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SizedBox(
+                      height: height * 0.2,
+                      width: width,
+                      child: Container(
+                        color: Colors.black54,
+                        child: _playerDisplay(
+                            widget.radioStreamIndex,
+                            widget.isPlaying,
+                            widget.loadingState,
+                            widget.radioLoadingBloc,
+                            widget.hasInternet),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
-          // don't build the widget if the app builds for the first time
-          if (!initialBuild) InternetAlert(hasInternet: widget.hasInternet),
-        ],
+            // don't build the widget if the app builds for the first time
+            if (!initialBuild) InternetAlert(hasInternet: widget.hasInternet),
+          ],
+        ),
       ),
     );
   }

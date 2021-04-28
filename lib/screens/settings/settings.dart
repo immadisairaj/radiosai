@@ -137,11 +137,11 @@ class _Settings extends State<Settings> {
             // flutter_custom_tabs doesn't support mailto
             onTap: () async {
               final urlString = 'mailto:immadirajendra.sai@gmail.com';
-              try{
-                if(await canLaunch(urlString)) {
+              try {
+                if (await canLaunch(urlString)) {
                   await launch(urlString);
                 }
-              } catch(e) {
+              } catch (e) {
                 // do nothing
               }
             },
@@ -150,7 +150,8 @@ class _Settings extends State<Settings> {
             contentPadding: EdgeInsets.only(left: 10),
             title: Text('Privacy Policy'),
             onTap: () {
-              Browser.launchURL(context, 'https://immadisairaj.me/radiosai/privacy_policy.html');
+              Browser.launchURL(context,
+                  'https://immadisairaj.me/radiosai/privacy_policy.html');
             },
           ),
           Divider(),
@@ -162,7 +163,10 @@ class _Settings extends State<Settings> {
                 context: context,
                 applicationName: _packageInfo.appName,
                 applicationVersion: _packageInfo.version,
-                applicationIcon: Image(image: AssetImage('assets/radiosai-logo.jpg')),
+                applicationIcon: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Image(image: AssetImage('assets/radiosai-logo.jpg')),
+                ),
               );
             },
           ),
