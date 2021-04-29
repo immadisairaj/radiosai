@@ -364,6 +364,7 @@ class _RadioPlayer extends State<RadioPlayer>
               .showSnackBar(const SnackBar(
                 content: Text('Try to play after connecting to the Internet'),
                 behavior: SnackBarBehavior.floating,
+                duration: Duration(milliseconds: 1500),
               ))
               .closed
               .then((value) {

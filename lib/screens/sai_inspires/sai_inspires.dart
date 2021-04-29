@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -27,9 +28,12 @@ class _SaiInspires extends State<SaiInspires> {
   String finalUrl;
 
   bool _isLoading = true;
+  bool _isCopying = false;
 
   String _dateText = ''; // date text id is 'Head'
+  final String _thoughtOfTheDay = 'THOUGHT OF THE DAY';
   String _contentText = ''; // content text id is 'Content'
+  final String _byBaba = '-BABA';
 
   @override
   void initState() {
@@ -47,7 +51,15 @@ class _SaiInspires extends State<SaiInspires> {
         title: Text('Sai Inspires'),
         actions: <Widget>[
           IconButton(
+            icon: Icon(Icons.copy_outlined),
+            tooltip: 'Copy to clipboard',
+            splashRadius: 24,
+            onPressed: () => _copyText(context),
+          ),
+          IconButton(
             icon: Icon(Icons.date_range_outlined),
+            tooltip: 'Select date',
+            splashRadius: 24,
             onPressed: () => _selectDate(context),
           ),
         ],
@@ -87,7 +99,7 @@ class _SaiInspires extends State<SaiInspires> {
                               children: [
                                 Align(
                                   alignment: Alignment(1, 0),
-                                  child: Text(
+                                  child: SelectableText(
                                     _dateText,
                                     style: TextStyle(
                                       fontSize: 14,
@@ -96,15 +108,15 @@ class _SaiInspires extends State<SaiInspires> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Text(
-                                    'THOUGHT OF THE DAY',
+                                  child: SelectableText(
+                                    _thoughtOfTheDay,
                                     style: TextStyle(
                                       color: Colors.red,
                                       fontSize: 16,
                                     ),
                                   ),
                                 ),
-                                Text(
+                                SelectableText(
                                   _contentText,
                                   textAlign: TextAlign.justify,
                                   style: TextStyle(
@@ -117,8 +129,8 @@ class _SaiInspires extends State<SaiInspires> {
                                       top: 8.0, bottom: 20),
                                   child: Align(
                                     alignment: Alignment(1, 0),
-                                    child: Text(
-                                      '-BABA',
+                                    child: SelectableText(
+                                      _byBaba,
                                       style: TextStyle(
                                         fontSize: 15,
                                       ),
@@ -177,6 +189,38 @@ class _SaiInspires extends State<SaiInspires> {
         _updateURL(selectedDate);
       });
     }
+  }
+
+  // copy text if data is visible
+  void _copyText(BuildContext context) {
+    if (!_isCopying) {
+      _isCopying = true;
+      if (_contentText != 'null') {
+        // if data is visible, copy to clipboard
+        Clipboard.setData(ClipboardData(
+                text:
+                    '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba'))
+            .then((value) {
+          _showSnackBar(context, 'Copied to clipboard');
+        });
+      } else {
+        // is there is no data, show snackbar that no data is available
+        _showSnackBar(context, 'No data available to copy');
+      }
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String text) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(
+          content: Text(text),
+          behavior: SnackBarBehavior.floating,
+          duration: Duration(seconds: 1),
+        ))
+        .closed
+        .then((value) {
+      _isCopying = false;
+    });
   }
 
   // handle when no data is retrieved
