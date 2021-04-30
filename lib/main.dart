@@ -10,11 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 
 void main() {
-  runApp(
-    MyConstants(
-      child: MyApp()
-      )
-    );
+  runApp(MyConstants(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -26,12 +22,14 @@ class MyApp extends StatelessWidget {
         // stream for radio sai stream index
         Provider<RadioIndexBloc>(
           create: (_) => RadioIndexBloc(),
-          dispose: (_, RadioIndexBloc radioIndexBloc) => radioIndexBloc.dispose(),
+          dispose: (_, RadioIndexBloc radioIndexBloc) =>
+              radioIndexBloc.dispose(),
         ),
         // stream for radio loading state
         Provider<RadioLoadingBloc>(
           create: (_) => RadioLoadingBloc(false),
-          dispose: (_, RadioLoadingBloc radioLoadingBloc) => radioLoadingBloc.dispose(),
+          dispose: (_, RadioLoadingBloc radioLoadingBloc) =>
+              radioLoadingBloc.dispose(),
         ),
         // stream for internet connectivity status
         StreamProvider<InternetConnectionStatus>(
@@ -42,7 +40,8 @@ class MyApp extends StatelessWidget {
         // stream for initial radio sai stream index
         Provider<InitialRadioIndexBloc>(
           create: (_) => InitialRadioIndexBloc(),
-          dispose: (_, InitialRadioIndexBloc initialRadioIndexBloc) => initialRadioIndexBloc.dispose(),
+          dispose: (_, InitialRadioIndexBloc initialRadioIndexBloc) =>
+              initialRadioIndexBloc.dispose(),
         ),
       ],
       child: MaterialApp(

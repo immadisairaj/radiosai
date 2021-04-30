@@ -44,14 +44,14 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
         primary: false,
         shrinkWrap: true,
         itemBuilder: (context, widgetIndex) {
+          // check if the radio selected index matches the widget
+          bool isMatch = (widgetIndex == index);
           return Padding(
             padding: EdgeInsets.all(8),
             child: Card(
               elevation: 1.4,
               shadowColor: Theme.of(context).primaryColor,
-              color: (widgetIndex == index)
-                  ? Theme.of(context).primaryColor
-                  : null,
+              color: isMatch ? Theme.of(context).primaryColor : null,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
@@ -60,7 +60,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                 onTap: () async {
                   // update only if the index differes from actual index
                   // to avoid unnecessary update of streams
-                  if (widgetIndex != index) {
+                  if (!isMatch) {
                     _radioIndexBloc.changeRadioIndex.add(widgetIndex);
                     // close the panel if different stream is selected
                     widget.panelController.close();
@@ -72,9 +72,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                       MyConstants.of(context).radioStreamName[widgetIndex],
                       style: TextStyle(
                         fontSize: 16.5,
-                        color: (widgetIndex == index)
-                            ? Colors.white
-                            : Colors.black,
+                        color: isMatch ? Colors.white : Colors.black,
                       ),
                     ),
                   ),

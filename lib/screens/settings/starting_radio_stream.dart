@@ -9,7 +9,10 @@ final String recentlyPlayed = 'Recently played';
 class StartingRadioStream extends StatefulWidget {
   StartingRadioStream({
     Key key,
+    this.contentPadding,
   }) : super(key: key);
+
+  final EdgeInsetsGeometry contentPadding;
 
   @override
   _StartingRadioStream createState() => _StartingRadioStream();
@@ -27,7 +30,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
             int initialRadioStreamIndex = snapshot.data ?? -1;
             return PopupMenuButton(
               child: ListTile(
-                contentPadding: EdgeInsets.only(left: 10),
+                contentPadding: widget.contentPadding,
                 title: Text('Starting radio stream'),
                 subtitle: (initialRadioStreamIndex >= 0)
                     ? Text(MyConstants.of(context)
@@ -39,6 +42,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                 ),
               ),
               itemBuilder: (context) {
+                // -1: Recently Played and the rest are 6 streams
                 return [-1, 0, 1, 2, 3, 4, 5].map<PopupMenuEntry>((value) {
                   return PopupMenuItem(
                     value: value,
@@ -50,6 +54,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
               },
               tooltip: 'favourite radio stream to show on app start',
               initialValue: initialRadioStreamIndex,
+              // Offset aligns right side to the widget
               offset: const Offset(1, 0),
               onSelected: (value) {
                 _initialRadioIndexBloc.changeInitialRadioIndex.add(value);

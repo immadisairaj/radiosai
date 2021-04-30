@@ -47,11 +47,11 @@ _*I cannot guarantee any of the below. But, will try my best to include such fea
 
 I like to listen to various bhajans and which made me fond of radio sai very much. I've installed the app and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
 
->I am not forcing anyone to use this app and stop using the original application. I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable
+>I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable
 
 ## Screenshots
 
-<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500">
+<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500">
 
 ## Architecture
 

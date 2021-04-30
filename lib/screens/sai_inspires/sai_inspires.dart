@@ -267,53 +267,29 @@ class _SaiInspires extends State<SaiInspires> {
         enabled: true,
         child: Column(
           children: [
-            Container(
-              width: MediaQuery.of(context).size.width * 0.5,
-              height: MediaQuery.of(context).size.height * 0.4,
-              color: Colors.white,
-            ),
             Padding(
-              padding: EdgeInsets.only(top: 20, bottom: 10),
+              padding: EdgeInsets.only(bottom: 20),
               child: Container(
-                width: double.infinity,
-                height: 8,
+                width: MediaQuery.of(context).size.width * 0.5,
+                height: MediaQuery.of(context).size.height * 0.4,
                 color: Colors.white,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Container(
-                width: double.infinity,
-                height: 8,
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Container(
-                width: double.infinity,
-                height: 8,
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Container(
-                width: double.infinity,
-                height: 8,
-                color: Colors.white,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: 10),
-              child: Container(
-                width: double.infinity,
-                height: 8,
-                color: Colors.white,
-              ),
-            ),
+            // 5 shimmer lines
+            for(int i = 0; i < 6; i++) _shimmerLine(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _shimmerLine() {
+    return Padding(
+      padding: EdgeInsets.only(bottom: 10),
+      child: Container(
+        width: double.infinity,
+        height: 8,
+        color: Colors.white,
       ),
     );
   }

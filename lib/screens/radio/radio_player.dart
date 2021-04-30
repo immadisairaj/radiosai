@@ -82,6 +82,7 @@ class _RadioPlayer extends State<RadioPlayer>
     _handleRadioStreamChange(widget.radioStreamIndex);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    bool isBigScreen = (height * 0.1 >= 50);
     return WillPopScope(
       onWillPop: () {
         if (_panelController.isPanelOpen) return _panelController.close();
@@ -101,10 +102,9 @@ class _RadioPlayer extends State<RadioPlayer>
               controller: _panelController,
               minHeight: height * 0.1,
               // remove the collapsed widget if the height is small (below 4 lines)
-              collapsed: (height * 0.1 >= 50)
-                  ? _slidingPanelCollapsed(widget.radius)
-                  : null,
-              renderPanelSheet: (height * 0.1 >= 50) ? true : false,
+              collapsed:
+                  isBigScreen ? _slidingPanelCollapsed(widget.radius) : null,
+              renderPanelSheet: isBigScreen,
               panel: RadioStreamSelect(
                 panelController: _panelController,
               ),
@@ -115,7 +115,7 @@ class _RadioPlayer extends State<RadioPlayer>
                 onVerticalDragUpdate: (details) {
                   int sensitivity = 8;
                   if (details.delta.dy < -sensitivity) {
-                    if (height * 0.1 >= 50) {
+                    if (isBigScreen) {
                       _panelController.open();
                     }
                   }
@@ -189,7 +189,8 @@ class _RadioPlayer extends State<RadioPlayer>
   Widget _playerDisplay(int streamIndex, bool isPlaying, bool loadingState,
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     double height = MediaQuery.of(context).size.height;
-    double iconSize = (height * 0.1 >= 50) ? 40 : 30;
+    bool isBigScreen = (height * 0.1 >= 50);
+    double iconSize = isBigScreen ? 40 : 30;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -295,7 +296,7 @@ class _RadioPlayer extends State<RadioPlayer>
               // when height > 0, the container has to be transparent
               color: Colors.transparent,
               // adding height to set the player display properly when height is more
-              height: (height * 0.1 >= 50) ? height * 0.09 : 0,
+              height: isBigScreen ? height * 0.09 : 0,
               width: 0,
             );
             // return Text(

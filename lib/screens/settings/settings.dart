@@ -25,6 +25,8 @@ class _Settings extends State<Settings> {
     buildNumber: '',
   );
 
+  final EdgeInsetsGeometry _contentPadding = EdgeInsets.only(left: 10);
+
   @override
   void initState() {
     super.initState();
@@ -70,7 +72,9 @@ class _Settings extends State<Settings> {
       title: 'General Settings',
       child: Column(
         children: [
-          StartingRadioStream(),
+          StartingRadioStream(
+            contentPadding: _contentPadding,
+          ),
         ],
       ),
     );
@@ -82,7 +86,7 @@ class _Settings extends State<Settings> {
       child: Column(
         children: [
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('About Sai'),
             subtitle: Text('Who is Sri Sathya Sai Baba?'),
             onTap: () {
@@ -91,7 +95,7 @@ class _Settings extends State<Settings> {
             },
           ),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('About Radio Sai'),
             subtitle: Text('What is Radio Sai?'),
             onTap: () {
@@ -100,13 +104,13 @@ class _Settings extends State<Settings> {
           ),
           Divider(),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Version'),
             subtitle: Text('v${_packageInfo.version}'),
             onTap: () {},
           ),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Build time'),
             // get from constants
             subtitle: Text(MyConstants.of(context).buldTime),
@@ -123,7 +127,7 @@ class _Settings extends State<Settings> {
       child: Column(
         children: [
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Website'),
             subtitle: Text('https://immadisairaj.me/radiosai'),
             onTap: () {
@@ -131,7 +135,7 @@ class _Settings extends State<Settings> {
             },
           ),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Contact'),
             // use url_launcher for mail option because
             // flutter_custom_tabs doesn't support mailto
@@ -147,7 +151,7 @@ class _Settings extends State<Settings> {
             },
           ),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Privacy Policy'),
             onTap: () {
               Browser.launchURL(context,
@@ -156,7 +160,7 @@ class _Settings extends State<Settings> {
           ),
           Divider(),
           ListTile(
-            contentPadding: EdgeInsets.only(left: 10),
+            contentPadding: _contentPadding,
             title: Text('Open source licenses'),
             onTap: () {
               showLicensePage(

@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 
+// use Browser.launchURL(context, url);
+// as this is a static method to launch url in custom chrome tabs
 class Browser {
   static void launchURL(BuildContext context, String urlString) async {
     try {
