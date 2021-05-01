@@ -49,6 +49,7 @@ class _SaiInspires extends State<SaiInspires> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sai Inspires'),
+        brightness: Brightness.dark,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.copy_outlined),
@@ -231,10 +232,14 @@ class _SaiInspires extends State<SaiInspires> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              'No Data Available, check your internet and try again',
-              style: TextStyle(
-                fontSize: 16,
+            Padding(
+              padding: const EdgeInsets.only(left: 20, right: 20),
+              child: Text(
+                'No Data Available,\ncheck your internet and try again',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
             ),
             ElevatedButton(
@@ -276,7 +281,7 @@ class _SaiInspires extends State<SaiInspires> {
               ),
             ),
             // 5 shimmer lines
-            for(int i = 0; i < 6; i++) _shimmerLine(),
+            for (int i = 0; i < 6; i++) _shimmerLine(),
           ],
         ),
       ),

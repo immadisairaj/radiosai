@@ -20,10 +20,7 @@ class _RadioHome extends State<RadioHome> {
   @override
   Widget build(BuildContext context) {
     // border radius used for sliding panel
-    BorderRadiusGeometry radius = BorderRadius.only(
-      topLeft: Radius.circular(24.0),
-      topRight: Radius.circular(24.0),
-    );
+    Radius radius = Radius.circular(24.0);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(

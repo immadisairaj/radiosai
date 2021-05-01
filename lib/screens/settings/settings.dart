@@ -46,6 +46,7 @@ class _Settings extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
+        brightness: Brightness.dark,
       ),
       body: Container(
         color: Colors.white,

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:radiosai/audio_service/radio_player_task.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/widgets/internet_alert.dart';
+import 'package:radiosai/widgets/radio/slider_handle.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/radio/radio_stream_select.dart';
@@ -24,7 +25,7 @@ class RadioPlayer extends StatefulWidget {
       this.hasInternet})
       : super(key: key);
 
-  final BorderRadiusGeometry radius;
+  final Radius radius;
   final int radioStreamIndex;
   final bool isPlaying;
   final bool loadingState;
@@ -76,13 +77,22 @@ class _RadioPlayer extends State<RadioPlayer>
 
   @override
   Widget build(BuildContext context) {
+    // notification status bar color
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black26,
+      statusBarBrightness: Brightness.dark,
+      statusBarIconBrightness: Brightness.light,
+    ));
+
     // handle the pause and play button
     _handlePlayingState(widget.isPlaying);
     // handle the stream change when it is changed
     _handleRadioStreamChange(widget.radioStreamIndex);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    bool isBigScreen = (height * 0.1 >= 50);
+    bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
+    bool isBiggerScreen = (height * 0.1 >= 70); // full screen
+    bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
     return WillPopScope(
       onWillPop: () {
         if (_panelController.isPanelOpen) return _panelController.close();
@@ -97,25 +107,31 @@ class _RadioPlayer extends State<RadioPlayer>
         body: Stack(
           children: [
             SlidingUpPanel(
-              borderRadius: widget.radius,
+              borderRadius: BorderRadius.all(widget.radius),
               backdropEnabled: true,
               controller: _panelController,
               minHeight: height * 0.1,
-              // remove the collapsed widget if the height is small (below 4 lines)
+              // remove the collapsed widget if the height is small (below 2 lines)
               collapsed:
                   isBigScreen ? _slidingPanelCollapsed(widget.radius) : null,
-              renderPanelSheet: isBigScreen,
-              panel: RadioStreamSelect(
-                panelController: _panelController,
-              ),
-              parallaxEnabled: true,
-              parallaxOffset: 0.5,
+              renderPanelSheet: false,
+              // handle the height of the panel for different sizes
+              maxHeight: isBigScreen
+                  ? (isBiggerScreen ? height * 0.54 : height * 0.57)
+                  : height * 0.6,
+              // remove panel if small screen
+              panel: isSmallerScreen
+                  ? Container()
+                  : RadioStreamSelect(
+                      panelController: _panelController,
+                      radius: widget.radius,
+                    ),
               body: GestureDetector(
                 // swipe the panel when swiping from anywhere in the screen
                 onVerticalDragUpdate: (details) {
                   int sensitivity = 8;
                   if (details.delta.dy < -sensitivity) {
-                    if (isBigScreen) {
+                    if (!isSmallerScreen) {
                       _panelController.open();
                     }
                   }
@@ -152,26 +168,22 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   // main radio player widget after all streams
-  Widget _slidingPanelCollapsed(BorderRadiusGeometry radius) {
+  Widget _slidingPanelCollapsed(Radius radius) {
     return GestureDetector(
       onTap: () {
         _panelController.open();
       },
       child: Container(
+        margin: EdgeInsets.only(left: 10, right: 10),
         decoration: BoxDecoration(
-          borderRadius: radius,
+          borderRadius: BorderRadius.only(
+              topLeft: widget.radius, topRight: widget.radius),
+          color: Colors.white,
         ),
         child: Column(
           children: [
             SizedBox(height: 12),
-            Container(
-              height: 5,
-              width: 30,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(16),
-              ),
-            ),
+            SliderHandle(),
             SizedBox(height: 12),
             Text(
               'Select Stream',
@@ -190,6 +202,7 @@ class _RadioPlayer extends State<RadioPlayer>
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     double height = MediaQuery.of(context).size.height;
     bool isBigScreen = (height * 0.1 >= 50);
+    bool isSmallerScreen = (height * 0.1 < 30);
     double iconSize = isBigScreen ? 40 : 30;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -296,7 +309,9 @@ class _RadioPlayer extends State<RadioPlayer>
               // when height > 0, the container has to be transparent
               color: Colors.transparent,
               // adding height to set the player display properly when height is more
-              height: isBigScreen ? height * 0.09 : 0,
+              height: isBigScreen
+                  ? height * 0.09
+                  : (isSmallerScreen ? 0 : height * 0.08),
               width: 0,
             );
             // return Text(

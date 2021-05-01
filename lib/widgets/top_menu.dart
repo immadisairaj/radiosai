@@ -17,15 +17,15 @@ class TopMenu extends StatefulWidget {
 class _TopMenu extends State<TopMenu> {
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery.of(context).size.height;
-    double width = MediaQuery.of(context).size.width;
+    double topPadding = MediaQuery.of(context).padding.top + 5;
+    double rightPadding = MediaQuery.of(context).size.width * 0.02;
     List<String> menuTitles = MyConstants.of(context).menuTitles;
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
         padding: EdgeInsets.only(
-          top: height * 0.05,
-          right: width * 0.02,
+          top: topPadding,
+          right: rightPadding,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),

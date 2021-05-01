@@ -25,7 +25,7 @@ class _InternetAlert extends State<InternetAlert> {
         alignment: Alignment.topCenter,
         child: Padding(
           padding:
-              EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
+              EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10),
           child: Card(
             elevation: 1,
             shape: RoundedRectangleBorder(

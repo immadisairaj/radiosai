@@ -33,6 +33,7 @@ class MyApp extends StatelessWidget {
         ),
         // stream for internet connectivity status
         StreamProvider<InternetConnectionStatus>(
+          initialData: InternetConnectionStatus.connected,
           create: (context) {
             return InternetStatus().internetStatusStreamController.stream;
           },
