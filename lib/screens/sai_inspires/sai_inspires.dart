@@ -49,7 +49,6 @@ class _SaiInspires extends State<SaiInspires> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Sai Inspires'),
-        brightness: Brightness.dark,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.copy_outlined),

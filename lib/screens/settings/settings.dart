@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
-import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/settings/starting_radio_stream.dart';
 import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
@@ -46,7 +45,6 @@ class _Settings extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
-        brightness: Brightness.dark,
       ),
       body: Container(
         color: Colors.white,
@@ -98,7 +96,6 @@ class _Settings extends State<Settings> {
           ListTile(
             contentPadding: _contentPadding,
             title: Text('About Radio Sai'),
-            subtitle: Text('What is Radio Sai?'),
             onTap: () {
               Browser.launchURL(context, 'https://www.radiosai.org');
             },
@@ -108,13 +105,6 @@ class _Settings extends State<Settings> {
             contentPadding: _contentPadding,
             title: Text('Version'),
             subtitle: Text('v${_packageInfo.version}'),
-            onTap: () {},
-          ),
-          ListTile(
-            contentPadding: _contentPadding,
-            title: Text('Build time'),
-            // get from constants
-            subtitle: Text(MyConstants.of(context).buldTime),
             onTap: () {},
           ),
         ],

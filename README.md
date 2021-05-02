@@ -28,6 +28,8 @@ __Schedule:__ Look at the radio schedule of different streams from within the ap
 
 __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in.
 
+__Split Screen:__ The app is suitable for split screen. Operate the app while doing another work in different screen.
+
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
 __Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
@@ -43,9 +45,20 @@ _*I cannot guarantee any of the below. But, will try my best to include such fea
 - Add android auto support
 - Add google chrome cast support
 
+## Radio Player Flow
+
+```
+Stop State -> Change Radio Stream (user action) -> Changes Radio Stream -> Play State
+Play State -> Change Radio Stream (user action) -> Stop State -> Changes Radio Stream -> Play State
+Play State -> Pause in app screen (user action) -> Stop State
+
+Play State -> Pause in notification (user action) -> Pause State
+Play State -> Stop in notification (user action) -> Stop State
+```
+
 ## Motivation
 
-I like to listen to various bhajans and which made me fond of radio sai very much. I've installed the app and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
+I like to listen to various bhajans which made me fond of radio sai. I've installed the app and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
 
 >I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable
 

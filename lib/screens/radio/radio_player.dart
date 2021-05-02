@@ -87,7 +87,8 @@ class _RadioPlayer extends State<RadioPlayer>
     // handle the pause and play button
     _handlePlayingState(widget.isPlaying);
     // handle the stream change when it is changed
-    _handleRadioStreamChange(widget.radioStreamIndex);
+    _handleRadioStreamChange(
+        widget.radioStreamIndex, widget.isPlaying, widget.radioLoadingBloc);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
@@ -357,8 +358,8 @@ class _RadioPlayer extends State<RadioPlayer>
     AudioService.play();
   }
 
-  void stopRadioService() {
-    AudioService.stop();
+  Future<void> stopRadioService() async {
+    await AudioService.stop();
   }
 
   // handle the player when pause/play button is pressed
@@ -404,11 +405,22 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   // handle the player when radio stream changes
-  void _handleRadioStreamChange(int radioStreamIndex) {
+  void _handleRadioStreamChange(int radioStreamIndex, bool isPlaying,
+      RadioLoadingBloc loadingStreamBloc) async {
     // if the the index is changed, stop the radio service
     if (_tempRadioStreamIndex != radioStreamIndex) {
       widget.radioLoadingBloc.changeLoadingState.add(false);
-      stopRadioService();
+      // load and play the new stream when the user is playing
+      // stop and play the stream
+      if (isPlaying) {
+        await stopRadioService();
+        loadingStreamBloc.changeLoadingState.add(true);
+        initRadioService(radioStreamIndex);
+      } else {
+        // if the index is changed when user is not playing
+        // then, stop the player
+        await stopRadioService();
+      }
     }
   }
 }

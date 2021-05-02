@@ -50,6 +50,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.deepOrange,
+          appBarTheme: AppBarTheme(
+            brightness: Brightness.dark,
+          ),
         ),
         home: AudioServiceWidget(child: Home()),
       ),

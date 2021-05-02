@@ -49,8 +49,7 @@ class RadioPlayerTask extends BackgroundAudioTask {
     // start playing before loading so that we can stop the player before itself
     _player.play();
     // setting the player source and when loads, it automatically plays
-    await _player
-        .setAudioSource(AudioSource.uri(Uri.parse(params['audioSource'])));
+    await _player.setAudioSource(AudioSource.uri(Uri.parse(mediaItem.id)));
     return super.onStart(params);
   }
 
