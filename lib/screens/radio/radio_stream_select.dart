@@ -88,12 +88,15 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
             child: InkWell(
               borderRadius: BorderRadius.circular(8.0),
               onTap: () async {
-                // update only if the index differes from actual index
-                // to avoid unnecessary update of streams
-                if (!isMatch) {
-                  _radioIndexBloc.changeRadioIndex.add(widgetIndex);
-                  // close the panel if different stream is selected
-                  widget.panelController.close();
+                // change only if panel is open
+                if (widget.panelController.isPanelOpen) {
+                  // update only if the index differes from actual index
+                  // to avoid unnecessary update of streams
+                  if (!isMatch) {
+                    _radioIndexBloc.changeRadioIndex.add(widgetIndex);
+                    // close the panel if different stream is selected
+                    widget.panelController.close();
+                  }
                 }
               },
               child: Container(

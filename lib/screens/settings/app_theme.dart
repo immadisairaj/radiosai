@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 
-final String recentlyPlayed = 'Recently played';
-
 class AppTheme extends StatefulWidget {
   AppTheme({
     Key key,
@@ -43,27 +41,32 @@ class _AppTheme extends State<AppTheme> {
                         return AlertDialog(
                           title: Text('Change Theme'),
                           contentPadding: EdgeInsets.only(top: 10),
-                          content: SingleChildScrollView(
-                            child: ListView.builder(
-                                itemCount:
-                                    MyConstants.of(context).appThemes.length,
-                                shrinkWrap: true,
-                                primary: false,
-                                itemBuilder: (context, index) {
-                                  String value =
-                                      MyConstants.of(context).appThemes[index];
-                                  return RadioListTile(
-                                      activeColor:
-                                          Theme.of(context).accentColor,
-                                      value: value,
-                                      selected: value == appTheme,
-                                      title: Text(value),
-                                      groupValue: appTheme,
-                                      onChanged: (value) {
-                                        _appThemeBloc.changeAppTheme.add(value);
-                                        Navigator.of(context).pop();
-                                      });
-                                }),
+                          content: Scrollbar(
+                            radius: Radius.circular(8),
+                            isAlwaysShown: true,
+                            child: SingleChildScrollView(
+                              child: ListView.builder(
+                                  itemCount:
+                                      MyConstants.of(context).appThemes.length,
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  itemBuilder: (context, index) {
+                                    String value = MyConstants.of(context)
+                                        .appThemes[index];
+                                    return RadioListTile(
+                                        activeColor:
+                                            Theme.of(context).accentColor,
+                                        value: value,
+                                        selected: value == appTheme,
+                                        title: Text(value),
+                                        groupValue: appTheme,
+                                        onChanged: (value) {
+                                          _appThemeBloc.changeAppTheme
+                                              .add(value);
+                                          Navigator.of(context).pop();
+                                        });
+                                  }),
+                            ),
                           ),
                           buttonPadding: EdgeInsets.all(4),
                           actions: [
