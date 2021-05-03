@@ -48,7 +48,8 @@ _*I cannot guarantee any of the below. But, will try my best to include such fea
 ## Radio Player Flow
 
 ```
-Stop State -> Change Radio Stream (user action) -> Changes Radio Stream -> Play State
+Stop State -> Play in app screen (user action) -> Play State
+Stop State -> Change Radio Stream (user action) -> Changes Radio Stream -> Stop State
 Play State -> Change Radio Stream (user action) -> Stop State -> Changes Radio Stream -> Play State
 Play State -> Pause in app screen (user action) -> Stop State
 

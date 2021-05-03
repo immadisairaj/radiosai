@@ -28,37 +28,62 @@ class _StartingRadioStream extends State<StartingRadioStream> {
           stream: _initialRadioIndexBloc.initialRadioIndexStream,
           builder: (context, snapshot) {
             int initialRadioStreamIndex = snapshot.data ?? -1;
-            return PopupMenuButton(
+
+            String subtitle = (initialRadioStreamIndex >= 0)
+                ? MyConstants.of(context)
+                    .radioStreamName[initialRadioStreamIndex]
+                : recentlyPlayed;
+
+            return Tooltip(
+              message: 'favourite radio stream to show on app start',
               child: ListTile(
                 contentPadding: widget.contentPadding,
                 title: Text('Starting radio stream'),
-                subtitle: (initialRadioStreamIndex >= 0)
-                    ? Text(MyConstants.of(context)
-                        .radioStreamName[initialRadioStreamIndex])
-                    : Text(recentlyPlayed),
-                trailing: Padding(
-                  padding: const EdgeInsets.only(right: 10),
-                  child: Icon(Icons.arrow_drop_down_outlined),
-                ),
+                subtitle: Text(subtitle),
+                onTap: () async {
+                  showDialog<void>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text('Starting radio stream'),
+                          contentPadding: EdgeInsets.only(top: 10),
+                          content: SingleChildScrollView(
+                            child: ListView.builder(
+                                itemCount: 7,
+                                shrinkWrap: true,
+                                primary: false,
+                                itemBuilder: (context, index) {
+                                  int value = index - 1;
+                                  return RadioListTile(
+                                      value: value,
+                                      selected:
+                                          value == initialRadioStreamIndex,
+                                      title: (value >= 0)
+                                          ? Text(MyConstants.of(context)
+                                              .radioStreamName[value])
+                                          : Text(recentlyPlayed),
+                                      groupValue: initialRadioStreamIndex,
+                                      onChanged: (value) {
+                                        _initialRadioIndexBloc
+                                            .changeInitialRadioIndex
+                                            .add(value);
+                                        Navigator.of(context).pop();
+                                      });
+                                }),
+                          ),
+                          buttonPadding: EdgeInsets.all(4),
+                          actions: [
+                            TextButton(
+                              child: Text('Cancel'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            )
+                          ],
+                        );
+                      });
+                },
               ),
-              itemBuilder: (context) {
-                // -1: Recently Played and the rest are 6 streams
-                return [-1, 0, 1, 2, 3, 4, 5].map<PopupMenuEntry>((value) {
-                  return PopupMenuItem(
-                    value: value,
-                    child: (value >= 0)
-                        ? Text(MyConstants.of(context).radioStreamName[value])
-                        : Text(recentlyPlayed),
-                  );
-                }).toList();
-              },
-              tooltip: 'favourite radio stream to show on app start',
-              initialValue: initialRadioStreamIndex,
-              // Offset aligns right side to the widget
-              offset: const Offset(1, 0),
-              onSelected: (value) {
-                _initialRadioIndexBloc.changeInitialRadioIndex.add(value);
-              },
             );
           });
     });
