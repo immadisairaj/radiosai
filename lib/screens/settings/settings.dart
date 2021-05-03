@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
+import 'package:radiosai/screens/settings/app_theme.dart';
 import 'package:radiosai/screens/settings/starting_radio_stream.dart';
 import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
@@ -42,12 +43,15 @@ class _Settings extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    // check if dark theme
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
       ),
       body: Container(
-        color: Colors.white,
+        color: isDarkTheme ? Colors.grey[700] : Colors.white,
         height: MediaQuery.of(context).size.height,
         child: SingleChildScrollView(
           child: Padding(
@@ -72,6 +76,9 @@ class _Settings extends State<Settings> {
       child: Column(
         children: [
           StartingRadioStream(
+            contentPadding: _contentPadding,
+          ),
+          AppTheme(
             contentPadding: _contentPadding,
           ),
         ],

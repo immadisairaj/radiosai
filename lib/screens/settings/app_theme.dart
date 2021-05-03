@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
+import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 
 final String recentlyPlayed = 'Recently played';
 
-class StartingRadioStream extends StatefulWidget {
-  StartingRadioStream({
+class AppTheme extends StatefulWidget {
+  AppTheme({
     Key key,
     this.contentPadding,
   }) : super(key: key);
@@ -15,63 +15,52 @@ class StartingRadioStream extends StatefulWidget {
   final EdgeInsetsGeometry contentPadding;
 
   @override
-  _StartingRadioStream createState() => _StartingRadioStream();
+  _AppTheme createState() => _AppTheme();
 }
 
-class _StartingRadioStream extends State<StartingRadioStream> {
+class _AppTheme extends State<AppTheme> {
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    return Consumer<InitialRadioIndexBloc>(
-        // listen to change of initial radio stream index
-        builder: (context, _initialRadioIndexBloc, child) {
-      return StreamBuilder<int>(
-          stream: _initialRadioIndexBloc.initialRadioIndexStream,
+    return Consumer<AppThemeBloc>(
+        // listen to change of app theme
+        builder: (context, _appThemeBloc, child) {
+      return StreamBuilder<String>(
+          stream: _appThemeBloc.appThemeStream,
           builder: (context, snapshot) {
-            int initialRadioStreamIndex = snapshot.data ?? -1;
-
-            String subtitle = (initialRadioStreamIndex >= 0)
-                ? MyConstants.of(context)
-                    .radioStreamName[initialRadioStreamIndex]
-                : recentlyPlayed;
+            String appTheme =
+                snapshot.data ?? MyConstants.of(context).appThemes[2];
 
             return Tooltip(
-              message: 'favourite radio stream to show on app start',
+              message: 'change app theme',
               child: ListTile(
                 contentPadding: widget.contentPadding,
-                title: Text('Starting radio stream'),
-                subtitle: Text(subtitle),
+                title: Text('Theme'),
+                subtitle: Text(appTheme),
                 onTap: () async {
                   showDialog<void>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Starting radio stream'),
+                          title: Text('Change Theme'),
                           contentPadding: EdgeInsets.only(top: 10),
                           content: SingleChildScrollView(
                             child: ListView.builder(
-                                itemCount: 7,
+                                itemCount:
+                                    MyConstants.of(context).appThemes.length,
                                 shrinkWrap: true,
                                 primary: false,
                                 itemBuilder: (context, index) {
-                                  int value = index - 1;
+                                  String value =
+                                      MyConstants.of(context).appThemes[index];
                                   return RadioListTile(
                                       activeColor:
                                           Theme.of(context).accentColor,
                                       value: value,
-                                      selected:
-                                          value == initialRadioStreamIndex,
-                                      title: (value >= 0)
-                                          ? Text(MyConstants.of(context)
-                                              .radioStreamName[value])
-                                          : Text(recentlyPlayed),
-                                      groupValue: initialRadioStreamIndex,
+                                      selected: value == appTheme,
+                                      title: Text(value),
+                                      groupValue: appTheme,
                                       onChanged: (value) {
-                                        _initialRadioIndexBloc
-                                            .changeInitialRadioIndex
-                                            .add(value);
+                                        _appThemeBloc.changeAppTheme.add(value);
                                         Navigator.of(context).pop();
                                       });
                                 }),

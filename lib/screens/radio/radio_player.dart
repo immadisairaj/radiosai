@@ -170,6 +170,9 @@ class _RadioPlayer extends State<RadioPlayer>
 
   // main radio player widget after all streams
   Widget _slidingPanelCollapsed(Radius radius) {
+    // check if dark theme
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () {
         _panelController.open();
@@ -179,7 +182,7 @@ class _RadioPlayer extends State<RadioPlayer>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: widget.radius, topRight: widget.radius),
-          color: Colors.white,
+          color: isDarkTheme ? Colors.grey[700] : Colors.white,
         ),
         child: Column(
           children: [

@@ -24,11 +24,13 @@ __Seemless Listening:__ It is capable of running in the background until the app
 
 __Media Control:__ It can handle the audio options from a handset to a headset, from lock screen notifications to earphones button click. It also pauses when another player starts and doesn't interrupt any incoming notifications.
 
+__Dark Theme:__ The app also comes with dark theme. One can change the theme they want from settings.
+
+__Split Screen:__ The app is suitable for split screen. Operate the app while doing another work in different screen.
+
 __Schedule:__ Look at the radio schedule of different streams from within the app. Redirects to the official website.
 
 __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in.
-
-__Split Screen:__ The app is suitable for split screen. Operate the app while doing another work in different screen.
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
@@ -40,7 +42,6 @@ __Open Source:__ We believe that there is nothing to hide and like you to experi
 
 _*I cannot guarantee any of the below. But, will try my best to include such features in future releases (if I can)_
 
-- Add dark theme
 - Add a player for vedam which supports all media controls
 - Add android auto support
 - Add google chrome cast support
@@ -65,7 +66,7 @@ I like to listen to various bhajans which made me fond of radio sai. I've instal
 
 ## Screenshots
 
-<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500">
+<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500"> <img src="/screenshots/screenshot_7.jpg" height="500"> <img src="/screenshots/screenshot_8.jpg" height="500"> <img src="/screenshots/screenshot_9.jpg" height="500"> <img src="/screenshots/screenshot_10.jpg" height="500"> <img src="/screenshots/screenshot_11.jpg" height="500"> <img src="/screenshots/screenshot_12.jpg" height="500">
 
 ## Architecture
 

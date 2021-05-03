@@ -9,11 +9,14 @@ class SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // check if dark theme
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.only(top: 10),
       child: Card(
         elevation: 0.2,
-        color: Colors.grey[200],
+        color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -23,7 +26,7 @@ class SettingsSection extends StatelessWidget {
                 child: Text(
                   title,
                   style: TextStyle(
-                    color: Theme.of(context).primaryColor,
+                    color: Theme.of(context).accentColor,
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
                   ),

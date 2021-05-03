@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/bloc/internet_status.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
@@ -14,6 +15,21 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  final ThemeData lightTheme = ThemeData(
+    primarySwatch: Colors.deepOrange,
+    accentColor: Colors.deepOrangeAccent,
+    appBarTheme: AppBarTheme(
+      brightness: Brightness.dark,
+    ),
+  );
+
+  final ThemeData darkTheme = ThemeData(
+    primarySwatch: Colors.deepOrange,
+    accentColor: Colors.deepOrangeAccent,
+    brightness: Brightness.dark,
+    cardColor: Colors.grey[700],
+  );
+
   @override
   Widget build(BuildContext context) {
     // providers for changing widgets using streams
@@ -44,18 +60,37 @@ class MyApp extends StatelessWidget {
           dispose: (_, InitialRadioIndexBloc initialRadioIndexBloc) =>
               initialRadioIndexBloc.dispose(),
         ),
-      ],
-      child: MaterialApp(
-        title: 'Sai Voice',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primarySwatch: Colors.deepOrange,
-          appBarTheme: AppBarTheme(
-            brightness: Brightness.dark,
-          ),
+        // stream for app theme
+        Provider<AppThemeBloc>(
+          create: (_) => AppThemeBloc(),
+          dispose: (_, AppThemeBloc appThemeBloc) => appThemeBloc.dispose(),
         ),
-        home: AudioServiceWidget(child: Home()),
-      ),
+      ],
+      child: Consumer<AppThemeBloc>(
+          // listen to change of app theme
+          builder: (context, _appThemeBloc, child) {
+        return StreamBuilder<String>(
+            stream: _appThemeBloc.appThemeStream,
+            builder: (context, snapshot) {
+              String appTheme =
+                  snapshot.data ?? MyConstants.of(context).appThemes[2];
+
+              bool isSystemDefault =
+                  appTheme == MyConstants.of(context).appThemes[2];
+              bool isDarkTheme =
+                  appTheme == MyConstants.of(context).appThemes[1];
+
+              return MaterialApp(
+                title: 'Sai Voice',
+                debugShowCheckedModeBanner: false,
+                theme: isSystemDefault
+                    ? lightTheme
+                    : (isDarkTheme ? darkTheme : lightTheme),
+                darkTheme: isSystemDefault ? darkTheme : null,
+                home: AudioServiceWidget(child: Home()),
+              );
+            });
+      }),
     );
   }
 }

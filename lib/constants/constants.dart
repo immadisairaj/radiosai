@@ -35,6 +35,13 @@ class MyConstants extends InheritedWidget {
     'Settings',
   ];
 
+  // list of themes, don't change or move the values
+  final List<String> appThemes = const [
+    'Light',
+    'Dark',
+    'System default',
+  ];
+
   @override
   bool updateShouldNotify(MyConstants oldWidget) => false;
 }

@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 class SliderHandle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // check if dark theme
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       height: 5,
       width: 30,
       decoration: BoxDecoration(
-        color: Colors.grey[200],
+        color: isDarkTheme ? Colors.grey[400] : Colors.grey[200],
         borderRadius: BorderRadius.circular(16),
       ),
     );

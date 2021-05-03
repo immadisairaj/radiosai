@@ -46,6 +46,11 @@ class _SaiInspires extends State<SaiInspires> {
 
   @override
   Widget build(BuildContext context) {
+    // check if dark theme
+    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+
+    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Sai Inspires'),
@@ -66,7 +71,7 @@ class _SaiInspires extends State<SaiInspires> {
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
-        color: Colors.white,
+        color: backgroundColor,
         child: Stack(
           children: [
             InteractiveViewer(
@@ -87,11 +92,11 @@ class _SaiInspires extends State<SaiInspires> {
                     Stack(
                       children: [
                         // hide the webview behind the container and get content using JS
-                        _hiddenWebView(),
+                        if (_isLoading) _hiddenWebView(),
                         // container displays above the webview to make the webview hidden
                         Container(
                           width: MediaQuery.of(context).size.width,
-                          color: Colors.white,
+                          color: backgroundColor,
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 left: 20, right: 20, top: 8),
@@ -148,13 +153,13 @@ class _SaiInspires extends State<SaiInspires> {
               ),
             ),
             // show when no data is retrieved
-            if (_contentText == 'null') _noData(),
+            if (_contentText == 'null') _noData(backgroundColor),
             // Shown when it is loading
             if (_isLoading)
               Container(
-                color: Colors.white,
+                color: backgroundColor,
                 child: Center(
-                  child: _showLoading(),
+                  child: _showLoading(isDarkTheme),
                 ),
               ),
           ],
@@ -224,9 +229,9 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   // handle when no data is retrieved
-  Widget _noData() {
+  Widget _noData(Color backgroundColor) {
     return Container(
-      color: Colors.white,
+      color: backgroundColor,
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -262,12 +267,12 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   // Shimmer effect while loading the content
-  Widget _showLoading() {
+  Widget _showLoading(bool isDarkTheme) {
     return Padding(
       padding: EdgeInsets.only(top: 30, left: 20, right: 20),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey[300],
-        highlightColor: Colors.grey[100],
+        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
+        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
         enabled: true,
         child: Column(
           children: [
