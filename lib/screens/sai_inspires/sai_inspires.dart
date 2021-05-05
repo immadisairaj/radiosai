@@ -320,7 +320,11 @@ class _SaiInspires extends State<SaiInspires> {
           dateText = dateText.replaceAll('"', '');
           dateText = dateText.trim();
           contentText = contentText.replaceAll('\\n', '');
+          // to not remove " from the text add temp tag
+          contentText = contentText.replaceAll('\\"', '<q>');
           contentText = contentText.replaceAll('"', '');
+          // remove temp tag and replace with "
+          contentText = contentText.replaceAll('<q>', '"');
           contentText = contentText.trim();
           setState(() {
             // set the data

@@ -38,7 +38,8 @@ class RadioIndexBloc {
 
       _actionController.stream.listen(_changeStream);
       _addValue.add(_index);
-      // add in shared prefences as to not when opened next time
+      // add in shared prefences as to ensure proper
+      // radio index opens when opened next time
       value.setInt(_indexKey, _index);
     });
   }
