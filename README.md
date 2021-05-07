@@ -10,7 +10,7 @@ Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Globa
 
 _*All the data inside the app is taken from [radiosai.org](https://www.radiosai.org)_
 
-__Audio Streams include:__
+__Radio Streams include:__
 - Asia Stream
 - Africa Stream
 - America Stream
@@ -26,17 +26,17 @@ __Media Control:__ It can handle the audio options from a handset to a headset, 
 
 __Dark Theme:__ The app also comes with dark theme. One can change the theme they want from settings.
 
-__Split Screen:__ The app is suitable for split screen. Operate the app while doing another work in different screen.
+__Split Screen:__ The app is suitable for split screen. Operate this app while doing work in a different app.
 
-__Schedule:__ Look at the radio schedule of different streams from within the app. Redirects to the official website.
+__Schedule:__ Look at the radio schedule of different streams from within the app (Redirects to the official website).
 
-__Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in.
+__Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard).
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
 __Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
 
-> "Sai Ram, and Happy Listening"
+> "Sai Ram, and Happy Listening" - _a quote from Radio Sai_
 
 ## Future Updates
 
@@ -83,11 +83,12 @@ lib
 │   ├───radio
 │   ├───sai_inspires
 │   └───settings
+│       └───general
 └───widgets         # widgets related to screens
     ├───radio
     └───settings
 ```
-_Above is generated using "tree" command_
+_Above is generated using "tree" command inside lib/_
 
 ## OpenSource Libraries
 

@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info/package_info.dart';
-import 'package:radiosai/screens/settings/app_theme.dart';
-import 'package:radiosai/screens/settings/starting_radio_stream.dart';
+import 'package:radiosai/screens/settings/general/app_theme.dart';
+import 'package:radiosai/screens/settings/general/starting_radio_stream.dart';
 import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -165,10 +165,6 @@ class _Settings extends State<Settings> {
                 context: context,
                 applicationName: _packageInfo.appName,
                 applicationVersion: _packageInfo.version,
-                applicationIcon: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Image(image: AssetImage('assets/radiosai-logo.jpg')),
-                ),
               );
             },
           ),
