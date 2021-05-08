@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:radiosai/screens/sai_inspires/sai_image.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -26,6 +27,8 @@ class _SaiInspires extends State<SaiInspires> {
   DateTime selectedDate;
   String imageFinalUrl;
   String finalUrl;
+
+  final String heroTag = 'SaiInspiresImage';
 
   bool _isLoading = true;
   bool _isCopying = false;
@@ -86,7 +89,25 @@ class _SaiInspires extends State<SaiInspires> {
                         padding: EdgeInsets.all(10),
                         child: (imageFinalUrl == '')
                             ? Container()
-                            : Image.network(imageFinalUrl),
+                            : Material(
+                                child: InkWell(
+                                  child: Container(
+                                    color: backgroundColor,
+                                    child: Hero(
+                                      tag: heroTag,
+                                      child: Image.network(imageFinalUrl),
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => SaiImage(
+                                                heroTag: heroTag,
+                                                imageUrl: imageFinalUrl)));
+                                  },
+                                ),
+                              ),
                       ),
                     ),
                     Stack(
