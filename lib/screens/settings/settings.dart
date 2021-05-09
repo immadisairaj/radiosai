@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:radiosai/screens/settings/general/app_theme.dart';
 import 'package:radiosai/screens/settings/general/starting_radio_stream.dart';
@@ -60,6 +61,7 @@ class _Settings extends State<Settings> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 _generalSection(),
+                _storageSection(),
                 _aboutSection(),
                 _moreDetailsSection(),
               ],
@@ -80,6 +82,28 @@ class _Settings extends State<Settings> {
           ),
           AppTheme(
             contentPadding: _contentPadding,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _storageSection() {
+    return SettingsSection(
+      title: 'Storage',
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: _contentPadding,
+            title: Text('Clear cache'),
+            onTap: () {
+              DefaultCacheManager().emptyCache();
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('Cleared cache'),
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(seconds: 1),
+              ));
+            },
           ),
         ],
       ),

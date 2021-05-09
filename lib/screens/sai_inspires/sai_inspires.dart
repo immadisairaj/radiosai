@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -95,17 +96,14 @@ class _SaiInspires extends State<SaiInspires> {
                                     color: backgroundColor,
                                     child: Hero(
                                       tag: heroTag,
-                                      child: Image.network(imageFinalUrl),
+                                      child: CachedNetworkImage(
+                                        imageUrl: imageFinalUrl,
+                                        errorWidget: (context, url, error) =>
+                                            Icon(Icons.error),
+                                      ),
                                     ),
                                   ),
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => SaiImage(
-                                                heroTag: heroTag,
-                                                imageUrl: imageFinalUrl)));
-                                  },
+                                  onTap: () => _viewImage(),
                                 ),
                               ),
                       ),
@@ -187,6 +185,21 @@ class _SaiInspires extends State<SaiInspires> {
         ),
       ),
     );
+  }
+
+  // navigate to new page to view full image
+  _viewImage() {
+    int urlLength = imageFinalUrl.length;
+    String fileName =
+        'SI_${imageFinalUrl.substring(urlLength - 12, urlLength - 4)}';
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SaiImage(
+                  heroTag: heroTag,
+                  imageUrl: imageFinalUrl,
+                  fileName: fileName,
+                )));
   }
 
   // update the URL after picking the new date

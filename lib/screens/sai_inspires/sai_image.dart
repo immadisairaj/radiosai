@@ -1,16 +1,25 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:gallery_saver/gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SaiImage extends StatefulWidget {
   SaiImage({
     Key key,
     this.heroTag,
     this.imageUrl,
+    this.fileName,
   }) : super(key: key);
 
   final String heroTag;
   final String imageUrl;
+  final String fileName;
 
   @override
   _SaiImage createState() => _SaiImage();
@@ -30,10 +39,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   bool _fullScreen = false;
   AnimationController _animationController;
 
-  final AppBar appBar = AppBar(
-    title: Text('Image'),
-    backgroundColor: Colors.transparent,
-  );
+  bool _isCopying = false;
 
   @override
   void initState() {
@@ -60,7 +66,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     double appBarSize =
-        appBar.preferredSize.height + MediaQuery.of(context).padding.top;
+        AppBar().preferredSize.height + MediaQuery.of(context).padding.top;
     Size screenSize = MediaQuery.of(context).size;
     bool isScaleFit = _scale <= 1;
     return Scaffold(
@@ -71,7 +77,9 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
             children: [
               GestureDetector(
                 onTap: _toggleFullScreen,
-                onDoubleTap: () {},
+                onDoubleTap: () {
+                  // do nothing: to prevent single tap twice
+                },
                 child: Container(
                   color: Colors.black,
                   child: InteractiveViewer(
@@ -91,8 +99,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                         child: SizedBox(
                           height: screenSize.height,
                           width: screenSize.width,
-                          child: Image.network(
-                            widget.imageUrl,
+                          child: Image(
+                            image: CachedNetworkImageProvider(widget.imageUrl),
                             fit: BoxFit.contain,
                           ),
                         )),
@@ -104,7 +112,18 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                 child: Container(
                   height: appBarSize,
                   child: SafeArea(
-                    child: appBar,
+                    child: AppBar(
+                      title: Text(widget.fileName),
+                      backgroundColor: Colors.transparent,
+                      actions: [
+                        IconButton(
+                          icon: Icon(Icons.download_outlined),
+                          tooltip: 'Save image',
+                          splashRadius: 24,
+                          onPressed: () => _saveImage(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -114,6 +133,72 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       ),
     );
   }
+
+  // Below are image saving to gallery methods
+
+  void _saveImage() async {
+    if (!_isCopying) {
+      _isCopying = true;
+      final publicDirectoryPath = await _getPublicPath();
+      final albumName = 'Sai Voice/Sai Inspires';
+      final imageDirectoryPath = '$publicDirectoryPath/$albumName';
+      var permission = await _canSave();
+      if (!permission) {
+        _showSnackBar(context, 'Accept storage permission to save image',
+            Duration(seconds: 2));
+        return;
+      }
+      await new Directory(imageDirectoryPath).create(recursive: true);
+      var imageFilePath = '$imageDirectoryPath/${widget.fileName}.jpg';
+      var imageFile = new File(imageFilePath);
+      if (imageFile.existsSync()) {
+        _showSnackBar(context, 'Image already saved', Duration(seconds: 1));
+        return;
+      }
+      var cacheFile = await _getCachedFile();
+      imageFile.writeAsBytesSync(cacheFile.readAsBytesSync());
+      // save to gallery after saved to external file
+      GallerySaver.saveImage(imageFilePath, albumName: albumName)
+          .then((isSave) {
+        if (isSave) {
+          _showSnackBar(context, 'Saved to gallery', Duration(seconds: 1));
+        }
+      });
+    }
+  }
+
+  Future<String> _getPublicPath() async {
+    var path = await ExtStorage.getExternalStorageDirectory();
+    return path;
+  }
+
+  Future<File> _getCachedFile() async {
+    return await DefaultCacheManager().getSingleFile(widget.imageUrl);
+  }
+
+  Future<bool> _canSave() async {
+    var status = await Permission.storage.request();
+    if (status.isGranted || status.isLimited) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  void _showSnackBar(BuildContext context, String text, Duration duration) {
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(
+          content: Text(text),
+          behavior: SnackBarBehavior.floating,
+          duration: duration,
+        ))
+        .closed
+        .then((value) {
+      _isCopying = false;
+    });
+  }
+
+  // Below are toggling full screen methods
 
   void _toggleFullScreen() {
     _fullScreen = !_fullScreen;
@@ -137,7 +222,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     }
   }
 
-  // Below all are image animation methods
+  // Below are image animation methods
 
   void _onAnimateReset() {
     _transformationController.value = _animationReset.value;

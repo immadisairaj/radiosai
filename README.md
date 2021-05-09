@@ -30,11 +30,13 @@ __Split Screen:__ The app is suitable for split screen. Operate this app while d
 
 __Schedule:__ Look at the radio schedule of different streams from within the app (Redirects to the official website).
 
-__Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard).
+__Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard). One can also view and save the image.
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
 __Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
+
+__File Permissions:__ File write permission is requested only to save images from Sai Inspires. One can deny these permissions from the settings.
 
 > "Sai Ram, and Happy Listening" - _a quote from Radio Sai_
 
