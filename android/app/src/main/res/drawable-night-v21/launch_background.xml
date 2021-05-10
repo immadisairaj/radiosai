@@ -8,5 +8,5 @@
         android:height="200dp"
         android:width="200dp"
         android:gravity="center"
-        android:drawable="@drawable/ic_logo_notification_black" />
+        android:drawable="@drawable/ic_logo_notification_white" />
 </layer-list>

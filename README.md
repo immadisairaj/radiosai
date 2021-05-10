@@ -2,6 +2,10 @@
 
 A radio player which streams audio from Radio Sai Global Harmony.
 
+<img src="/assets/sai_voice_logo.png" height="150">
+
+_*Special Thanks to Aman Achutan for the logo_
+
 Om Sri Sai Ram :pray:
 
 Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Global Harmony.

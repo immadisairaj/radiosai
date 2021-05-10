@@ -51,7 +51,7 @@ dependencies:
   audio_service: ^0.17.0
 
 flutter_icons:
-  image_path: assets/radiosai-logo.jpg
+  image_path: assets/sai_voice_logo.png
   android: true
   ios: true
 
