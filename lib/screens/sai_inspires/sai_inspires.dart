@@ -135,7 +135,9 @@ class _SaiInspires extends State<SaiInspires> {
                                   child: SelectableText(
                                     _thoughtOfTheDay,
                                     style: TextStyle(
-                                      color: Colors.red,
+                                      color: isDarkTheme
+                                          ? Colors.amber
+                                          : Colors.red,
                                       fontSize: 16,
                                     ),
                                   ),
