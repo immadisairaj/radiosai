@@ -24,7 +24,7 @@ __Radio Streams include:__
 
 __Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
 
-__Seemless Listening:__ It is capable of running in the background until the app is removed from the process. Listen to your favourite radio stream with just one click after opening the app (an option to set the favourite stream at the start of the app)
+__Seamless Listening:__ It is capable of running in the background until the app is removed from the process. Listen to your favourite radio stream with just one click after opening the app (an option to set the favourite stream at the start of the app)
 
 __Media Control:__ It can handle the audio options from a handset to a headset, from lock screen notifications to earphones button click. It also pauses when another player starts and doesn't interrupt any incoming notifications.
 
