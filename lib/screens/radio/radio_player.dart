@@ -89,6 +89,8 @@ class _RadioPlayer extends State<RadioPlayer>
     // handle the stream change when it is changed
     _handleRadioStreamChange(
         widget.radioStreamIndex, widget.isPlaying, widget.radioLoadingBloc);
+    // handle the display of loading progressing widget
+    _handleLoadingState(widget.radioLoadingBloc);
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
@@ -249,8 +251,8 @@ class _RadioPlayer extends State<RadioPlayer>
                     ),
                     onPressed: () async {
                       if (streamIndex != null) {
-                        _handleOnPressed(streamIndex, isPlaying, loadingState,
-                            radioLoadingBloc, hasInternet);
+                        _handleOnPressed(
+                            streamIndex, isPlaying, loadingState, hasInternet);
                       }
                     },
                   ),
@@ -267,32 +269,27 @@ class _RadioPlayer extends State<RadioPlayer>
           builder: (context, snapshot) {
             final playerState = snapshot.data;
             final processingState = playerState ?? AudioProcessingState.none;
-            // String displayText = '';
+            // to display processingState, use ${describeEnum(processingState)}
             bool loadingUpdate;
             switch (processingState) {
               case AudioProcessingState.none:
                 loadingUpdate = null;
-                // displayText = 'Play';
                 break;
               case AudioProcessingState.ready:
                 loadingUpdate = false;
-                // displayText = isPlaying ? 'Playing' : 'Play';
                 break;
               case AudioProcessingState.completed:
               case AudioProcessingState.stopped:
-                // displayText = '${describeEnum(processingState)}';
                 loadingUpdate = false;
                 break;
               case AudioProcessingState.buffering:
                 loadingUpdate = true;
-                // displayText = 'Buffering';
                 if (!hasInternet) {
                   loadingUpdate = false;
                   stopRadioService();
                 }
                 break;
               case AudioProcessingState.connecting:
-                // displayText = 'Loading stream..';
                 if (!hasInternet) {
                   loadingUpdate = false;
                   stopRadioService();
@@ -300,11 +297,9 @@ class _RadioPlayer extends State<RadioPlayer>
                 break;
               case AudioProcessingState.error:
                 loadingUpdate = false;
-                // displayText = 'Error.. retry';
                 break;
               default:
                 loadingUpdate = false;
-              // displayText = '${describeEnum(processingState)}';
             }
             if (loadingUpdate != null)
               radioLoadingBloc.changeLoadingState.add(loadingUpdate);
@@ -318,13 +313,6 @@ class _RadioPlayer extends State<RadioPlayer>
                   : (isSmallerScreen ? 0 : height * 0.08),
               width: 0,
             );
-            // return Text(
-            //   displayText,
-            //   style: TextStyle(
-            //     color: Colors.white,
-            //     fontSize: 1,
-            //   ),
-            // );
           },
         ),
       ],
@@ -366,16 +354,14 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   // handle the player when pause/play button is pressed
-  void _handleOnPressed(int index, bool isPlaying, bool isLoading,
-      RadioLoadingBloc loadingStreamBloc, bool hasInternet) {
+  void _handleOnPressed(
+      int index, bool isPlaying, bool isLoading, bool hasInternet) {
     if (!isPlaying) {
       if (hasInternet) {
-        loadingStreamBloc.changeLoadingState.add(true);
         initRadioService(index);
         if (!isLoading) playRadioService();
       } else {
-        // display that the player is trying to load
-        loadingStreamBloc.changeLoadingState.add(true);
+        // display that the player is trying to load - handled by _handleLoadingState
         initRadioService(index);
         // Show a snack bar that it is unable to play
         if (_isSnackBarActive == false) {
@@ -393,7 +379,6 @@ class _RadioPlayer extends State<RadioPlayer>
         } // do nothing in else
       }
     } else {
-      loadingStreamBloc.changeLoadingState.add(false);
       stopRadioService();
     }
   }
@@ -405,6 +390,11 @@ class _RadioPlayer extends State<RadioPlayer>
     } else {
       _pausePlayController.reverse();
     }
+  }
+
+  // handle the loading progressing widget based on the running state
+  void _handleLoadingState(RadioLoadingBloc loadingStreamBloc) {
+    loadingStreamBloc.changeLoadingState.add(AudioService.running);
   }
 
   // handle the player when radio stream changes
