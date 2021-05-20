@@ -1,13 +1,12 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:radiosai/screens/sai_inspires/sai_image.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 class SaiInspires extends StatefulWidget {
   SaiInspires({
@@ -19,8 +18,6 @@ class SaiInspires extends StatefulWidget {
 }
 
 class _SaiInspires extends State<SaiInspires> {
-  WebViewController _webViewController;
-
   final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
   final String baseUrl = 'https://www.radiosai.org/pages/ThoughtText.asp';
 
@@ -45,7 +42,6 @@ class _SaiInspires extends State<SaiInspires> {
     _updateURL(selectedDate);
 
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
   @override
@@ -108,66 +104,59 @@ class _SaiInspires extends State<SaiInspires> {
                               ),
                       ),
                     ),
-                    Stack(
-                      children: [
-                        // hide the webview behind the container and get content using JS
-                        if (_isLoading) _hiddenWebView(),
-                        // container displays above the webview to make the webview hidden
-                        Container(
-                          width: MediaQuery.of(context).size.width,
-                          color: backgroundColor,
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 20, right: 20, top: 8),
-                            child: Column(
-                              children: [
-                                Align(
-                                  alignment: Alignment(1, 0),
-                                  child: SelectableText(
-                                    _dateText,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                    ),
-                                  ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      color: backgroundColor,
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 20, right: 20, top: 8),
+                        child: Column(
+                          children: [
+                            Align(
+                              alignment: Alignment(1, 0),
+                              child: SelectableText(
+                                _dateText,
+                                style: TextStyle(
+                                  fontSize: 14,
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: SelectableText(
-                                    _thoughtOfTheDay,
-                                    style: TextStyle(
-                                      color: isDarkTheme
-                                          ? Colors.amber
-                                          : Colors.red,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ),
-                                SelectableText(
-                                  _contentText,
-                                  textAlign: TextAlign.justify,
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    height: 1.3,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      top: 8.0, bottom: 20),
-                                  child: Align(
-                                    alignment: Alignment(1, 0),
-                                    child: SelectableText(
-                                      _byBaba,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: SelectableText(
+                                _thoughtOfTheDay,
+                                style: TextStyle(
+                                  color: isDarkTheme
+                                      ? Colors.amber
+                                      : Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            SelectableText(
+                              _contentText,
+                              textAlign: TextAlign.justify,
+                              style: TextStyle(
+                                fontSize: 17,
+                                height: 1.3,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  top: 8.0, bottom: 20),
+                              child: Align(
+                                alignment: Alignment(1, 0),
+                                child: SelectableText(
+                                  _byBaba,
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ],
                 ),
@@ -211,7 +200,45 @@ class _SaiInspires extends State<SaiInspires> {
     imageFinalUrl =
         '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
     finalUrl = '$baseUrl?mydate=$formattedDate';
-    if (_webViewController != null) await _webViewController.loadUrl(finalUrl);
+    _getData();
+  }
+
+  _getData() async {
+    var file;
+    try {
+      file = await DefaultCacheManager().getSingleFile(finalUrl);
+    } catch(e) {
+      setState(() {
+        // if there is no internet
+        _contentText = 'null';
+        imageFinalUrl = '';
+        _isLoading = false;
+      });
+      return;
+    }
+    var response = file.readAsStringSync();
+    var document = parse(response);
+    String dateText = document.getElementById('Head').text;
+    String contentText = document.getElementById('Content').text;
+
+    // Trim the data to remove unnecessary content
+    dateText = dateText.replaceAll('"', '');
+    dateText = dateText.trim();
+    contentText = contentText.replaceAll('\\n', '');
+    // to not remove " from the text add temp tag
+    contentText = contentText.replaceAll('\\"', '<q>');
+    contentText = contentText.replaceAll('"', '');
+    // remove temp tag and replace with "
+    contentText = contentText.replaceAll('<q>', '"');
+    contentText = contentText.trim();
+    setState(() {
+      // set the data
+      _dateText = dateText;
+      _contentText = contentText;
+
+      // loading is done
+      _isLoading = false;
+    });
   }
 
   // select the date and update the url
@@ -335,48 +362,6 @@ class _SaiInspires extends State<SaiInspires> {
         width: double.infinity,
         height: 8,
         color: Colors.white,
-      ),
-    );
-  }
-
-  // hide the webview behind the container and get content using JS
-  Widget _hiddenWebView() {
-    return Positioned.fill(
-      child: WebView(
-        initialUrl: finalUrl,
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageFinished: (url) async {
-          // get the data to show at the top
-          String dateText = await _webViewController.evaluateJavascript(
-              "document.getElementById('Head').textContent");
-          String contentText = await _webViewController.evaluateJavascript(
-              "document.getElementById('Content').textContent");
-
-          // Trim the data to remove unnecessary content
-          dateText = dateText.replaceAll('"', '');
-          dateText = dateText.trim();
-          contentText = contentText.replaceAll('\\n', '');
-          // to not remove " from the text add temp tag
-          contentText = contentText.replaceAll('\\"', '<q>');
-          contentText = contentText.replaceAll('"', '');
-          // remove temp tag and replace with "
-          contentText = contentText.replaceAll('<q>', '"');
-          contentText = contentText.trim();
-          setState(() {
-            // set the data
-            _dateText = dateText;
-            _contentText = contentText;
-
-            // if data is not proper, don't set the image
-            if (contentText == 'null') imageFinalUrl = '';
-
-            // loading is done
-            _isLoading = false;
-          });
-        },
-        onWebViewCreated: (controller) {
-          _webViewController = controller;
-        },
       ),
     );
   }

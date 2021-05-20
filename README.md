@@ -104,9 +104,6 @@ used to store short data locally like: saving the radio stream while closing the
 __sliding_up_panel:__
 used to select a different radio stream by sliding up the panel.
 
-__webview_flutter:__
-it is hidden inside the Sai Inspires screen which is used to retrieve the data from the web and display it on the top.
-
 __shimmer:__
 used to show loading progress in the Sai Inspires screen
 
