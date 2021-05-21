@@ -32,9 +32,11 @@ class _SaiInspires extends State<SaiInspires> {
   bool _isCopying = false;
 
   String _dateText = ''; // date text id is 'Head'
-  final String _thoughtOfTheDay = 'THOUGHT OF THE DAY';
+  String _thoughtOfTheDay = 'THOUGHT OF THE DAY';
   String _contentText = ''; // content text id is 'Content'
-  final String _byBaba = '-BABA';
+  String _byBaba = '-BABA';
+  String _quote = '';
+  bool _isOldData = false;
 
   @override
   void initState() {
@@ -108,54 +110,11 @@ class _SaiInspires extends State<SaiInspires> {
                       width: MediaQuery.of(context).size.width,
                       color: backgroundColor,
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            left: 20, right: 20, top: 8),
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment(1, 0),
-                              child: SelectableText(
-                                _dateText,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: SelectableText(
-                                _thoughtOfTheDay,
-                                style: TextStyle(
-                                  color: isDarkTheme
-                                      ? Colors.amber
-                                      : Colors.red,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                            SelectableText(
-                              _contentText,
-                              textAlign: TextAlign.justify,
-                              style: TextStyle(
-                                fontSize: 17,
-                                height: 1.3,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                  top: 8.0, bottom: 20),
-                              child: Align(
-                                alignment: Alignment(1, 0),
-                                child: SelectableText(
-                                  _byBaba,
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                        padding:
+                            const EdgeInsets.only(left: 20, right: 20, top: 8),
+                        child: _isOldData
+                            ? _oldContent(isDarkTheme)
+                            : _newContent(isDarkTheme),
                       ),
                     ),
                   ],
@@ -199,15 +158,124 @@ class _SaiInspires extends State<SaiInspires> {
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
     imageFinalUrl =
         '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
-    finalUrl = '$baseUrl?mydate=$formattedDate';
-    _getData();
+    if (date.isAfter(new DateTime(2011, 8, 25))) {
+      finalUrl = '$imageBaseUrl/${date.year}/SI_$imageFormattedDate.htm';
+      _getNewData();
+    } else {
+      finalUrl = '$baseUrl?mydate=$formattedDate';
+      _getOldData();
+    }
   }
 
-  _getData() async {
+  // get data of date from 26 Aug 2011
+  _getNewData() async {
     var file;
     try {
       file = await DefaultCacheManager().getSingleFile(finalUrl);
-    } catch(e) {
+    } catch (e) {
+      setState(() {
+        // if there is no internet
+        _contentText = 'null';
+        imageFinalUrl = '';
+        _isLoading = false;
+      });
+      return;
+    }
+    var response = file.readAsStringSync();
+    var document = parse(response);
+
+    int k;
+    if (document
+            .getElementsByTagName('tbody')[0]
+            .children[1]
+            .getElementsByTagName('font')
+            .length ==
+        0)
+      k = 2;
+    else
+      k = 1;
+
+    String dateText = document
+        .getElementsByTagName('tbody')[0]
+        .children[k]
+        .getElementsByTagName('font')[0]
+        .text;
+
+    String top = document
+        .getElementsByTagName('tbody')[0]
+        .children[k]
+        .getElementsByTagName('font')[1]
+        .text;
+    if (top.contains('Featured'))
+      top = document
+          .getElementsByTagName('tbody')[0]
+          .children[k]
+          .getElementsByTagName('font')[2]
+          .text;
+
+    String contentText = document
+        .getElementsByTagName('tbody')[0]
+        .children[k + 1]
+        .getElementsByTagName('font')[0]
+        .text;
+
+    String from = document
+        .getElementsByTagName('tbody')[0]
+        .children[k + 1]
+        .getElementsByTagName('font')[1]
+        .text;
+
+    int l = document.getElementsByTagName('tbody')[0].children.length;
+    String quote = document
+        .getElementsByTagName('tbody')[0]
+        .children[l - 2]
+        .getElementsByTagName('font')[0]
+        .text;
+
+    // Trim the data to remove unnecessary content
+    dateText = dateText.replaceAll('"', '');
+    dateText = dateText.trim();
+    dateText = 'Date: $dateText';
+
+    top = top.replaceAll('\\n', '');
+    top = top.replaceAll('\\t', '');
+    // to not remove " from the text add temp tag
+    top = top.replaceAll('\\"', '<q>');
+    top = top.replaceAll('"', '');
+    // remove temp tag and replace with "
+    top = top.replaceAll('<q>', '"');
+    top = top.trim();
+
+    contentText = contentText.replaceAll('\\n', '');
+    // to not remove " from the text add temp tag
+    contentText = contentText.replaceAll('\\"', '<q>');
+    contentText = contentText.replaceAll('"', '');
+    // remove temp tag and replace with "
+    contentText = contentText.replaceAll('<q>', '"');
+    contentText = contentText.trim();
+
+    setState(() {
+      _thoughtOfTheDay = top;
+      _byBaba = from;
+      _quote = quote;
+
+      // set the data
+      _dateText = dateText;
+      _contentText = contentText;
+
+      _isOldData = false;
+
+      // loading is done
+      _isLoading = false;
+    });
+  }
+
+  // get data of date before Aug 26 2011
+  _getOldData() async {
+    var file;
+    try {
+      file = await DefaultCacheManager().getSingleFile(finalUrl);
+    } catch (e) {
       setState(() {
         // if there is no internet
         _contentText = 'null';
@@ -232,9 +300,14 @@ class _SaiInspires extends State<SaiInspires> {
     contentText = contentText.replaceAll('<q>', '"');
     contentText = contentText.trim();
     setState(() {
+      _thoughtOfTheDay = 'THOUGHT OF THE DAY';
+      _byBaba = '-BABA';
+
       // set the data
       _dateText = dateText;
       _contentText = contentText;
+
+      _isOldData = true;
 
       // loading is done
       _isLoading = false;
@@ -264,11 +337,15 @@ class _SaiInspires extends State<SaiInspires> {
     if (!_isCopying) {
       _isCopying = true;
       if (_contentText != 'null') {
+        String copyData;
+        if (_isOldData)
+          copyData =
+              '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba';
+        else
+          copyData =
+              '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba\n\n$_quote';
         // if data is visible, copy to clipboard
-        Clipboard.setData(ClipboardData(
-                text:
-                    '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba'))
-            .then((value) {
+        Clipboard.setData(ClipboardData(text: copyData)).then((value) {
           _showSnackBar(context, 'Copied to clipboard');
         });
       } else {
@@ -326,6 +403,114 @@ class _SaiInspires extends State<SaiInspires> {
           ],
         ),
       ),
+    );
+  }
+
+  // for new data >= 26 Aug 2011
+  Widget _newContent(bool isDarkTheme) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment(1, 0),
+          child: SelectableText(
+            _dateText,
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+          child: SelectableText(
+            _thoughtOfTheDay,
+            textAlign: TextAlign.justify,
+            style: TextStyle(
+              color: isDarkTheme ? Colors.amber : Colors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        SelectableText(
+          _contentText,
+          textAlign: TextAlign.justify,
+          style: TextStyle(
+            fontSize: 17,
+            height: 1.3,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Align(
+            alignment: Alignment(1, 0),
+            child: SelectableText(
+              _byBaba,
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 20),
+          child: SelectableText(
+            _quote,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: isDarkTheme ? Colors.amber : Colors.red,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // for old data < 26 Aug 2011
+  Widget _oldContent(bool isDarkTheme) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment(1, 0),
+          child: SelectableText(
+            _dateText,
+            style: TextStyle(
+              fontSize: 14,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SelectableText(
+            _thoughtOfTheDay,
+            style: TextStyle(
+              color: isDarkTheme ? Colors.amber : Colors.red,
+              fontSize: 16,
+            ),
+          ),
+        ),
+        SelectableText(
+          _contentText,
+          textAlign: TextAlign.justify,
+          style: TextStyle(
+            fontSize: 17,
+            height: 1.3,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8.0, bottom: 20),
+          child: Align(
+            alignment: Alignment(1, 0),
+            child: SelectableText(
+              _byBaba,
+              style: TextStyle(
+                fontSize: 15,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
