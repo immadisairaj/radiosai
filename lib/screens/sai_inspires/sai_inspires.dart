@@ -6,6 +6,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:radiosai/screens/sai_inspires/sai_image.dart';
+import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
@@ -122,7 +123,16 @@ class _SaiInspires extends State<SaiInspires> {
               ),
             ),
             // show when no data is retrieved
-            if (_contentText == 'null') _noData(backgroundColor),
+            if (_contentText == 'null')
+              NoData(
+                backgroundColor: backgroundColor,
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                    _updateURL(selectedDate);
+                  });
+                },
+              ),
             // Shown when it is loading
             if (_isLoading)
               Container(
@@ -255,13 +265,12 @@ class _SaiInspires extends State<SaiInspires> {
     contentText = contentText.trim();
 
     setState(() {
-      _thoughtOfTheDay = top;
-      _byBaba = from;
-      _quote = quote;
-
       // set the data
       _dateText = dateText;
       _contentText = contentText;
+      _thoughtOfTheDay = top;
+      _byBaba = from;
+      _quote = quote;
 
       _isOldData = false;
 
@@ -300,12 +309,11 @@ class _SaiInspires extends State<SaiInspires> {
     contentText = contentText.replaceAll('<q>', '"');
     contentText = contentText.trim();
     setState(() {
-      _thoughtOfTheDay = 'THOUGHT OF THE DAY';
-      _byBaba = '-BABA';
-
       // set the data
       _dateText = dateText;
       _contentText = contentText;
+      _thoughtOfTheDay = 'THOUGHT OF THE DAY';
+      _byBaba = '-BABA';
 
       _isOldData = true;
 
@@ -366,44 +374,6 @@ class _SaiInspires extends State<SaiInspires> {
         .then((value) {
       _isCopying = false;
     });
-  }
-
-  // handle when no data is retrieved
-  Widget _noData(Color backgroundColor) {
-    return Container(
-      color: backgroundColor,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 20, right: 20),
-              child: Text(
-                'No Data Available,\ncheck your internet and try again',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            ),
-            ElevatedButton(
-              child: Text(
-                'Retry',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-              onPressed: () {
-                setState(() {
-                  _isLoading = true;
-                  _updateURL(selectedDate);
-                });
-              },
-            )
-          ],
-        ),
-      ),
-    );
   }
 
   // for new data >= 26 Aug 2011

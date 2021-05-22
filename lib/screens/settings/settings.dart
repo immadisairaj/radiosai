@@ -4,7 +4,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:radiosai/screens/settings/general/app_theme.dart';
 import 'package:radiosai/screens/settings/general/starting_radio_stream.dart';
-import 'package:radiosai/widgets/browser.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -120,7 +119,7 @@ class _Settings extends State<Settings> {
             title: Text('About Sai'),
             subtitle: Text('Who is Sri Sathya Sai Baba?'),
             onTap: () {
-              Browser.launchURL(context,
+              _urlLaunch(
                   'http://media.radiosai.org/journals/Portal/bhagavan.htm');
             },
           ),
@@ -128,7 +127,7 @@ class _Settings extends State<Settings> {
             contentPadding: _contentPadding,
             title: Text('About Radio Sai'),
             onTap: () {
-              Browser.launchURL(context, 'https://www.radiosai.org');
+              _urlLaunch('https://www.radiosai.org');
             },
           ),
           Divider(),
@@ -153,30 +152,21 @@ class _Settings extends State<Settings> {
             title: Text('Website'),
             subtitle: Text('https://immadisairaj.me/radiosai'),
             onTap: () {
-              Browser.launchURL(context, 'https://immadisairaj.me/radiosai');
+              _urlLaunch('https://immadisairaj.me/radiosai');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
             title: Text('Contact'),
-            // use url_launcher for mail option because
-            // flutter_custom_tabs doesn't support mailto
-            onTap: () async {
-              final urlString = 'mailto:immadirajendra.sai@gmail.com';
-              try {
-                if (await canLaunch(urlString)) {
-                  await launch(urlString);
-                }
-              } catch (e) {
-                // do nothing
-              }
+            onTap: () {
+              _urlLaunch('mailto:immadirajendra.sai@gmail.com');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
             title: Text('Privacy Policy'),
             onTap: () {
-              Browser.launchURL(context,
+              _urlLaunch(
                   'https://immadisairaj.me/radiosai/privacy_policy.html');
             },
           ),
@@ -195,5 +185,15 @@ class _Settings extends State<Settings> {
         ],
       ),
     );
+  }
+
+  _urlLaunch(urlString) async {
+    try {
+      if (await canLaunch(urlString)) {
+        await launch(urlString);
+      }
+    } catch (e) {
+      // do nothing
+    }
   }
 }
