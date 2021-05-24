@@ -254,6 +254,9 @@ class _SaiInspires extends State<SaiInspires> {
     top = top.replaceAll('"', '');
     // remove temp tag and replace with "
     top = top.replaceAll('<q>', '"');
+    top = top.replaceAll('\n', ' ');
+    // replace multiple spaces with single space
+    top = top.replaceAll(RegExp(' +'), ' ');
     top = top.trim();
 
     contentText = contentText.replaceAll('\\n', '');
@@ -262,7 +265,15 @@ class _SaiInspires extends State<SaiInspires> {
     contentText = contentText.replaceAll('"', '');
     // remove temp tag and replace with "
     contentText = contentText.replaceAll('<q>', '"');
+    contentText = contentText.replaceAll('\n', ' ');
+    // replace multiple spaces with single space
+    contentText = contentText.replaceAll(RegExp(' +'), ' ');
     contentText = contentText.trim();
+
+    quote = quote.replaceAll('\n', ' ');
+    // replace multiple spaces with single space
+    quote = quote.replaceAll(RegExp(' +'), ' ');
+    quote = quote.trim();
 
     setState(() {
       // set the data

@@ -1,6 +1,7 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/bloc/internet_status.dart';
@@ -64,6 +65,11 @@ class MyApp extends StatelessWidget {
         Provider<AppThemeBloc>(
           create: (_) => AppThemeBloc(),
           dispose: (_, AppThemeBloc appThemeBloc) => appThemeBloc.dispose(),
+        ),
+        // stream for time zone
+        Provider<TimeZoneBloc>(
+          create: (_) => TimeZoneBloc(),
+          dispose: (_, TimeZoneBloc timeZoneBloc) => timeZoneBloc.dispose(),
         ),
       ],
       child: Consumer<AppThemeBloc>(

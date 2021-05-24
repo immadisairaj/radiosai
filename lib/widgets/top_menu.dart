@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 import 'package:radiosai/screens/settings/settings.dart';
 import 'package:radiosai/widgets/browser.dart';
@@ -61,8 +62,8 @@ class _TopMenu extends State<TopMenu> {
                         MaterialPageRoute(builder: (context) => Settings()));
                     break;
                   case 'Schedule':
-                    Browser.launchURL(
-                        context, "https://radiosai.org/program/Index.php");
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => RadioSchedule()));
                     break;
                   case 'Audio Archive':
                     Browser.launchURL(context,

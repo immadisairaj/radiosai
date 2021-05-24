@@ -83,11 +83,13 @@ lib
 ├───audio_service   # audio service related task
 ├───bloc            # business logic files related to screens
 │   ├───radio
+│   ├───radio_schedule
 │   └───settings
 ├───constants       # constants
 ├───screens         # all screens
 │   ├───radio
 │   ├───sai_inspires
+│   ├───radio_schedule
 │   └───settings
 │       └───general
 └───widgets         # widgets related to screens
@@ -105,7 +107,7 @@ __sliding_up_panel:__
 used to select a different radio stream by sliding up the panel.
 
 __shimmer:__
-used to show loading progress in the Sai Inspires screen
+used to show loading progress in the data loading screens
 
 __flutter_custom_tabs:__
 it is used for redirecting the URL from the app to chrome powered browser
