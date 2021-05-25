@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -126,6 +129,20 @@ class _SaiInspires extends State<SaiInspires> {
             if (_contentText == 'null')
               NoData(
                 backgroundColor: backgroundColor,
+                text: 'No Data Available,\ncheck your internet and try again',
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                    _updateURL(selectedDate);
+                  });
+                },
+              ),
+            // show when no data is retrieved and timeout
+            if (_contentText == 'timeout')
+              NoData(
+                backgroundColor: backgroundColor,
+                text:
+                    'No Data Available,\nURL timeout, try again after some time',
                 onPressed: () {
                   setState(() {
                     _isLoading = true;
@@ -181,11 +198,21 @@ class _SaiInspires extends State<SaiInspires> {
   _getNewData() async {
     var file;
     try {
-      file = await DefaultCacheManager().getSingleFile(finalUrl);
-    } catch (e) {
+      file = await DefaultCacheManager()
+          .getSingleFile(finalUrl)
+          .timeout(const Duration(seconds: 4));
+    } on SocketException catch (_) {
       setState(() {
         // if there is no internet
         _contentText = 'null';
+        imageFinalUrl = '';
+        _isLoading = false;
+      });
+      return;
+    } on TimeoutException catch (_) {
+      setState(() {
+        // if timeout
+        _contentText = 'timeout';
         imageFinalUrl = '';
         _isLoading = false;
       });
@@ -294,11 +321,21 @@ class _SaiInspires extends State<SaiInspires> {
   _getOldData() async {
     var file;
     try {
-      file = await DefaultCacheManager().getSingleFile(finalUrl);
-    } catch (e) {
+      file = await DefaultCacheManager()
+          .getSingleFile(finalUrl)
+          .timeout(const Duration(seconds: 4));
+    } on SocketException catch (_) {
       setState(() {
         // if there is no internet
         _contentText = 'null';
+        imageFinalUrl = '';
+        _isLoading = false;
+      });
+      return;
+    } on TimeoutException catch (_) {
+      setState(() {
+        // if timeout
+        _contentText = 'timeout';
         imageFinalUrl = '';
         _isLoading = false;
       });

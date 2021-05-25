@@ -6,10 +6,12 @@ class NoData extends StatefulWidget {
   NoData({
     key,
     @required this.backgroundColor,
+    @required this.text,
     @required this.onPressed,
   }) : super(key: key);
 
   final Color backgroundColor;
+  final String text;
   final Function onPressed;
 
   @override
@@ -28,7 +30,7 @@ class _NoData extends State<NoData> {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20),
               child: Text(
-                'No Data Available,\ncheck your internet and try again',
+                widget.text,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,

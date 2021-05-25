@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -227,6 +229,21 @@ class _ScheduleData extends State<ScheduleData> {
                   if (_finalTableData[0][0] == 'null' && _isLoading == false)
                     NoData(
                       backgroundColor: backgroundColor,
+                      text:
+                          'No Data Available,\ncheck your internet and try again',
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          _updateURL(selectedDate);
+                        });
+                      },
+                    ),
+                  // show when no data is retrieved and timeout
+                  if (_finalTableData[0][0] == 'timeout' && _isLoading == false)
+                    NoData(
+                      backgroundColor: backgroundColor,
+                      text:
+                          'No Data Available,\nURL timeout, try again after some time',
                       onPressed: () {
                         setState(() {
                           _isLoading = true;
@@ -276,12 +293,24 @@ class _ScheduleData extends State<ScheduleData> {
       // get data from online if not present in cache
       http.Response response;
       try {
-        response = await http.post(Uri.parse(baseUrl), body: formData);
-      } catch (e) {
+        response = await http
+            .post(Uri.parse(baseUrl), body: formData)
+            .timeout(const Duration(seconds: 5));
+      } on SocketException catch (_) {
         setState(() {
           // if there is no internet
           _finalTableData = [
             ['null']
+          ];
+          finalUrl = '';
+          _isLoading = false;
+        });
+        return;
+      } on TimeoutException catch (_) {
+        setState(() {
+          // if timeout
+          _finalTableData = [
+            ['timeout']
           ];
           finalUrl = '';
           _isLoading = false;
