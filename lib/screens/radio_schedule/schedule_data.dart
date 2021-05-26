@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
@@ -35,6 +36,10 @@ class _ScheduleData extends State<ScheduleData> {
   final DateTime now = DateTime.now();
   DateTime selectedDate;
 
+  ScrollController _scrollController;
+  bool _showDropDown = true;
+  bool _isScrollingDown = false;
+
   // used for the first build
   int oldStreamId = 0;
   final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
@@ -58,6 +63,15 @@ class _ScheduleData extends State<ScheduleData> {
     selectedStream = 'Asia Stream';
     oldStreamId = widget.radioStreamIndex;
     super.initState();
+    _scrollController = new ScrollController();
+    _scrollController.addListener(_scrollListener);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -88,60 +102,75 @@ class _ScheduleData extends State<ScheduleData> {
         color: backgroundColor,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
+            AnimatedContainer(
+              height: _showDropDown ? null : 0,
+              duration: Duration(milliseconds: 300),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
+                        style: TextStyle(
+                          fontSize: 19,
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                'Select Zone',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Center(
+                              child: Text(
+                                'Select Stream',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Row(
                       children: [
                         Flexible(
-                          flex: 1,
                           child: Center(
-                            child: Text(
-                              'Select Zone',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: _timeZoneDropDown(isDarkTheme),
                             ),
                           ),
                         ),
                         Flexible(
-                          flex: 1,
                           child: Center(
-                            child: Text(
-                              'Select Stream',
-                              style: TextStyle(
-                                fontSize: 18,
-                              ),
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5),
+                              child: _streamDropDown(isDarkTheme),
                             ),
                           ),
                         ),
                       ],
                     ),
-                  ),
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: _timeZoneDropDown(isDarkTheme),
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: _streamDropDown(isDarkTheme),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Expanded(
@@ -151,6 +180,7 @@ class _ScheduleData extends State<ScheduleData> {
                     RefreshIndicator(
                       onRefresh: _refresh,
                       child: SingleChildScrollView(
+                        controller: _scrollController,
                         child: ListView.builder(
                             shrinkWrap: true,
                             primary: false,
@@ -295,7 +325,7 @@ class _ScheduleData extends State<ScheduleData> {
       try {
         response = await http
             .post(Uri.parse(baseUrl), body: formData)
-            .timeout(const Duration(seconds: 5));
+            .timeout(const Duration(seconds: 40));
       } on SocketException catch (_) {
         setState(() {
           // if there is no internet
@@ -356,6 +386,21 @@ class _ScheduleData extends State<ScheduleData> {
     // parsing table data
     List<List<String>> tableData = [];
     int dataLength = table.getElementsByTagName('tr').length - 1;
+    if (dataLength == 0) {
+      tableData = [
+        ['null']
+      ];
+      setState(() {
+        // set the data
+        _finalTableHead = tableHead;
+        _finalTableData = tableData;
+        _finalLocalTime = localTime;
+
+        // loading is done
+        _isLoading = false;
+      });
+      return;
+    }
     for (int i = 1; i <= dataLength; i++) {
       List<String> tempList = [];
       var rowData =
@@ -430,8 +475,8 @@ class _ScheduleData extends State<ScheduleData> {
       // Schedule started on 8th Nov 2019
       firstDate: DateTime(2019, 11, 8),
       initialDate: selectedDate,
-      // Schedule is available for 2 days after current date
-      lastDate: now.add(Duration(days: 2)),
+      // Schedule is available for 1 day after current date
+      lastDate: now.add(Duration(days: 1)),
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -467,6 +512,25 @@ class _ScheduleData extends State<ScheduleData> {
     if (streamId == '') return;
     int index = firstStreamMap.indexOf(int.parse(streamId));
     selectedStream = MyConstants.of(context).radioStreamName[index];
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.reverse) {
+      if (!_isScrollingDown) {
+        _isScrollingDown = true;
+        _showDropDown = false;
+        setState(() {});
+      }
+    }
+    if (_scrollController.position.userScrollDirection ==
+        ScrollDirection.forward) {
+      if (_isScrollingDown) {
+        _isScrollingDown = false;
+        _showDropDown = true;
+        setState(() {});
+      }
+    }
   }
 
   Widget _streamDropDown(bool isDarkTheme) {
@@ -545,14 +609,14 @@ class _ScheduleData extends State<ScheduleData> {
         child: Column(
           children: [
             // 5 shimmer boxes
-            for (int i = 0; i < 6; i++) _shimmerBox(),
+            for (int i = 0; i < 6; i++) _shimmerContent(),
           ],
         ),
       ),
     );
   }
 
-  Widget _shimmerBox() {
+  Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(
       padding: EdgeInsets.only(bottom: 20),

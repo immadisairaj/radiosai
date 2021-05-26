@@ -200,7 +200,7 @@ class _SaiInspires extends State<SaiInspires> {
     try {
       file = await DefaultCacheManager()
           .getSingleFile(finalUrl)
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 40));
     } on SocketException catch (_) {
       setState(() {
         // if there is no internet
@@ -323,7 +323,7 @@ class _SaiInspires extends State<SaiInspires> {
     try {
       file = await DefaultCacheManager()
           .getSingleFile(finalUrl)
-          .timeout(const Duration(seconds: 4));
+          .timeout(const Duration(seconds: 40));
     } on SocketException catch (_) {
       setState(() {
         // if there is no internet
