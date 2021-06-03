@@ -87,6 +87,7 @@ lib
 │   └───settings
 ├───constants       # constants
 ├───screens         # all screens
+│   ├───media
 │   ├───radio
 │   ├───sai_inspires
 │   ├───radio_schedule

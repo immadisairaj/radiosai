@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -104,7 +105,7 @@ class _ScheduleData extends State<ScheduleData> {
           children: [
             AnimatedContainer(
               height: _showDropDown ? null : 0,
-              duration: Duration(milliseconds: 300),
+              duration: Duration(milliseconds: 500),
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -181,6 +182,7 @@ class _ScheduleData extends State<ScheduleData> {
                       onRefresh: _refresh,
                       child: SingleChildScrollView(
                         controller: _scrollController,
+                        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                         child: ListView.builder(
                             shrinkWrap: true,
                             primary: false,
@@ -245,7 +247,14 @@ class _ScheduleData extends State<ScheduleData> {
                                       ),
                                     ),
                                     borderRadius: BorderRadius.circular(8.0),
-                                    onTap: () {},
+                                    onTap: () {
+                                      if (fids != '')
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    Media(fids: fids)));
+                                    },
                                   ),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(8.0),
@@ -608,7 +617,7 @@ class _ScheduleData extends State<ScheduleData> {
         enabled: true,
         child: Column(
           children: [
-            // 5 shimmer boxes
+            // 5 shimmer context
             for (int i = 0; i < 6; i++) _shimmerContent(),
           ],
         ),
