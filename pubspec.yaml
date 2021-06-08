@@ -45,7 +45,6 @@ dependencies:
   permission_handler: ^7.1.0
   ext_storage: ^1.0.3
   gallery_saver: ^2.1.0
-  flutter_media_metadata: ^0.1.0
   html: ^0.15.0
   http: ^0.13.3
   # Audio packages

@@ -3,30 +3,16 @@ import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
 class MediaPlayerTask extends BackgroundAudioTask {
-  // final _mediaLibrary = MediaLibrary();
   AudioPlayer _player = new AudioPlayer();
   ConcatenatingAudioSource concatenatingAudioSource;
   AudioProcessingState _skipState;
   Seeker _seeker;
   StreamSubscription<PlaybackEvent> _eventSubscription;
 
-  // List<MediaItem> get queue => <MediaItem>[
-  //   MediaItem(
-  //     id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-  //     album: "Science Friday",
-  //     title: "From Cat Rheology To Operatic Incompetence",
-  //     artist: "Science Friday and WNYC Studios",
-  //     duration: Duration(milliseconds: 2856950),
-  //     artUri: Uri.parse(
-  //         "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
-  //   ),
-  // ];
-  // List<MediaItem> get queue => _mediaLibrary.items;
   List<MediaItem> mediaQueue;
   List<MediaItem> get queue => mediaQueue;
   int get index => _player.currentIndex;
@@ -40,16 +26,11 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // Get the path of image for artUri in notification
     String path = await getNotificationImage();
 
-    // Get the duration of the audio file
-    int duration = await getDuration(params['audioSource']);
-
     // Set media item to tell the clients what is playing
     final tempMediaItem = MediaItem(
       id: params['audioSource'],
       album: "Radio Sai Global Harmony",
       title: params['audioName'],
-      artist: "Radio Sai",
-      duration: Duration(milliseconds: duration),
       artUri: Uri.parse('file://$path'),
     );
 
@@ -88,6 +69,10 @@ class MediaPlayerTask extends BackgroundAudioTask {
     );
     try {
       await _player.setAudioSource(concatenatingAudioSource);
+      // update the duration when just_audio decodes it
+      _player.durationStream.listen((duration) {
+        updateQueueWithCurrentDuration(duration);
+      });
       // In this example, we automatically start playing on start.
       onPlay();
     } catch (e) {
@@ -103,16 +88,11 @@ class MediaPlayerTask extends BackgroundAudioTask {
         // Get the path of image for artUri in notification
         String path = await getNotificationImage();
 
-        // Get the duration of the audio file
-        int duration = await getDuration(params['audioSource']);
-
         // Set media item to tell the clients what is playing
         final tempMediaItem = MediaItem(
           id: params['audioSource'],
           album: "Radio Sai Global Harmony",
           title: params['audioName'],
-          artist: "Radio Sai",
-          duration: Duration(milliseconds: duration),
           artUri: Uri.parse('file://$path'),
         );
 
@@ -125,6 +105,17 @@ class MediaPlayerTask extends BackgroundAudioTask {
         break;
     }
     return super.onCustomAction(name, params);
+  }
+
+  // updates the media item data with duration after decoding
+  // reference from audio_service github issue 543
+  void updateQueueWithCurrentDuration(Duration duration) {
+    final songIndex = _player.playbackEvent.currentIndex;
+    print('current index: $songIndex, duration: $duration');
+    final modifiedMediaItem = mediaItem.copyWith(duration: duration);
+    mediaQueue[songIndex] = modifiedMediaItem;
+    AudioServiceBackground.setMediaItem(queue[songIndex]);
+    AudioServiceBackground.setQueue(queue);
   }
 
   @override
@@ -274,22 +265,6 @@ class MediaPlayerTask extends BackgroundAudioTask {
     String filePath = '$appDocPath/sai_listens_notification.jpg';
     return filePath;
   }
-
-  // Get the duration of the media
-  Future<int> getDuration(String mediaLink) async {
-    // takes a lot of time to get the media data and holds off the UI
-    // have to find another way to get the duration
-    var retriever;
-    try {
-      retriever = new MetadataRetriever();
-      await retriever.setUri(Uri.parse(mediaLink));
-    } catch (e) {
-      print(e);
-    }
-    Metadata metadata = await retriever.metadata;
-    print(metadata.trackDuration.toString());
-    return metadata.trackDuration;
-  }
 }
 
 class Seeker {
@@ -321,31 +296,3 @@ class Seeker {
     _running = false;
   }
 }
-
-// /// Provides access to a library of media items. In your app, this could come
-// /// from a database or web service.
-// class MediaLibrary {
-//   final _items = <MediaItem>[
-//     MediaItem(
-//       id: "https://s3.amazonaws.com/scifri-segments/scifri201711241.mp3",
-//       album: "Science Friday",
-//       title: "From Cat Rheology To Operatic Incompetence",
-//       artist: "Science Friday and WNYC Studios",
-//       duration: Duration(milliseconds: 2856950),
-//       artUri: Uri.parse(
-//           "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
-//     ),
-//     // MediaItem(
-//     //   // This can be any unique id, but we use the audio URL for convenience.
-//     //   id: "http://dl.radiosai.org/SPECIAL_RUSSIAN_SONGS.mp3",
-//     //   album: "Science Friday",
-//     //   title: "Special Russian Songs",
-//     //   artist: "RS",
-//     //   duration: Duration(milliseconds: 3150916),
-//     //   artUri: Uri.parse(
-//     //       "https://media.wnyc.org/i/1400/1400/l/80/1/ScienceFriday_WNYCStudios_1400.jpg"),
-//     // ),
-//   ];
-
-//   List<MediaItem> get items => _items;
-// }

@@ -7,7 +7,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:radiosai/screens/media_player/media_player.dart';
@@ -15,7 +14,6 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:radiosai/audio_service/media_player_task.dart';
 import 'package:shimmer/shimmer.dart';
 
-// NOTE: Your entrypoint MUST be a top-level function.
 void _mediaPlayerTaskEntrypoint() async {
   AudioServiceBackground.run(() => MediaPlayerTask());
 }
@@ -275,6 +273,7 @@ class _Media extends State<Media> {
   }
 
   void addToQueue(String name, String link) async {
+    // TODO: don't add duplicate to queue
     try {
       // passing params to send the source to play
       Map<String, dynamic> _params = {
