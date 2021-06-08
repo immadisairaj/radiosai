@@ -2,13 +2,23 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_media_metadata/flutter_media_metadata.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
+import 'package:radiosai/audio_service/media_player_task.dart';
 import 'package:shimmer/shimmer.dart';
+
+// NOTE: Your entrypoint MUST be a top-level function.
+void _mediaPlayerTaskEntrypoint() async {
+  AudioServiceBackground.run(() => MediaPlayerTask());
+}
 
 class Media extends StatefulWidget {
   Media({
@@ -26,11 +36,12 @@ class _Media extends State<Media> {
   bool _isLoading = true;
 
   String baseUrl = 'https://radiosai.org/program/Download.php';
-  String mediaBaseUrl = 'dl.radiosai.org/';
+  String mediaBaseUrl = 'https://dl.radiosai.org/';
   String mediaFileType = '.mp3';
   String finalUrl = '';
 
   List<String> _finalMediaData = ['null'];
+  List<String> _finalMediaLinks = [];
 
   @override
   void initState() {
@@ -75,9 +86,6 @@ class _Media extends State<Media> {
                           // replace '_' to ' ' in the text and retain it's original name
                           String mediaName = _finalMediaData[index];
                           mediaName = mediaName.replaceAll('_', ' ');
-                          // append string to get media link
-                          String mediaLink =
-                              '$mediaBaseUrl${_finalMediaData[index]}$mediaFileType';
                           return Padding(
                             padding: EdgeInsets.only(left: 8, right: 8),
                             child: Card(
@@ -91,12 +99,32 @@ class _Media extends State<Media> {
                                     child: ListTile(
                                       title: Text(mediaName),
                                       // TODO: download option?
+                                      trailing: IconButton(
+                                        icon: Icon(Icons.add_to_queue_outlined),
+                                        onPressed: () {
+                                          // TODO: change this later
+                                          // only adds when the queue is already present
+                                          addToQueue(mediaName,
+                                              _finalMediaLinks[index]);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      MediaPlayer()));
+                                        },
+                                      ),
                                     ),
                                   ),
                                 ),
                                 borderRadius: BorderRadius.circular(8.0),
-                                onTap: () {
+                                onTap: () async {
                                   // TODO: move to player/something
+                                  startPlayer(
+                                      mediaName, _finalMediaLinks[index]);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => MediaPlayer()));
                                 },
                               ),
                               shape: RoundedRectangleBorder(
@@ -197,26 +225,67 @@ class _Media extends State<Media> {
     _parseData(tempResponse);
   }
 
-  _parseData(String response) {
+  _parseData(String response) async {
     var document = parse(response);
     var mediaTags = document.getElementsByTagName('a');
 
     List<String> mediaFiles = [];
+    List<String> mediaLinks = [];
     int length = mediaTags.length;
     for (int i = 0; i < length; i++) {
       var temp = mediaTags[i].text;
       // remove the mp3 tags (add later when playing)
       temp = temp.replaceAll('.mp3', '');
       mediaFiles.add(temp);
+
+      // append string to get media link
+      mediaLinks.add('$mediaBaseUrl${mediaFiles[i]}$mediaFileType');
     }
 
     setState(() {
       // set the data
       _finalMediaData = mediaFiles;
+      _finalMediaLinks = mediaLinks;
 
       // loading is done
       _isLoading = false;
     });
+  }
+
+  void startPlayer(String name, String link) async {
+    try {
+      // passing params to send the source to play
+      Map<String, dynamic> _params = {
+        'audioSource': link,
+        'audioName': name,
+      };
+      await AudioService.stop();
+      AudioService.connect();
+      AudioService.start(
+        backgroundTaskEntrypoint: _mediaPlayerTaskEntrypoint,
+        params: _params,
+        // clear the notification when paused
+        androidStopForegroundOnPause: true,
+        androidEnableQueue: true,
+        // androidNotificationChannelName: 'Media Player',
+      );
+    } on PlatformException {
+      print("Execption while registering");
+    }
+  }
+
+  void addToQueue(String name, String link) async {
+    try {
+      // passing params to send the source to play
+      Map<String, dynamic> _params = {
+        'audioSource': link,
+        'audioName': name,
+      };
+      // using custom action because we are getting duration and artUi separately
+      AudioService.customAction('addToQueue', _params);
+    } catch (e) {
+      print("Execption while adding: $e");
+    }
   }
 
   // for refreshing the data

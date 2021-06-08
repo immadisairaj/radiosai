@@ -45,11 +45,12 @@ dependencies:
   permission_handler: ^7.1.0
   ext_storage: ^1.0.3
   gallery_saver: ^2.1.0
+  flutter_media_metadata: ^0.1.0
   html: ^0.15.0
   http: ^0.13.3
   # Audio packages
-  just_audio: ^0.7.4
-  audio_service: ^0.17.0
+  just_audio: ^0.7.5
+  audio_service: ^0.17.1
 
 flutter_icons:
   image_path: assets/sai_voice_logo.png

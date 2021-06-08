@@ -33,6 +33,8 @@ class MyConstants extends InheritedWidget {
     // 'Vedam',
     'Audio Archive',
     'Settings',
+    // TODO: might have to remove later
+    'Audio Demo',
   ];
 
   // list of radio streams for radio schedule
