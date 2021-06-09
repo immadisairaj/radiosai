@@ -251,15 +251,30 @@ class _Media extends State<Media> {
   }
 
   void startPlayer(String name, String link) async {
+    if (AudioService.playbackState.playing) {
+      if (AudioService.queue != null && AudioService.queue.length != 0) {
+        // TODO: replace queue if a new item is added instead of stopping
+        // // AudioService.stop doesn't work when played for first time
+        // // So, using a custom action to stop the player (workaround)
+        // await AudioService.customAction('stop');
+      } else {
+        // if radio player is playing
+        await AudioService.stop();
+        initRadioService(name, link);
+      }
+    } else {
+      initRadioService(name, link);
+    }
+  }
+
+  void initRadioService(String name, String link) {
     try {
       // passing params to send the source to play
       Map<String, dynamic> _params = {
         'audioSource': link,
         'audioName': name,
       };
-      if (AudioService.playbackState.playing) {
-        await AudioService.stop();
-      }
+
       AudioService.connect();
       AudioService.start(
         backgroundTaskEntrypoint: _mediaPlayerTaskEntrypoint,

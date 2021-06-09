@@ -61,7 +61,13 @@ class _RadioHome extends State<RadioHome> {
                                   .map((state) => state.playing)
                                   .distinct(),
                               builder: (context, snapshot) {
-                                final isPlaying = snapshot.data ?? false;
+                                bool isPlaying = snapshot.data ?? false;
+
+                                // change the playing state only when radio player is playing
+                                if (AudioService.queue != null &&
+                                    AudioService.queue.length != 0) {
+                                  isPlaying = false;
+                                }
 
                                 // get the data of the internet connectivity change
                                 bool hasInternet =

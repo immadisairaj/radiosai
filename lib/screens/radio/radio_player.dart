@@ -356,8 +356,13 @@ class _RadioPlayer extends State<RadioPlayer>
 
   // handle the player when pause/play button is pressed
   void _handleOnPressed(
-      int index, bool isPlaying, bool isLoading, bool hasInternet) {
+      int index, bool isPlaying, bool isLoading, bool hasInternet) async {
     if (!isPlaying) {
+      if (AudioService.playbackState.playing) {
+        // stop if media player is playing
+        await AudioService.customAction('stop');
+        // TODO: make the radio player play after media player stops
+      }
       if (hasInternet) {
         initRadioService(index);
         if (!isLoading) playRadioService();
@@ -395,7 +400,10 @@ class _RadioPlayer extends State<RadioPlayer>
 
   // handle the loading progressing widget based on the running state
   void _handleLoadingState(RadioLoadingBloc loadingStreamBloc) {
-    loadingStreamBloc.changeLoadingState.add(AudioService.running);
+    // change state only when radio player is playing
+    if (AudioServiceBackground.queue == null) {
+      loadingStreamBloc.changeLoadingState.add(AudioService.running);
+    }
   }
 
   // handle the player when radio stream changes
@@ -412,8 +420,8 @@ class _RadioPlayer extends State<RadioPlayer>
         initRadioService(radioStreamIndex);
       } else {
         // if the index is changed when user is not playing
-        // then, stop the player
-        await stopRadioService();
+        // then, do nothing
+        // await stopRadioService();
       }
     }
   }
