@@ -257,7 +257,7 @@ class _Media extends State<Media> {
         'audioSource': link,
         'audioName': name,
       };
-      if(AudioService.playbackState.playing) {
+      if (AudioService.playbackState.playing) {
         await AudioService.stop();
       }
       AudioService.connect();
@@ -267,7 +267,7 @@ class _Media extends State<Media> {
         // clear the notification when paused
         androidStopForegroundOnPause: true,
         androidEnableQueue: true,
-        // androidNotificationChannelName: 'Media Player',
+        androidNotificationChannelName: 'Media Player',
       );
     } on PlatformException {
       print("Execption while registering");

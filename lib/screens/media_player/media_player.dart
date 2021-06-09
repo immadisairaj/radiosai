@@ -182,7 +182,7 @@ class _MediaPlayer extends State<MediaPlayer> {
         },
       );
 
-      ElevatedButton startButton(String label, VoidCallback onPressed) =>
+  ElevatedButton startButton(String label, VoidCallback onPressed) =>
       ElevatedButton(
         child: Text(label),
         onPressed: onPressed,
@@ -203,7 +203,11 @@ class _MediaPlayer extends State<MediaPlayer> {
   IconButton stopButton() => IconButton(
         icon: Icon(Icons.stop),
         iconSize: 64.0,
-        onPressed: AudioService.stop,
+        onPressed: () async {
+          // AudioService.stop doesn't work when played for first time
+          // So, using a custom action to stop the player (workaround)
+          await AudioService.customAction('stop');
+        },
       );
 }
 

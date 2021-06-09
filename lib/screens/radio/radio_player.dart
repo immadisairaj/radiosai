@@ -333,6 +333,7 @@ class _RadioPlayer extends State<RadioPlayer>
         params: _params,
         // clear the notification when paused
         androidStopForegroundOnPause: true,
+        androidNotificationChannelName: 'Radio Player',
       );
 
       // setting the temporary radio stream index to track the

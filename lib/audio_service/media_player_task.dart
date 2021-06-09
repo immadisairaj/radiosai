@@ -107,6 +107,11 @@ class MediaPlayerTask extends BackgroundAudioTask {
         // broadcast the queue
         AudioServiceBackground.setQueue(queue);
         break;
+      // use custom action to stop due to an issue
+      // with when directly calling AudioService.stop
+      case 'stop':
+        await onStop();
+        break;
     }
     return super.onCustomAction(name, params);
   }
