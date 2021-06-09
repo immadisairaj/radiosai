@@ -7,7 +7,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
 
 class MediaPlayerTask extends BackgroundAudioTask {
-  AudioPlayer _player = new AudioPlayer();
+  AudioPlayer _player;
   ConcatenatingAudioSource concatenatingAudioSource;
   AudioProcessingState _skipState;
   Seeker _seeker;
@@ -20,6 +20,10 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onStart(Map<String, dynamic> params) async {
+    // initialize the just_audio player
+    // global declaration might not create new player
+    _player = new AudioPlayer();
+
     // initialize the queue
     mediaQueue = [];
 
@@ -33,7 +37,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
       title: params['audioName'],
       artUri: Uri.parse('file://$path'),
     );
-
+    // add media item to the queue
     mediaQueue.add(tempMediaItem);
 
     // Broadcast media item changes.
@@ -48,8 +52,8 @@ class MediaPlayerTask extends BackgroundAudioTask {
     _player.processingStateStream.listen((state) {
       switch (state) {
         case ProcessingState.completed:
-          // In this example, the service stops when reaching the end.
-          onStop();
+          // In this example, the service pauses when reaching the end.
+          onPause();
           break;
         case ProcessingState.ready:
           // If we just came from skipping between tracks, clear the skip
@@ -166,6 +170,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onStop() async {
+    _player.stop();
     await _player.dispose();
     _eventSubscription.cancel();
     // It is important to wait for this state to be broadcast before we shut

@@ -257,7 +257,9 @@ class _Media extends State<Media> {
         'audioSource': link,
         'audioName': name,
       };
-      await AudioService.stop();
+      if(AudioService.playbackState.playing) {
+        await AudioService.stop();
+      }
       AudioService.connect();
       AudioService.start(
         backgroundTaskEntrypoint: _mediaPlayerTaskEntrypoint,
