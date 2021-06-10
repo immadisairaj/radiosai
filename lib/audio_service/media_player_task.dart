@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:path_provider/path_provider.dart';
 
 class MediaPlayerTask extends BackgroundAudioTask {
   AudioPlayer _player;
@@ -27,16 +24,13 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // initialize the queue
     mediaQueue = [];
 
-    // Get the path of image for artUri in notification
-    String path = await getNotificationImage();
-
-    // Set media item to tell the clients what is playing
     final tempMediaItem = MediaItem(
-      id: params['audioSource'],
-      album: "Radio Sai Global Harmony",
-      title: params['audioName'],
-      artUri: Uri.parse('file://$path'),
+      id: params['id'],
+      album: params['album'],
+      title: params['title'],
+      artUri: Uri.parse(params['artUri']),
     );
+
     // add media item to the queue
     mediaQueue.add(tempMediaItem);
 
@@ -88,25 +82,6 @@ class MediaPlayerTask extends BackgroundAudioTask {
   @override
   Future onCustomAction(String name, params) async {
     switch (name) {
-      case 'addToQueue':
-        // Get the path of image for artUri in notification
-        String path = await getNotificationImage();
-
-        // Set media item to tell the clients what is playing
-        final tempMediaItem = MediaItem(
-          id: params['audioSource'],
-          album: "Radio Sai Global Harmony",
-          title: params['audioName'],
-          artUri: Uri.parse('file://$path'),
-        );
-
-        mediaQueue.add(tempMediaItem);
-        await concatenatingAudioSource
-            .add(AudioSource.uri(Uri.parse(tempMediaItem.id)));
-
-        // broadcast the queue
-        AudioServiceBackground.setQueue(queue);
-        break;
       // use custom action to stop due to an issue
       // with when directly calling AudioService.stop
       case 'stop':
@@ -114,6 +89,30 @@ class MediaPlayerTask extends BackgroundAudioTask {
         break;
     }
     return super.onCustomAction(name, params);
+  }
+
+  @override
+  Future<void> onAddQueueItem(MediaItem mediaItem) async {
+    mediaQueue.add(mediaItem);
+    await concatenatingAudioSource
+        .add(AudioSource.uri(Uri.parse(mediaItem.id)));
+
+    // broadcast the queue
+    await AudioServiceBackground.setQueue(queue);
+    return super.onAddQueueItem(mediaItem);
+  }
+
+  @override
+  Future<void> onRemoveQueueItem(MediaItem mediaItem) async {
+    int removeIndex = mediaQueue.indexOf(mediaItem);
+    mediaQueue.remove(mediaItem);
+    // stop if no item in queue
+    if(mediaQueue.length == 0) onStop();
+    await concatenatingAudioSource.removeAt(removeIndex);
+
+    // broadcast the queue
+    await AudioServiceBackground.setQueue(queue);
+    return super.onRemoveQueueItem(mediaItem);
   }
 
   // updates the media item data with duration after decoding
@@ -146,6 +145,20 @@ class MediaPlayerTask extends BackgroundAudioTask {
     _player.seek(Duration.zero, index: newIndex);
     // Demonstrate custom events.
     AudioServiceBackground.sendCustomEvent('skip to $newIndex');
+  }
+
+  @override
+  Future<void> onSkipToPrevious() async {
+    // if player played more than 2 seconds
+    // then seek to beginning of the media
+    if (_player.position > Duration(seconds: 2)) {
+      await _player.seek(Duration.zero, index: _player.currentIndex);
+      return;
+    } else {
+      _skipState = AudioProcessingState.skippingToPrevious;
+      await _player.seekToPrevious();
+    }
+    return super.onSkipToPrevious();
   }
 
   @override
@@ -249,31 +262,6 @@ class MediaPlayerTask extends BackgroundAudioTask {
       default:
         throw Exception("Invalid state: ${_player.processingState}");
     }
-  }
-
-  // Get notification image stored in file,
-  // if not stored, then store the image
-  Future<String> getNotificationImage() async {
-    String path = await getFilePath();
-    File file = File(path);
-    bool fileExists = file.existsSync();
-    // if the image already exists, return the path
-    if (fileExists) return path;
-    // store the image into path from assets then return the path
-    final byteData =
-        await rootBundle.load('assets/sai_listens_notification.jpg');
-    // if file is not created, create to write into the file
-    file.create(recursive: true);
-    await file.writeAsBytes(byteData.buffer.asUint8List());
-    return path;
-  }
-
-  // Get the file path of the notification image
-  Future<String> getFilePath() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDocDir.path;
-    String filePath = '$appDocPath/sai_listens_notification.jpg';
-    return filePath;
   }
 }
 

@@ -401,7 +401,7 @@ class _RadioPlayer extends State<RadioPlayer>
   // handle the loading progressing widget based on the running state
   void _handleLoadingState(RadioLoadingBloc loadingStreamBloc) {
     // change state only when radio player is playing
-    if (AudioServiceBackground.queue == null) {
+    if (!(AudioService.queue != null && AudioService.queue.length != 0)) {
       loadingStreamBloc.changeLoadingState.add(AudioService.running);
     }
   }

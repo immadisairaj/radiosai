@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:radiosai/audio_service/media_player_task.dart';
@@ -253,30 +254,43 @@ class _Media extends State<Media> {
   void startPlayer(String name, String link) async {
     if (AudioService.playbackState.playing) {
       if (AudioService.queue != null && AudioService.queue.length != 0) {
-        // TODO: replace queue if a new item is added instead of stopping
-        // // AudioService.stop doesn't work when played for first time
-        // // So, using a custom action to stop the player (workaround)
-        // await AudioService.customAction('stop');
+        // if trying to add the current playing media, do nothing
+        if (AudioService.currentMediaItem.id == link) return;
+
+        // doesn't add to queue if already exists
+        bool isAdded = await addToQueue(name, link);
+        if (!isAdded) {
+          // if already exists, move to last
+          await moveToLast(name, link);
+        }
+
+        // play the media
+        AudioService.skipToQueueItem(link);
       } else {
         // if radio player is playing
         await AudioService.stop();
         initRadioService(name, link);
       }
     } else {
+      // initialize the radio service
       initRadioService(name, link);
     }
   }
 
-  void initRadioService(String name, String link) {
+  void initRadioService(String name, String link) async {
+    final tempMediaItem = await getMediaItem(name, link);
+
     try {
       // passing params to send the source to play
       Map<String, dynamic> _params = {
-        'audioSource': link,
-        'audioName': name,
+        'id': tempMediaItem.id,
+        'album': tempMediaItem.album,
+        'title': tempMediaItem.title,
+        'artUri': tempMediaItem.artUri.toString(),
       };
 
       AudioService.connect();
-      AudioService.start(
+      await AudioService.start(
         backgroundTaskEntrypoint: _mediaPlayerTaskEntrypoint,
         params: _params,
         // clear the notification when paused
@@ -289,19 +303,43 @@ class _Media extends State<Media> {
     }
   }
 
-  void addToQueue(String name, String link) async {
-    // TODO: don't add duplicate to queue
-    try {
-      // passing params to send the source to play
-      Map<String, dynamic> _params = {
-        'audioSource': link,
-        'audioName': name,
-      };
-      // using custom action because we are getting duration and artUi separately
-      AudioService.customAction('addToQueue', _params);
-    } catch (e) {
-      print("Execption while adding: $e");
+  // add a new media item to the end of the queue
+  // doesn't add and returns false if item already in queue
+  Future<bool> addToQueue(String name, String link) async {
+    final tempMediaItem = await getMediaItem(name, link);
+    if (AudioService.queue.contains(tempMediaItem)) {
+      // TODO: show that the current is already in queue or something
+      return false;
+    } else {
+      await AudioService.addQueueItem(tempMediaItem);
+      return true;
     }
+  }
+
+  // move the media item to the end of the queue
+  // check if the item is already in queue before calling
+  Future<void> moveToLast(String name, String link) async {
+    if (AudioService.queue != null && AudioService.queue.length > 1) {
+      final tempMediaItem = await getMediaItem(name, link);
+      await AudioService.removeQueueItem(tempMediaItem);
+      await AudioService.addQueueItem(tempMediaItem);
+    }
+    return;
+  }
+
+  Future<MediaItem> getMediaItem(String name, String link) async {
+    // Get the path of image for artUri in notification
+    String path = await getNotificationImage();
+
+    // Set media item to tell the clients what is playing
+    final tempMediaItem = MediaItem(
+      id: link,
+      album: "Radio Sai Global Harmony",
+      title: name,
+      artUri: Uri.parse('file://$path'),
+    );
+
+    return tempMediaItem;
   }
 
   // for refreshing the data
@@ -311,6 +349,31 @@ class _Media extends State<Media> {
       _isLoading = true;
       _updateURL();
     });
+  }
+
+  // Get notification image stored in file,
+  // if not stored, then store the image
+  Future<String> getNotificationImage() async {
+    String path = await getFilePath();
+    File file = File(path);
+    bool fileExists = file.existsSync();
+    // if the image already exists, return the path
+    if (fileExists) return path;
+    // store the image into path from assets then return the path
+    final byteData =
+        await rootBundle.load('assets/sai_listens_notification.jpg');
+    // if file is not created, create to write into the file
+    file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+    return path;
+  }
+
+  // Get the file path of the notification image
+  Future<String> getFilePath() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    String filePath = '$appDocPath/sai_listens_notification.jpg';
+    return filePath;
   }
 
   // Shimmer effect while loading the content
