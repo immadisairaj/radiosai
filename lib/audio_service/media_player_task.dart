@@ -107,7 +107,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     int removeIndex = mediaQueue.indexOf(mediaItem);
     mediaQueue.remove(mediaItem);
     // stop if no item in queue
-    if(mediaQueue.length == 0) onStop();
+    if (mediaQueue.length == 0) onStop();
     await concatenatingAudioSource.removeAt(removeIndex);
 
     // broadcast the queue
@@ -149,9 +149,9 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
   @override
   Future<void> onSkipToPrevious() async {
-    // if player played more than 2 seconds
+    // if player played more than 3 seconds
     // then seek to beginning of the media
-    if (_player.position > Duration(seconds: 2)) {
+    if (_player.position > Duration(seconds: 3)) {
       await _player.seek(Duration.zero, index: _player.currentIndex);
       return;
     } else {
@@ -162,7 +162,13 @@ class MediaPlayerTask extends BackgroundAudioTask {
   }
 
   @override
-  Future<void> onPlay() => _player.play();
+  Future<void> onPlay() async {
+    // if played when end of the queue, play from starting
+    if (queue != null && _player.currentIndex == (queue.length - 1))
+      await _player.seek(Duration.zero, index: 0);
+    _player.play();
+    await super.onPlay();
+  }
 
   @override
   Future<void> onPause() => _player.pause();
@@ -227,7 +233,6 @@ class MediaPlayerTask extends BackgroundAudioTask {
       controls: [
         MediaControl.skipToPrevious,
         _player.playing ? MediaControl.pause : MediaControl.play,
-        MediaControl.stop,
         MediaControl.skipToNext,
       ],
       systemActions: [
@@ -235,7 +240,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
-      androidCompactActions: [0, 1, 3],
+      androidCompactActions: [0, 1, 2],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,

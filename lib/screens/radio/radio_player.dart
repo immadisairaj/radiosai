@@ -251,8 +251,7 @@ class _RadioPlayer extends State<RadioPlayer>
                     ),
                     onPressed: () async {
                       if (streamIndex != null) {
-                        _handleOnPressed(
-                            streamIndex, isPlaying, loadingState, hasInternet);
+                        _handleOnPressed(streamIndex, isPlaying, hasInternet);
                       }
                     },
                   ),
@@ -319,7 +318,7 @@ class _RadioPlayer extends State<RadioPlayer>
     );
   }
 
-  void initRadioService(int index) {
+  Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
     try {
       // passing params to send the source to play
@@ -327,7 +326,7 @@ class _RadioPlayer extends State<RadioPlayer>
         'audioSource': MyConstants.of(context).radioStreamLink[index],
         'audioName': MyConstants.of(context).radioStreamName[index],
       };
-      AudioService.connect();
+      await AudioService.connect();
       AudioService.start(
         backgroundTaskEntrypoint: _entrypoint,
         params: _params,
@@ -355,37 +354,41 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   // handle the player when pause/play button is pressed
-  void _handleOnPressed(
-      int index, bool isPlaying, bool isLoading, bool hasInternet) async {
+  void _handleOnPressed(int index, bool isPlaying, bool hasInternet) async {
     if (!isPlaying) {
-      if (AudioService.playbackState.playing) {
-        // stop if media player is playing
+      if (AudioService.running) {
+        // stop if media player is loaded
         await AudioService.customAction('stop');
-        // TODO: make the radio player play after media player stops
-      }
-      if (hasInternet) {
-        initRadioService(index);
-        if (!isLoading) playRadioService();
+        await AudioService.disconnect();
+        _startRadioPlayer(index, isPlaying, hasInternet);
       } else {
-        // display that the player is trying to load - handled by _handleLoadingState
-        initRadioService(index);
-        // Show a snack bar that it is unable to play
-        if (_isSnackBarActive == false) {
-          _isSnackBarActive = true;
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(
-                content: Text('Try to play after connecting to the Internet'),
-                behavior: SnackBarBehavior.floating,
-                duration: Duration(milliseconds: 1500),
-              ))
-              .closed
-              .then((value) {
-            _isSnackBarActive = false;
-          });
-        } // do nothing in else
+        _startRadioPlayer(index, isPlaying, hasInternet);
       }
     } else {
       stopRadioService();
+    }
+  }
+
+  void _startRadioPlayer(int index, bool isPlaying, bool hasInternet) {
+    if (hasInternet) {
+      initRadioService(index);
+    } else {
+      // display that the player is trying to load - handled by _handleLoadingState
+      initRadioService(index);
+      // Show a snack bar that it is unable to play
+      if (_isSnackBarActive == false) {
+        _isSnackBarActive = true;
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(
+              content: Text('Try to play after connecting to the Internet'),
+              behavior: SnackBarBehavior.floating,
+              duration: Duration(milliseconds: 1500),
+            ))
+            .closed
+            .then((value) {
+          _isSnackBarActive = false;
+        });
+      } // do nothing in else
     }
   }
 

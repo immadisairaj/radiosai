@@ -272,6 +272,11 @@ class _Media extends State<Media> {
         initRadioService(name, link);
       }
     } else {
+      if (AudioService.running) {
+        // if the radio player is paused
+        await AudioService.stop();
+        initRadioService(name, link);
+      }
       // initialize the radio service
       initRadioService(name, link);
     }
