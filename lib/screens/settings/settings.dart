@@ -53,17 +53,22 @@ class _Settings extends State<Settings> {
       body: Container(
         color: isDarkTheme ? Colors.grey[700] : Colors.white,
         height: MediaQuery.of(context).size.height,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.only(bottom: 20),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                _generalSection(),
-                _storageSection(),
-                _aboutSection(),
-                _moreDetailsSection(),
-              ],
+        child: Scrollbar(
+          radius: Radius.circular(8),
+          child: SingleChildScrollView(
+            physics:
+                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            child: Padding(
+              padding: EdgeInsets.only(bottom: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  _generalSection(),
+                  _storageSection(),
+                  _aboutSection(),
+                  _moreDetailsSection(),
+                ],
+              ),
             ),
           ),
         ),

@@ -180,88 +180,118 @@ class _ScheduleData extends State<ScheduleData> {
                   if (_isLoading == false || _finalTableData[0][0] != 'null')
                     RefreshIndicator(
                       onRefresh: _refresh,
-                      child: SingleChildScrollView(
-                        controller: _scrollController,
-                        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            padding: EdgeInsets.only(bottom: 10),
-                            itemCount: _finalTableData.length,
-                            itemBuilder: (context, index) {
-                              List<String> rowData = _finalTableData[index];
-                              String localTime =
-                                  '${rowData[1]} $_finalLocalTime';
-                              String gmtTime = '${rowData[2]} GMT';
-                              String duration = '${rowData[4]} min';
-                              List<String> mainRowData =
-                                  rowData[3].split('<split>');
-                              String tag = mainRowData[0];
-                              String programe = mainRowData[1];
-                              String fids = mainRowData[2]
-                                  .substring(1, mainRowData[2].length - 1);
-                              return Padding(
-                                padding: EdgeInsets.only(left: 8, right: 8),
-                                child: Card(
-                                  color: isDarkTheme
-                                      ? Colors.grey[800]
-                                      : Colors.grey[200],
-                                  child: InkWell(
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.only(top: 2, bottom: 2),
-                                      child: Center(
-                                        child: ListTile(
-                                          title: Text(
-                                            tag,
-                                            style: TextStyle(
-                                              color:
-                                                  Theme.of(context).accentColor,
-                                              fontWeight: FontWeight.w600,
+                      child: Scrollbar(
+                        radius: Radius.circular(8),
+                        child: SingleChildScrollView(
+                          controller: _scrollController,
+                          physics: BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                          child: Card(
+                            elevation: 0,
+                            color: isDarkTheme
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                padding: EdgeInsets.only(top: 2, bottom: 2),
+                                itemCount: _finalTableData.length,
+                                itemBuilder: (context, index) {
+                                  List<String> rowData = _finalTableData[index];
+                                  String localTime =
+                                      '${rowData[1]} $_finalLocalTime';
+                                  String gmtTime = '${rowData[2]} GMT';
+                                  String duration = '${rowData[4]} min';
+                                  List<String> mainRowData =
+                                      rowData[3].split('<split>');
+                                  String tag = mainRowData[0];
+                                  String programe = mainRowData[1];
+                                  String fids = mainRowData[2]
+                                      .substring(1, mainRowData[2].length - 1);
+                                  return Column(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            EdgeInsets.only(left: 2, right: 2),
+                                        child: Card(
+                                          elevation: 0,
+                                          color: isDarkTheme
+                                              ? Colors.grey[800]
+                                              : Colors.grey[200],
+                                          child: InkWell(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  top: 2, bottom: 2),
+                                              child: Center(
+                                                child: ListTile(
+                                                  title: Text(
+                                                    tag,
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  subtitle: Text(programe),
+                                                  trailing: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text(
+                                                        localTime,
+                                                        style: TextStyle(
+                                                          color: isDarkTheme
+                                                              ? Colors.grey[300]
+                                                              : Colors
+                                                                  .grey[700],
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        duration,
+                                                        style: TextStyle(
+                                                          color: isDarkTheme
+                                                              ? Colors.grey[300]
+                                                              : Colors
+                                                                  .grey[700],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
                                             ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            focusColor: isDarkTheme
+                                                ? Colors.grey[700]
+                                                : Colors.grey[300],
+                                            onTap: () {
+                                              if (fids != '')
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            Media(fids: fids)));
+                                            },
                                           ),
-                                          subtitle: Text(programe),
-                                          trailing: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text(
-                                                localTime,
-                                                style: TextStyle(
-                                                  color: isDarkTheme
-                                                      ? Colors.grey[300]
-                                                      : Colors.grey[700],
-                                                ),
-                                              ),
-                                              Text(
-                                                duration,
-                                                style: TextStyle(
-                                                  color: isDarkTheme
-                                                      ? Colors.grey[300]
-                                                      : Colors.grey[700],
-                                                ),
-                                              ),
-                                            ],
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    onTap: () {
-                                      if (fids != '')
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    Media(fids: fids)));
-                                    },
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                  ),
-                                ),
-                              );
-                            }),
+                                      if (index != _finalTableData.length - 1)
+                                        Divider(
+                                          height: 2,
+                                          thickness: 1.5,
+                                        ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ),
                       ),
                     ),
                   // show when no data is retrieved
@@ -524,20 +554,24 @@ class _ScheduleData extends State<ScheduleData> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.reverse) {
-      if (!_isScrollingDown) {
-        _isScrollingDown = true;
-        _showDropDown = false;
-        setState(() {});
+    int sensitivity = 8;
+    if (_scrollController.offset > sensitivity ||
+        _scrollController.offset < -sensitivity) {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (!_isScrollingDown) {
+          _isScrollingDown = true;
+          _showDropDown = false;
+          setState(() {});
+        }
       }
-    }
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.forward) {
-      if (_isScrollingDown) {
-        _isScrollingDown = false;
-        _showDropDown = true;
-        setState(() {});
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (_isScrollingDown) {
+          _isScrollingDown = false;
+          _showDropDown = true;
+          setState(() {});
+        }
       }
     }
   }

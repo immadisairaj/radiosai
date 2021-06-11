@@ -68,42 +68,69 @@ class _Media extends State<Media> {
             if (_isLoading == false || _finalMediaData[0] != 'null')
               RefreshIndicator(
                 onRefresh: _refresh,
-                child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      // have minimum height to reload even when 1 item is present
-                      minHeight: MediaQuery.of(context).size.height,
-                    ),
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        primary: false,
-                        padding: EdgeInsets.only(bottom: 10),
-                        itemCount: _finalMediaData.length,
-                        itemBuilder: (context, index) {
-                          // replace '_' to ' ' in the text and retain it's original name
-                          String mediaName = _finalMediaData[index];
-                          mediaName = mediaName.replaceAll('_', ' ');
-                          return Padding(
-                            padding: EdgeInsets.only(left: 8, right: 8),
-                            child: Card(
-                              color: isDarkTheme
-                                  ? Colors.grey[800]
-                                  : Colors.grey[200],
-                              child: InkWell(
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 2, bottom: 2),
-                                  child: Center(
-                                    child: ListTile(
-                                      title: Text(mediaName),
-                                      // TODO: download option?
-                                      trailing: IconButton(
-                                        icon: Icon(Icons.add_to_queue_outlined),
-                                        onPressed: () {
-                                          // TODO: change this later
-                                          // only adds when the queue is already present
-                                          addToQueue(mediaName,
+                child: Scrollbar(
+                  radius: Radius.circular(8),
+                  child: SingleChildScrollView(
+                    physics: BouncingScrollPhysics(
+                        parent: AlwaysScrollableScrollPhysics()),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        // have minimum height to reload even when 1 item is present
+                        minHeight: MediaQuery.of(context).size.height * 0.9,
+                      ),
+                      child: Card(
+                        elevation: 0,
+                        color:
+                            isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                        child: ListView.builder(
+                            shrinkWrap: true,
+                            primary: false,
+                            padding: EdgeInsets.only(top: 2, bottom: 2),
+                            itemCount: _finalMediaData.length,
+                            itemBuilder: (context, index) {
+                              // replace '_' to ' ' in the text and retain it's original name
+                              String mediaName = _finalMediaData[index];
+                              mediaName = mediaName.replaceAll('_', ' ');
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 8, right: 8),
+                                    child: Card(
+                                      elevation: 0,
+                                      color: isDarkTheme
+                                          ? Colors.grey[800]
+                                          : Colors.grey[200],
+                                      child: InkWell(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              top: 2, bottom: 2),
+                                          child: Center(
+                                            child: ListTile(
+                                              title: Text(mediaName),
+                                              // TODO: download option?
+                                              trailing: IconButton(
+                                                icon: Icon(Icons
+                                                    .add_to_queue_outlined),
+                                                onPressed: () {
+                                                  // TODO: change this later
+                                                  // only adds when the queue is already present
+                                                  addToQueue(mediaName,
+                                                      _finalMediaLinks[index]);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              MediaPlayer()));
+                                                },
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        onTap: () async {
+                                          // TODO: move to player/something
+                                          startPlayer(mediaName,
                                               _finalMediaLinks[index]);
                                           Navigator.push(
                                               context,
@@ -112,26 +139,22 @@ class _Media extends State<Media> {
                                                       MediaPlayer()));
                                         },
                                       ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                      ),
                                     ),
                                   ),
-                                ),
-                                borderRadius: BorderRadius.circular(8.0),
-                                onTap: () async {
-                                  // TODO: move to player/something
-                                  startPlayer(
-                                      mediaName, _finalMediaLinks[index]);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => MediaPlayer()));
-                                },
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8.0),
-                              ),
-                            ),
-                          );
-                        }),
+                                  if (index != _finalMediaData.length - 1)
+                                    Divider(
+                                      height: 2,
+                                      thickness: 1.5,
+                                    ),
+                                ],
+                              );
+                            }),
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -164,7 +164,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onPlay() async {
     // if played when end of the queue, play from starting
-    if (queue != null && _player.currentIndex == (queue.length - 1))
+    if (_player.processingState == ProcessingState.completed)
       await _player.seek(Duration.zero, index: 0);
     _player.play();
     await super.onPlay();
