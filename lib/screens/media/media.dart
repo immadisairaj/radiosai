@@ -130,7 +130,7 @@ class _Media extends State<Media> {
                                             BorderRadius.circular(8.0),
                                         onTap: () async {
                                           // TODO: move to player/something
-                                          startPlayer(mediaName,
+                                          await startPlayer(mediaName,
                                               _finalMediaLinks[index]);
                                           Navigator.push(
                                               context,
@@ -274,7 +274,7 @@ class _Media extends State<Media> {
     });
   }
 
-  void startPlayer(String name, String link) async {
+  Future<void> startPlayer(String name, String link) async {
     if (AudioService.playbackState.playing) {
       if (AudioService.queue != null && AudioService.queue.length != 0) {
         // if trying to add the current playing media, do nothing

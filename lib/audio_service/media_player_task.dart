@@ -188,6 +188,37 @@ class MediaPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onSeekBackward(bool begin) async => _seekContinuously(begin, -1);
 
+  @override
+  Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
+    await _player
+        .setShuffleModeEnabled(shuffleMode == AudioServiceShuffleMode.all);
+    // broadcast shuffle state to the UI
+    await _broadcastState();
+    return super.onSetShuffleMode(shuffleMode);
+  }
+
+  @override
+  Future<void> onSetRepeatMode(AudioServiceRepeatMode repeatMode) async {
+    LoopMode loopMode;
+    switch (repeatMode) {
+      case AudioServiceRepeatMode.none:
+        loopMode = LoopMode.off;
+        break;
+      case AudioServiceRepeatMode.all:
+        loopMode = LoopMode.all;
+        break;
+      case AudioServiceRepeatMode.one:
+        loopMode = LoopMode.one;
+        break;
+      default:
+        loopMode = LoopMode.off;
+    }
+    await _player.setLoopMode(loopMode);
+    // broadcast loop state to the UI
+    await _broadcastState();
+    return super.onSetRepeatMode(repeatMode);
+  }
+
   // called on swipe of notification (when paused)
   @override
   Future<void> onTaskRemoved() => onStop();
@@ -229,6 +260,25 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
   /// Broadcasts the current state to all clients.
   Future<void> _broadcastState() async {
+    LoopMode loopMode = _player.loopMode;
+    AudioServiceRepeatMode audioServiceRepeatMode;
+    switch (loopMode) {
+      case LoopMode.off:
+        audioServiceRepeatMode = AudioServiceRepeatMode.none;
+        break;
+      case LoopMode.all:
+        audioServiceRepeatMode = AudioServiceRepeatMode.all;
+        break;
+      case LoopMode.one:
+        audioServiceRepeatMode = AudioServiceRepeatMode.one;
+        break;
+      default:
+        audioServiceRepeatMode = AudioServiceRepeatMode.none;
+    }
+    AudioServiceShuffleMode audioServiceShuffleMode =
+        (_player.shuffleModeEnabled)
+            ? AudioServiceShuffleMode.all
+            : AudioServiceShuffleMode.none;
     await AudioServiceBackground.setState(
       controls: [
         MediaControl.skipToPrevious,
@@ -246,6 +296,8 @@ class MediaPlayerTask extends BackgroundAudioTask {
       position: _player.position,
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
+      repeatMode: audioServiceRepeatMode,
+      shuffleMode: audioServiceShuffleMode,
     );
   }
 

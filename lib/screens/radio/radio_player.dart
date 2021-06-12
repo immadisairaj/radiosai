@@ -91,6 +91,8 @@ class _RadioPlayer extends State<RadioPlayer>
         widget.radioStreamIndex, widget.isPlaying, widget.radioLoadingBloc);
     // handle the display of loading progressing widget
     _handleLoadingState(widget.radioLoadingBloc);
+
+    // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
