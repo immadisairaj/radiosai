@@ -5,6 +5,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:rxdart/rxdart.dart';
 
 class MediaPlayer extends StatefulWidget {
@@ -54,13 +55,12 @@ class _MediaPlayer extends State<MediaPlayer> {
                   children: [
                     // UI to show when we're running, i.e. player state/controls.
 
-                    // TODO: add top icons
                     Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 8),
+                      padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
                       child: Material(
                         color: Colors.transparent,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton(
                               icon: Icon(Icons.arrow_back_outlined),
@@ -69,6 +69,17 @@ class _MediaPlayer extends State<MediaPlayer> {
                               onPressed: () {
                                 Navigator.maybePop(context);
                               },
+                            ),
+                            Row(
+                              children: [
+                                // TODO: media top menu widget
+                                IconButton(
+                                  icon: Icon(Icons.more_vert),
+                                  splashRadius: 24,
+                                  iconSize: 25,
+                                  onPressed: () {},
+                                ),
+                              ],
                             ),
                           ],
                         ),
@@ -87,6 +98,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                               child: Image(
                                 fit: BoxFit.cover,
                                 alignment: Alignment(0, -1),
+                                // TODO: get image from artUri
                                 image: AssetImage('assets/sai_listens.jpg'),
                               ),
                             ),
@@ -255,56 +267,53 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       );
                                     }),
                                 // Play/pause buttons
-                                Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    StreamBuilder<bool>(
-                                      stream: AudioService.playbackStateStream
-                                          .map((state) => state.playing)
-                                          .distinct(),
-                                      builder: (context, snapshot) {
-                                        final playing = snapshot.data ?? false;
-                                        return Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            // loading indicator
-                                            StreamBuilder<AudioProcessingState>(
-                                              stream: AudioService
-                                                  .playbackStateStream
-                                                  .map((state) =>
-                                                      state.processingState)
-                                                  .distinct(),
-                                              builder: (context, snapshot) {
-                                                final processingState = snapshot
-                                                        .data ??
+                                StreamBuilder<bool>(
+                                  stream: AudioService.playbackStateStream
+                                      .map((state) => state.playing)
+                                      .distinct(),
+                                  builder: (context, snapshot) {
+                                    final playing = snapshot.data ?? false;
+                                    return Stack(
+                                      alignment: Alignment.center,
+                                      children: [
+                                        // loading indicator
+                                        StreamBuilder<AudioProcessingState>(
+                                          stream: AudioService
+                                              .playbackStateStream
+                                              .map((state) =>
+                                                  state.processingState)
+                                              .distinct(),
+                                          builder: (context, snapshot) {
+                                            final processingState =
+                                                snapshot.data ??
                                                     AudioProcessingState.none;
-                                                bool isLoading =
-                                                    (processingState ==
-                                                            AudioProcessingState
-                                                                .ready)
-                                                        ? false
-                                                        : true;
-                                                return Visibility(
-                                                  visible: isLoading,
-                                                  child: SizedBox(
-                                                    height: iconSize + 3,
-                                                    width: iconSize + 3,
-                                                    child:
-                                                        CircularProgressIndicator(),
-                                                  ),
-                                                );
-                                              },
-                                            ),
-                                            Center(
-                                              child: playing
-                                                  ? pauseButton(iconSize)
-                                                  : playButton(iconSize),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    ),
-                                  ],
+                                            bool isLoading = (processingState ==
+                                                        AudioProcessingState
+                                                            .ready ||
+                                                    processingState ==
+                                                        AudioProcessingState
+                                                            .completed)
+                                                ? false
+                                                : true;
+                                            return Visibility(
+                                              visible: isLoading,
+                                              child: SizedBox(
+                                                height: iconSize + 3,
+                                                width: iconSize + 3,
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        Center(
+                                          child: playing
+                                              ? pauseButton(iconSize)
+                                              : playButton(iconSize),
+                                        ),
+                                      ],
+                                    );
+                                  },
                                 ),
                                 // seek 10 seconds forward
                                 StreamBuilder<MediaState>(
@@ -387,7 +396,6 @@ class _MediaPlayer extends State<MediaPlayer> {
                       },
                     ),
 
-                    // TODO: add bottom icons
                     if (!isSmallerScreen)
                       Padding(
                         padding: const EdgeInsets.only(left: 8, bottom: 8),
@@ -401,7 +409,14 @@ class _MediaPlayer extends State<MediaPlayer> {
                                 splashRadius: 24,
                                 iconSize: 25,
                                 onPressed: () {
-                                  // TODO: show present queue
+                                  // if pop from queue is clear, pop from here
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PlayingQueue())).then((value) {
+                                    if (value) Navigator.maybePop(context);
+                                  });
                                 },
                               ),
                             ],
