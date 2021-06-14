@@ -30,11 +30,8 @@ class MyConstants extends InheritedWidget {
   final List<String> menuTitles = const [
     'Schedule',
     'Sai Inspires',
-    // 'Vedam',
     'Audio Archive',
     'Settings',
-    // TODO: might have to remove later
-    'Audio Demo',
   ];
 
   // list of radio streams for radio schedule

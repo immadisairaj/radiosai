@@ -302,8 +302,11 @@ class _RadioPlayer extends State<RadioPlayer>
               default:
                 loadingUpdate = false;
             }
-            if (loadingUpdate != null)
+            if (loadingUpdate != null) {
+              // don't add loading when media player is playing
+              if (loadingUpdate == true && !isPlaying) loadingUpdate = false;
               radioLoadingBloc.changeLoadingState.add(loadingUpdate);
+            }
             // returning empty widget as there is nothing to display
             return Container(
               // when height > 0, the container has to be transparent

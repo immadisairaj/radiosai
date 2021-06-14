@@ -9,6 +9,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:radiosai/screens/sai_inspires/sai_image.dart';
+import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -161,6 +162,7 @@ class _SaiInspires extends State<SaiInspires> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 

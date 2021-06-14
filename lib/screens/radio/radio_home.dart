@@ -92,12 +92,6 @@ class _RadioHome extends State<RadioHome> {
           ),
         ],
       ),
-      // TODO: bottom bar for displaying if other player is playing
-      // maybe can put inside the player widget?
-      // bottomNavigationBar: Container(
-      //   height: 100,
-      //   color: Colors.white,
-      // ),
     );
   }
 }

@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/media/media.dart';
+import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -334,6 +335,7 @@ class _ScheduleData extends State<ScheduleData> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 
@@ -652,7 +654,7 @@ class _ScheduleData extends State<ScheduleData> {
         child: Column(
           children: [
             // 5 shimmer context
-            for (int i = 0; i < 6; i++) _shimmerContent(),
+            for (int i = 0; i < 5; i++) _shimmerContent(),
           ],
         ),
       ),

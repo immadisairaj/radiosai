@@ -11,6 +11,7 @@ import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
+import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:radiosai/audio_service/media_player_task.dart';
 import 'package:shimmer/shimmer.dart';
@@ -194,6 +195,7 @@ class _Media extends State<Media> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 

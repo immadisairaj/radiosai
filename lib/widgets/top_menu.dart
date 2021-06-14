@@ -72,11 +72,6 @@ class _TopMenu extends State<TopMenu> {
                     Browser.launchURL(context,
                         "https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm");
                     break;
-                  // TODO: might have to remove later
-                  // Temporary to check the Media Player
-                  case 'Audio Demo':
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MediaPlayer()));
                 }
               },
             ),

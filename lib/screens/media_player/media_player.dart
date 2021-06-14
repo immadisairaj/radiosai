@@ -47,7 +47,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                   return SizedBox();
                 }
                 final running = snapshot.data ?? true;
-                // pop if the radio player is not running
+                // pop if the media player is not running
                 if (!running) Navigator.maybePop(context);
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -415,7 +415,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               PlayingQueue())).then((value) {
-                                    if (value) Navigator.maybePop(context);
+                                    if (value == null || value == true) Navigator.maybePop(context);
                                   });
                                 },
                               ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:radiosai/screens/radio/radio_home.dart';
+import 'package:radiosai/widgets/top_media_player.dart';
 import 'package:radiosai/widgets/top_menu.dart';
 
 class Home extends StatefulWidget {
@@ -43,6 +44,7 @@ class _Home extends State<Home> {
         children: [
           RadioHome(),
           TopMenu(),
+          TopMediaPlayer(),
         ],
       ),
     );

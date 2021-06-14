@@ -21,8 +21,12 @@ class _PlayingQueue extends State<PlayingQueue> {
 
     Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
 
+    // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
+    bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
+    bool isBiggerScreen = (height * 0.1 >= 70); // full screen
+    bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
     return Scaffold(
       body: SafeArea(
@@ -39,75 +43,79 @@ class _PlayingQueue extends State<PlayingQueue> {
                     return SizedBox();
                   }
                   final running = snapshot.data ?? true;
-                  // pop if the radio player is not running
-                  if (!running) Navigator.maybePop(context);
+                  // pop if the media player is not running
+                  if (!running) Navigator.maybePop(context, true);
 
                   return Column(
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.maybePop(context);
-                        },
-                        child: Container(
-                          height: height * 0.1,
-                          width: width,
-                          color: Colors.transparent,
-                          child: Material(
+                      if (!isSmallerScreen)
+                        GestureDetector(
+                          onTap: () {
+                            // pop to media player
+                            Navigator.maybePop(context, false);
+                          },
+                          child: Container(
+                            height: height * 0.1,
+                            width: width,
                             color: Colors.transparent,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                IconButton(
-                                  icon:
-                                      Icon(Icons.keyboard_arrow_down_outlined),
-                                  splashRadius: 24,
-                                  iconSize: 25,
-                                  onPressed: () {
-                                    Navigator.maybePop(context);
-                                  },
-                                ),
-                                StreamBuilder<QueueState>(
-                                  stream: _queueStateStream,
-                                  builder: (context, snapshot) {
-                                    final queueState = snapshot.data;
-                                    final mediaItem = queueState?.mediaItem;
-                                    final mediaTitle = (queueState != null &&
-                                            mediaItem?.title != null)
-                                        ? mediaItem.title
-                                        : 'loading media...';
-                                    return SizedBox(
-                                      width: width * 0.65,
-                                      child: Text(
-                                        // Display Audio Title
-                                        mediaTitle,
-                                        textAlign: TextAlign.start,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                // Pause/Play button
-                                StreamBuilder<bool>(
-                                    stream: AudioService.playbackStateStream
-                                        .map((state) => state.playing)
-                                        .distinct(),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(
+                                        Icons.keyboard_arrow_down_outlined),
+                                    splashRadius: 24,
+                                    iconSize: 25,
+                                    onPressed: () {
+                                      // pop to media player
+                                      Navigator.maybePop(context, false);
+                                    },
+                                  ),
+                                  StreamBuilder<QueueState>(
+                                    stream: _queueStateStream,
                                     builder: (context, snapshot) {
-                                      final playing = snapshot.data ?? false;
+                                      final queueState = snapshot.data;
+                                      final mediaItem = queueState?.mediaItem;
+                                      final mediaTitle = (queueState != null &&
+                                              mediaItem?.title != null)
+                                          ? mediaItem.title
+                                          : 'loading media...';
+                                      return SizedBox(
+                                        width: width * 0.65,
+                                        child: Text(
+                                          // Display Audio Title
+                                          mediaTitle,
+                                          textAlign: TextAlign.start,
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  // Pause/Play button
+                                  StreamBuilder<bool>(
+                                      stream: AudioService.playbackStateStream
+                                          .map((state) => state.playing)
+                                          .distinct(),
+                                      builder: (context, snapshot) {
+                                        final playing = snapshot.data ?? false;
 
-                                      return playing
-                                          ? pauseButton()
-                                          : playButton();
-                                    }),
-                              ],
+                                        return playing
+                                            ? pauseButton()
+                                            : playButton();
+                                      }),
+                                ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
                       Expanded(
                         child: StreamBuilder<QueueState>(
                           stream: _queueStateStream,
@@ -172,7 +180,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                               await AudioService.updateQueue([]);
                               await AudioService.customAction('stop');
                               AudioService.disconnect();
-                              // pop the media player of pop here
+                              // pop the media player when pop here
                               Navigator.maybePop(context, true);
                             },
                           ),
@@ -189,7 +197,7 @@ class _PlayingQueue extends State<PlayingQueue> {
 
   Widget queueItemWidget(BuildContext context, MediaItem mediaItem,
       bool isCurrentItem, bool isDarkTheme) {
-    Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[200];
+    Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
     return Material(
       color: Colors.transparent,
       child: Padding(
