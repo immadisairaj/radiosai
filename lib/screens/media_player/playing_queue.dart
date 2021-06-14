@@ -52,7 +52,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                         GestureDetector(
                           onTap: () {
                             // pop to media player
-                            Navigator.maybePop(context, false);
+                            Navigator.maybePop(context);
                           },
                           child: Container(
                             height: height * 0.1,
@@ -72,7 +72,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                                     iconSize: 25,
                                     onPressed: () {
                                       // pop to media player
-                                      Navigator.maybePop(context, false);
+                                      Navigator.maybePop(context);
                                     },
                                   ),
                                   StreamBuilder<QueueState>(
@@ -176,12 +176,9 @@ class _PlayingQueue extends State<PlayingQueue> {
                             ),
                             borderRadius: BorderRadius.circular(8.0),
                             onTap: () async {
-                              // clear the queue and disconnect
-                              await AudioService.updateQueue([]);
+                              // stop the player (which clears the queue)
                               await AudioService.customAction('stop');
-                              AudioService.disconnect();
-                              // pop the media player when pop here
-                              Navigator.maybePop(context, true);
+                              Navigator.maybePop(context);
                             },
                           ),
                         ),

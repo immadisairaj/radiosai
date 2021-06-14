@@ -102,17 +102,32 @@ class MediaPlayerTask extends BackgroundAudioTask {
     return super.onAddQueueItem(mediaItem);
   }
 
+  // remove only after checking the media item is present in the queue
   @override
   Future<void> onRemoveQueueItem(MediaItem mediaItem) async {
     int removeIndex = mediaQueue.indexOf(mediaItem);
     mediaQueue.remove(mediaItem);
-    // stop if no item in queue
-    if (mediaQueue.length == 0) onStop();
     await concatenatingAudioSource.removeAt(removeIndex);
 
     // broadcast the queue
     await AudioServiceBackground.setQueue(queue);
     return super.onRemoveQueueItem(mediaItem);
+  }
+
+  @override
+  Future<void> onUpdateQueue(List<MediaItem> queueList) async {
+    mediaQueue = queueList;
+
+    // clear the audio sources
+    await concatenatingAudioSource.clear();
+    // add all new audio sources
+    await concatenatingAudioSource.addAll(
+        queueList.map((item) => AudioSource.uri(Uri.parse(item.id))).toList());
+
+    // broadcast the queue
+    await AudioServiceBackground.setQueue(queueList);
+
+    return super.onUpdateQueue(queueList);
   }
 
   // updates the media item data with duration after decoding

@@ -414,9 +414,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              PlayingQueue())).then((value) {
-                                    if (value == null || value == true) Navigator.maybePop(context);
-                                  });
+                                              PlayingQueue()));
                                 },
                               ),
                             ],

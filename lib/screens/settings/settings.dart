@@ -4,7 +4,6 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:radiosai/screens/settings/general/app_theme.dart';
 import 'package:radiosai/screens/settings/general/starting_radio_stream.dart';
-import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,7 +73,6 @@ class _Settings extends State<Settings> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 
