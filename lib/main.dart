@@ -1,5 +1,6 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
@@ -11,7 +12,12 @@ import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 
-void main() {
+void main() async {
+  // initialize flutter downloader
+  WidgetsFlutterBinding.ensureInitialized();
+  // TODO: change the debug to false later
+  await FlutterDownloader.initialize(debug: true);
+
   runApp(MyConstants(child: MyApp()));
 }
 

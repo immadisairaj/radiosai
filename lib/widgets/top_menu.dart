@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
-import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 import 'package:radiosai/screens/settings/settings.dart';
-import 'package:radiosai/widgets/browser.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TopMenu extends StatefulWidget {
   TopMenu({
@@ -69,8 +68,8 @@ class _TopMenu extends State<TopMenu> {
                             builder: (context) => RadioSchedule()));
                     break;
                   case 'Audio Archive':
-                    Browser.launchURL(context,
-                        "https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm");
+                    _urlLaunch(
+                        'https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm');
                     break;
                 }
               },
@@ -79,5 +78,15 @@ class _TopMenu extends State<TopMenu> {
         ),
       ),
     );
+  }
+
+  _urlLaunch(urlString) async {
+    try {
+      if (await canLaunch(urlString)) {
+        await launch(urlString);
+      }
+    } catch (e) {
+      // do nothing
+    }
   }
 }

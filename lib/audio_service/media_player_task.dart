@@ -24,11 +24,17 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // initialize the queue
     mediaQueue = [];
 
+    Map<String, dynamic> _extras = {
+      'uri': params['extrasUri'],
+    };
+
+    // extras['uri'] contains the audio source
     final tempMediaItem = MediaItem(
       id: params['id'],
       album: params['album'],
       title: params['title'],
       artUri: Uri.parse(params['artUri']),
+      extras: _extras,
     );
 
     // add media item to the queue
@@ -63,7 +69,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     AudioServiceBackground.setQueue(queue);
     concatenatingAudioSource = new ConcatenatingAudioSource(
       children:
-          queue.map((item) => AudioSource.uri(Uri.parse(item.id))).toList(),
+          queue.map((item) => AudioSource.uri(Uri.parse(item.extras['uri']))).toList(),
     );
     try {
       await _player.setAudioSource(concatenatingAudioSource);
@@ -95,7 +101,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     mediaQueue.add(mediaItem);
     await concatenatingAudioSource
-        .add(AudioSource.uri(Uri.parse(mediaItem.id)));
+        .add(AudioSource.uri(Uri.parse(mediaItem.extras['uri'])));
 
     // broadcast the queue
     await AudioServiceBackground.setQueue(queue);
@@ -122,7 +128,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     await concatenatingAudioSource.clear();
     // add all new audio sources
     await concatenatingAudioSource.addAll(
-        queueList.map((item) => AudioSource.uri(Uri.parse(item.id))).toList());
+        queueList.map((item) => AudioSource.uri(Uri.parse(item.extras['uri']))).toList());
 
     // broadcast the queue
     await AudioServiceBackground.setQueue(queueList);
