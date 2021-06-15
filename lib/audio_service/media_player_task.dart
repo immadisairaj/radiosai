@@ -68,8 +68,9 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // Load and broadcast the queue
     AudioServiceBackground.setQueue(queue);
     concatenatingAudioSource = new ConcatenatingAudioSource(
-      children:
-          queue.map((item) => AudioSource.uri(Uri.parse(item.extras['uri']))).toList(),
+      children: queue
+          .map((item) => AudioSource.uri(Uri.parse(item.extras['uri'])))
+          .toList(),
     );
     try {
       await _player.setAudioSource(concatenatingAudioSource);
@@ -92,6 +93,26 @@ class MediaPlayerTask extends BackgroundAudioTask {
       // with when directly calling AudioService.stop
       case 'stop':
         await onStop();
+        break;
+      case 'editUri':
+        bool isPlaying = _player.playing;
+        Duration position = _player.position;
+        int index = params['index'];
+        bool isCurrentItem = _player.currentIndex == index;
+        await concatenatingAudioSource.removeAt(index);
+        await concatenatingAudioSource.insert(
+            index, AudioSource.uri(Uri.parse(params['uri'])));
+        mediaQueue[index].extras['uri'] = params['uri'];
+
+        // broadcast the queue
+        await AudioServiceBackground.setQueue(queue);
+
+        // Note: a small break might occur when changing the state
+
+        // return to it's original state after changing uri
+        if (!isCurrentItem) break;
+        await _player.seek(position);
+        if (isPlaying) _player.play();
         break;
     }
     return super.onCustomAction(name, params);
@@ -127,8 +148,9 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // clear the audio sources
     await concatenatingAudioSource.clear();
     // add all new audio sources
-    await concatenatingAudioSource.addAll(
-        queueList.map((item) => AudioSource.uri(Uri.parse(item.extras['uri']))).toList());
+    await concatenatingAudioSource.addAll(queueList
+        .map((item) => AudioSource.uri(Uri.parse(item.extras['uri'])))
+        .toList());
 
     // broadcast the queue
     await AudioServiceBackground.setQueue(queueList);
