@@ -197,9 +197,6 @@ class MediaPlayerTask extends BackgroundAudioTask {
     if (_player.position > Duration(seconds: 3)) {
       await _player.seek(Duration.zero, index: _player.currentIndex);
       return;
-    } else {
-      _skipState = AudioProcessingState.skippingToPrevious;
-      await _player.seekToPrevious();
     }
     return super.onSkipToPrevious();
   }

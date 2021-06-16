@@ -150,7 +150,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                                     if (mediaItem == currentMediaItem)
                                       isCurrentItem = true;
                                     return queueItemWidget(context, mediaItem,
-                                        isCurrentItem, isDarkTheme);
+                                        isCurrentItem, queueList.length, isDarkTheme);
                                   },
                                 ),
                               ),
@@ -193,7 +193,7 @@ class _PlayingQueue extends State<PlayingQueue> {
   }
 
   Widget queueItemWidget(BuildContext context, MediaItem mediaItem,
-      bool isCurrentItem, bool isDarkTheme) {
+      bool isCurrentItem, int length, bool isDarkTheme) {
     Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
     return Material(
       color: Colors.transparent,
@@ -204,7 +204,7 @@ class _PlayingQueue extends State<PlayingQueue> {
           color: isCurrentItem ? selectedColor : Colors.transparent,
           child: InkWell(
             child: Padding(
-              padding: const EdgeInsets.all(5),
+              padding: const EdgeInsets.only(top: 5, left: 5, bottom: 5),
               child: ListTile(
                 leading: SizedBox(
                   height: 40,
@@ -217,7 +217,17 @@ class _PlayingQueue extends State<PlayingQueue> {
                   ),
                 ),
                 title: Text(mediaItem.title),
-                // TODO: add trailing to remove from queue and more
+                trailing: IconButton(
+                  icon: Icon(CupertinoIcons.minus_circle),
+                  splashRadius: 24,
+                  onPressed: () async {
+                    if (length == 1) {
+                      await AudioService.customAction('stop');
+                      Navigator.maybePop(context);
+                    }
+                    else await AudioService.removeQueueItem(mediaItem);
+                  }
+                ),
               ),
             ),
             onTap: () {
