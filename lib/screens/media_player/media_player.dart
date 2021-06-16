@@ -1,10 +1,19 @@
 import 'dart:async';
+import 'dart:io';
+import 'dart:isolate';
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -18,6 +27,22 @@ class MediaPlayer extends StatefulWidget {
 }
 
 class _MediaPlayer extends State<MediaPlayer> {
+  String mediaBaseUrl = 'https://dl.radiosai.org/';
+
+  String _mediaDirectory = '';
+  ReceivePort _port = ReceivePort();
+  List<DownloadTaskInfo> _downloadTasks = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getDirectoryPath();
+
+    // Flutter Downloader
+    _bindBackgroundIsolate();
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
   @override
   Widget build(BuildContext context) {
     // check if dark theme
@@ -73,12 +98,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                             Row(
                               children: [
                                 // TODO: media top menu widget
-                                IconButton(
-                                  icon: Icon(Icons.more_vert),
-                                  splashRadius: 24,
-                                  iconSize: 25,
-                                  onPressed: () {},
-                                ),
+                                _options(isDarkTheme),
                               ],
                             ),
                           ],
@@ -409,7 +429,6 @@ class _MediaPlayer extends State<MediaPlayer> {
                                 splashRadius: 24,
                                 iconSize: 25,
                                 onPressed: () {
-                                  // if pop from queue is clear, pop from here
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
@@ -429,6 +448,78 @@ class _MediaPlayer extends State<MediaPlayer> {
         ),
       ),
     );
+  }
+
+  Widget _options(bool isDarkTheme) {
+    List<String> optionsList = [
+      'Download',
+      'View Playing Queue',
+    ];
+    return StreamBuilder<MediaItem>(
+        stream: AudioService.currentMediaItemStream,
+        builder: (context, snapshot) {
+          final mediaItem = snapshot.data;
+          final mediaId = (mediaItem != null && mediaItem?.id != null)
+              ? mediaItem.id
+              : 'loading media...';
+          if (mediaId == 'loading media...')
+            return IconButton(
+              icon: Icon(Icons.more_vert),
+              iconSize: 25,
+              splashRadius: 24,
+              onPressed: () {},
+            );
+
+          var mediaFilePath = '$_mediaDirectory/$mediaId';
+          var mediaFile = File(mediaFilePath);
+          var isFileExists = mediaFile.existsSync();
+
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: Material(
+              color: Colors.transparent,
+              child: PopupMenuButton<String>(
+                icon: Icon(
+                  Icons.more_vert,
+                ),
+                color: isDarkTheme ? Colors.grey[800] : Colors.grey[300],
+                iconSize: 25,
+                offset: const Offset(-10, 10),
+                itemBuilder: (context) {
+                  return optionsList.map<PopupMenuEntry<String>>((value) {
+                    bool enabled = true;
+                    String text = value;
+                    // if already downloaded, disable download button
+                    if (value == 'Download' && isFileExists) {
+                      enabled = false;
+                      text = 'Downloaded';
+                    }
+                    return PopupMenuItem<String>(
+                      enabled: enabled,
+                      value: value,
+                      child: Text(
+                        text,
+                      ),
+                    );
+                  }).toList();
+                },
+                onSelected: (value) {
+                  switch (value) {
+                    case 'View Playing Queue':
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PlayingQueue()));
+                      break;
+                    case 'Download':
+                      _downloadMediaFile('$mediaBaseUrl$mediaId');
+                      break;
+                  }
+                },
+              ),
+            ),
+          );
+        });
   }
 
   /// A stream reporting the combined state of the current media item and its
@@ -460,6 +551,211 @@ class _MediaPlayer extends State<MediaPlayer> {
         iconSize: iconSize,
         onPressed: AudioService.pause,
       );
+
+  void _showSnackBar(BuildContext context, String text, Duration duration) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(text),
+      behavior: SnackBarBehavior.floating,
+      duration: duration,
+    ));
+  }
+
+  // sets the path for directory
+  // doesn't care if the directory is created or not
+  _getDirectoryPath() async {
+    final publicDirectoryPath = await _getPublicPath();
+    final albumName = 'Sai Voice/Media';
+    final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
+
+    setState(() {
+      // update the media directory
+      _mediaDirectory = mediaDirectoryPath;
+    });
+  }
+
+  Future<String> _getPublicPath() async {
+    var path = await ExtStorage.getExternalStorageDirectory();
+    return path;
+  }
+
+  Future<MediaItem> getMediaItem(
+      String name, String link, bool isFileExists) async {
+    // Get the path of image for artUri in notification
+    String path = await getNotificationImage();
+
+    if (isFileExists) {
+      link = _changeLinkToFile(link, mediaBaseUrl, _mediaDirectory);
+    }
+
+    String fileId = _getFileFromUri(link, mediaBaseUrl, _mediaDirectory);
+
+    Map<String, dynamic> _extras = {
+      'uri': link,
+    };
+
+    // Set media item to tell the clients what is playing
+    // extras['uri'] contains the audio source
+    final tempMediaItem = MediaItem(
+      id: fileId,
+      album: "Radio Sai Global Harmony",
+      title: name,
+      artUri: Uri.parse('file://$path'),
+      extras: _extras,
+    );
+
+    return tempMediaItem;
+  }
+
+  // changes link to file - removes base url and appends directory
+  // returns file URI
+  String _changeLinkToFile(String link, String baseUrl, String directory) {
+    link = link.replaceAll(baseUrl, '');
+    return 'file://$directory/$link';
+  }
+
+  // changes link to file - removes base url or removes directory
+  // returns file with extension
+  String _getFileFromUri(String link, String baseUrl, String directory) {
+    link = link.replaceAll(baseUrl, '');
+    link = link.replaceAll('file://$directory/', '');
+    return link;
+  }
+
+  // Get notification image stored in file,
+  // if not stored, then store the image
+  Future<String> getNotificationImage() async {
+    String path = await getFilePath();
+    File file = File(path);
+    bool fileExists = file.existsSync();
+    // if the image already exists, return the path
+    if (fileExists) return path;
+    // store the image into path from assets then return the path
+    final byteData =
+        await rootBundle.load('assets/sai_listens_notification.jpg');
+    // if file is not created, create to write into the file
+    file.create(recursive: true);
+    await file.writeAsBytes(byteData.buffer.asUint8List());
+    return path;
+  }
+
+  // Get the file path of the notification image
+  Future<String> getFilePath() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    String filePath = '$appDocPath/sai_listens_notification.jpg';
+    return filePath;
+  }
+
+  _downloadMediaFile(String fileLink) async {
+    var permission = await _canSave();
+    if (!permission) {
+      _showSnackBar(context, 'Accept storage permission to save image',
+          Duration(seconds: 2));
+      return;
+    }
+    await new Directory(_mediaDirectory).create(recursive: true);
+    final fileName = fileLink.replaceAll('$mediaBaseUrl', '');
+
+    // download only when the file is not available
+    // downloading an available file will delete the file
+    DownloadTaskInfo task =
+        new DownloadTaskInfo(name: fileName, link: fileLink);
+    if (_downloadTasks.contains(task)) return;
+    _downloadTasks.add(task);
+    _showSnackBar(context, 'downloading', Duration(seconds: 1));
+    final taskId = await FlutterDownloader.enqueue(
+      url: fileLink,
+      savedDir: _mediaDirectory,
+      fileName: fileName,
+      showNotification: false,
+    );
+    int i = _downloadTasks.indexOf(task);
+    _downloadTasks[i].taskId = taskId;
+  }
+
+  Future<bool> _canSave() async {
+    var status = await Permission.storage.request();
+    if (status.isGranted || status.isLimited) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  //
+  // Flutter Downloader
+  //
+
+  void _bindBackgroundIsolate() {
+    bool isSuccess = IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port_1');
+    if (!isSuccess) {
+      _unbindBackgroundIsolate();
+      _bindBackgroundIsolate();
+      return;
+    }
+    _port.listen((data) async {
+      String id = data[0];
+      DownloadTaskStatus status = data[1];
+      int progress = data[2];
+
+      if (_downloadTasks != null && _downloadTasks.isNotEmpty) {
+        final task =
+            _downloadTasks.firstWhere((element) => element.taskId == id);
+
+        setState(() {
+          task.status = status;
+          task.progress = progress;
+
+          if (status == DownloadTaskStatus.failed) {
+            // remove the file if the task failed
+            FlutterDownloader.remove(taskId: id);
+            setState(() {
+              _showSnackBar(
+                  context, 'failed downloading', Duration(seconds: 1));
+            });
+            return;
+          }
+
+          if (status == DownloadTaskStatus.complete) {
+            // show that it is downloaded
+            setState(() {
+              _showSnackBar(context, 'downloaded', Duration(seconds: 1));
+
+              _replaceMedia(task);
+            });
+            return;
+          }
+        });
+      }
+    });
+  }
+
+  _replaceMedia(DownloadTaskInfo task) async {
+    // replace the uri to downloaded if present in playing queue
+    MediaItem mediaItem = await getMediaItem(task.name, task.link, false);
+    int index = AudioService.queue.indexOf(mediaItem);
+    if (index != -1) {
+      String uri = _changeLinkToFile(task.link, mediaBaseUrl, _mediaDirectory);
+      Map<String, dynamic> _params = {
+        'name': task.name,
+        'index': index,
+        'uri': uri,
+      };
+      AudioService.customAction('editUri', _params);
+    }
+  }
+
+  void _unbindBackgroundIsolate() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port_1');
+  }
+
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) {
+    final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port_1');
+    send.send([id, status, progress]);
+  }
 }
 
 class QueueState {

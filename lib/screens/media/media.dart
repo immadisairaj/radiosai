@@ -38,6 +38,8 @@ class Media extends StatefulWidget {
 }
 
 class _Media extends State<Media> {
+  bool changeState = false;
+
   bool _isLoading = true;
 
   String baseUrl = 'https://radiosai.org/program/Download.php';
@@ -50,7 +52,7 @@ class _Media extends State<Media> {
 
   String _mediaDirectory = '';
   ReceivePort _port = ReceivePort();
-  List<_DownloadTaskInfo> _downloadTasks = [];
+  List<DownloadTaskInfo> _downloadTasks = [];
 
   @override
   void initState() {
@@ -117,7 +119,7 @@ class _Media extends State<Media> {
                               var mediaFilePath =
                                   '$_mediaDirectory/$mediaFileName';
                               var mediaFile = new File(mediaFilePath);
-                              var isFileExist = mediaFile.existsSync();
+                              var isFileExists = mediaFile.existsSync();
                               return Column(
                                 children: [
                                   Padding(
@@ -138,7 +140,7 @@ class _Media extends State<Media> {
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Visibility(
-                                                    visible: !isFileExist,
+                                                    visible: !isFileExists,
                                                     child: IconButton(
                                                       icon: Icon(Icons
                                                           .download_outlined),
@@ -165,14 +167,14 @@ class _Media extends State<Media> {
                                                             mediaName,
                                                             _finalMediaLinks[
                                                                 index],
-                                                            isFileExist);
+                                                            isFileExists);
                                                       } else {
                                                         bool added =
                                                             await addToQueue(
                                                                 mediaName,
                                                                 _finalMediaLinks[
                                                                     index],
-                                                                isFileExist);
+                                                                isFileExists);
                                                         if (added)
                                                           _showSnackBar(
                                                               context,
@@ -196,16 +198,20 @@ class _Media extends State<Media> {
                                         borderRadius:
                                             BorderRadius.circular(8.0),
                                         onTap: () async {
-                                          // TODO: move to player/something
                                           await startPlayer(
                                               mediaName,
                                               _finalMediaLinks[index],
-                                              isFileExist);
+                                              isFileExists);
                                           Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MediaPlayer()));
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          MediaPlayer()))
+                                              .then((value) {
+                                            setState(() {
+                                              changeState = !changeState;
+                                            });
+                                          });
                                         },
                                       ),
                                       shape: RoundedRectangleBorder(
@@ -364,8 +370,8 @@ class _Media extends State<Media> {
 
     // download only when the file is not available
     // downloading an available file will delete the file
-    _DownloadTaskInfo task =
-        new _DownloadTaskInfo(name: fileName, link: fileLink);
+    DownloadTaskInfo task =
+        new DownloadTaskInfo(name: fileName, link: fileLink);
     if (_downloadTasks.contains(task)) return;
     _downloadTasks.add(task);
     _showSnackBar(context, 'downloading', Duration(seconds: 1));
@@ -518,10 +524,14 @@ class _Media extends State<Media> {
     // Set media item to tell the clients what is playing
     // extras['uri'] contains the audio source
     final tempMediaItem = MediaItem(
+      // the file name which includes '_' and file extension is id
       id: fileId,
       album: "Radio Sai Global Harmony",
+      // name of the file without '_' or extensions
       title: name,
+      // art of the media
       artUri: Uri.parse('file://$path'),
+      // extras['uri'] contain the uri of the media
       extras: _extras,
     );
 
@@ -636,7 +646,7 @@ class _Media extends State<Media> {
       _bindBackgroundIsolate();
       return;
     }
-    _port.listen((data) {
+    _port.listen((data) async {
       String id = data[0];
       DownloadTaskStatus status = data[1];
       int progress = data[2];
@@ -644,6 +654,7 @@ class _Media extends State<Media> {
       if (_downloadTasks != null && _downloadTasks.isNotEmpty) {
         final task =
             _downloadTasks.firstWhere((element) => element.taskId == id);
+
         setState(() {
           task.status = status;
           task.progress = progress;
@@ -660,29 +671,32 @@ class _Media extends State<Media> {
 
           if (status == DownloadTaskStatus.complete) {
             // show that it is downloaded
-            setState(() async {
+            setState(() {
               _showSnackBar(context, 'downloaded', Duration(seconds: 1));
 
-              // replace the uri to downloaded if present in playing queue
-              MediaItem mediaItem =
-                  await getMediaItem(task.name, task.link, false);
-              int index = AudioService.queue.indexOf(mediaItem);
-              if (index != -1) {
-                String uri =
-                    _changeLinkToFile(task.link, mediaBaseUrl, _mediaDirectory);
-                Map<String, dynamic> _params = {
-                  'name': task.name,
-                  'index': index,
-                  'uri': uri,
-                };
-                AudioService.customAction('editUri', _params);
-              }
+              _replaceMedia(task);
             });
             return;
           }
         });
       }
     });
+  }
+
+  _replaceMedia(DownloadTaskInfo task) async {
+    // replace the uri to downloaded if present in playing queue
+    MediaItem mediaItem = await getMediaItem(task.name, task.link, false);
+    print('-------------- ${task.name}');
+    int index = AudioService.queue.indexOf(mediaItem);
+    if (index != -1) {
+      String uri = _changeLinkToFile(task.link, mediaBaseUrl, _mediaDirectory);
+      Map<String, dynamic> _params = {
+        'name': task.name,
+        'index': index,
+        'uri': uri,
+      };
+      AudioService.customAction('editUri', _params);
+    }
   }
 
   void _unbindBackgroundIsolate() {
@@ -697,7 +711,7 @@ class _Media extends State<Media> {
   }
 }
 
-class _DownloadTaskInfo {
+class DownloadTaskInfo {
   final String name;
   final String link;
 
@@ -705,5 +719,5 @@ class _DownloadTaskInfo {
   int progress = 0;
   DownloadTaskStatus status = DownloadTaskStatus.undefined;
 
-  _DownloadTaskInfo({this.name, this.link});
+  DownloadTaskInfo({this.name, this.link});
 }
