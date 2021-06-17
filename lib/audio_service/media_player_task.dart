@@ -72,12 +72,14 @@ class MediaPlayerTask extends BackgroundAudioTask {
           .map((item) => AudioSource.uri(Uri.parse(item.extras['uri'])))
           .toList(),
     );
+
+    // update the duration when just_audio decodes it
+    _player.durationStream.listen((duration) {
+      updateQueueWithCurrentDuration(duration);
+    });
+
     try {
       await _player.setAudioSource(concatenatingAudioSource);
-      // update the duration when just_audio decodes it
-      _player.durationStream.listen((duration) {
-        updateQueueWithCurrentDuration(duration);
-      });
       // In this example, we automatically start playing on start.
       onPlay();
     } catch (e) {
@@ -111,7 +113,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
         // return to it's original state after changing uri
         if (!isCurrentItem) break;
-        await _player.seek(position);
+        await _player.seek(position, index: index);
         if (isPlaying) _player.play();
         break;
     }

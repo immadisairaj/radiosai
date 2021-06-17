@@ -1,10 +1,12 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
+import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
 
 class RadioHome extends StatefulWidget {
@@ -17,6 +19,21 @@ class RadioHome extends StatefulWidget {
 }
 
 class _RadioHome extends State<RadioHome> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Flutter Downloader
+    DownloadHelper.bindBackgroundIsolate();
+    FlutterDownloader.registerCallback(DownloadHelper.downloadCallback);
+  }
+
+  @override
+  void dispose() {
+    DownloadHelper.unbindBackgroundIsolate();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // border radius used for sliding panel

@@ -5,7 +5,7 @@ class RadioLoadingBloc {
   bool _loading;
 
   // Initialize the stream for radio player loading state
-  RadioLoadingBloc(bool value) {
+  RadioLoadingBloc() {
     _actionController.stream.listen(_changeStream);
   }
 
@@ -19,7 +19,7 @@ class RadioLoadingBloc {
   // call the function changeLoadingState.add(value) to change the value
   StreamSink get changeLoadingState => _actionController.sink;
 
-  void _changeStream(data) async {
+  void _changeStream(data) {
     if (data == null) {
       _loading = false;
     } else {

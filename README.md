@@ -82,10 +82,12 @@ Most of the main features use bloc architecture using providers and streams. The
 lib
 ├───audio_service   # audio service related task
 ├───bloc            # business logic files related to screens
+│   ├───media
 │   ├───radio
 │   ├───radio_schedule
 │   └───settings
 ├───constants       # constants
+├───helper          # helper classes
 ├───screens         # all screens
 │   ├───media
 │   ├───media_player
@@ -103,7 +105,7 @@ _Above is generated using "tree" command inside lib/_
 ## OpenSource Libraries
 
 __shared_preferenecs:__
-used to store short data locally like: saving the radio stream while closing the app and displays the same on app start, display the favourite radio stream on app start.
+used to store short data locally like: saving the radio stream while closing the app and displays the same on app start, display the favourite radio stream on app start; save the user preference app theme.
 
 __sliding_up_panel:__
 used to select a different radio stream by sliding up the panel.
@@ -111,11 +113,11 @@ used to select a different radio stream by sliding up the panel.
 __shimmer:__
 used to show loading progress in the data loading screens
 
-__flutter_custom_tabs:__
-it is used for redirecting the URL from the app to chrome powered browser
-
 __internet_connection_checker:__
 used to detect the internet status of the device
+
+__flutter_downloader:__
+used to download files/media from the internet
 
 __just_audio & audio_service:__
 the main base of the app helps play the audio seamlessly with media control

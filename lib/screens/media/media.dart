@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:typed_data';
 import 'dart:ui';
 
@@ -13,8 +12,12 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:radiosai/bloc/media/media_screen_bloc.dart';
+import 'package:radiosai/helper/download_helper.dart';
+import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -38,8 +41,6 @@ class Media extends StatefulWidget {
 }
 
 class _Media extends State<Media> {
-  bool changeState = false;
-
   bool _isLoading = true;
 
   String baseUrl = 'https://radiosai.org/program/Download.php';
@@ -51,8 +52,7 @@ class _Media extends State<Media> {
   List<String> _finalMediaLinks = [];
 
   String _mediaDirectory = '';
-  ReceivePort _port = ReceivePort();
-  List<DownloadTaskInfo> _downloadTasks = [];
+  List<DownloadTaskInfo> _downloadTasks;
 
   @override
   void initState() {
@@ -61,15 +61,7 @@ class _Media extends State<Media> {
     _getDirectoryPath();
     _updateURL();
 
-    // Flutter Downloader
-    _bindBackgroundIsolate();
-    FlutterDownloader.registerCallback(downloadCallback);
-  }
-
-  @override
-  void dispose() {
-    _unbindBackgroundIsolate();
-    super.dispose();
+    _downloadTasks = DownloadHelper.getDownloadTasks();
   }
 
   @override
@@ -105,129 +97,18 @@ class _Media extends State<Media> {
                         elevation: 0,
                         color:
                             isDarkTheme ? Colors.grey[800] : Colors.grey[200],
-                        child: ListView.builder(
-                            shrinkWrap: true,
-                            primary: false,
-                            padding: EdgeInsets.only(top: 2, bottom: 2),
-                            itemCount: _finalMediaData.length,
-                            itemBuilder: (context, index) {
-                              String mediaFileName =
-                                  '${_finalMediaData[index]}$mediaFileType';
-                              // replace '_' to ' ' in the text and retain it's original name
-                              String mediaName = _finalMediaData[index];
-                              mediaName = mediaName.replaceAll('_', ' ');
-                              var mediaFilePath =
-                                  '$_mediaDirectory/$mediaFileName';
-                              var mediaFile = new File(mediaFilePath);
-                              var isFileExists = mediaFile.existsSync();
-                              return Column(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.only(left: 8),
-                                    child: Card(
-                                      elevation: 0,
-                                      color: isDarkTheme
-                                          ? Colors.grey[800]
-                                          : Colors.grey[200],
-                                      child: InkWell(
-                                        child: Padding(
-                                          padding: EdgeInsets.only(
-                                              top: 2, bottom: 2),
-                                          child: Center(
-                                            child: ListTile(
-                                              title: Text(mediaName),
-                                              trailing: Row(
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Visibility(
-                                                    visible: !isFileExists,
-                                                    child: IconButton(
-                                                      icon: Icon(Icons
-                                                          .download_outlined),
-                                                      splashRadius: 24,
-                                                      onPressed: () {
-                                                        _downloadMediaFile(
-                                                            _finalMediaLinks[
-                                                                index]);
-                                                      },
-                                                    ),
-                                                  ),
-                                                  IconButton(
-                                                    icon: Icon(CupertinoIcons
-                                                        .add_circled),
-                                                    splashRadius: 24,
-                                                    onPressed: () async {
-                                                      if (!(AudioService
-                                                                  .queue !=
-                                                              null &&
-                                                          AudioService.queue
-                                                                  .length !=
-                                                              0)) {
-                                                        startPlayer(
-                                                            mediaName,
-                                                            _finalMediaLinks[
-                                                                index],
-                                                            isFileExists);
-                                                      } else {
-                                                        bool added =
-                                                            await addToQueue(
-                                                                mediaName,
-                                                                _finalMediaLinks[
-                                                                    index],
-                                                                isFileExists);
-                                                        if (added)
-                                                          _showSnackBar(
-                                                              context,
-                                                              'Added to queue',
-                                                              Duration(
-                                                                  seconds: 1));
-                                                        else
-                                                          _showSnackBar(
-                                                              context,
-                                                              'Already in queue',
-                                                              Duration(
-                                                                  seconds: 1));
-                                                      }
-                                                    },
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        onTap: () async {
-                                          await startPlayer(
-                                              mediaName,
-                                              _finalMediaLinks[index],
-                                              isFileExists);
-                                          Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          MediaPlayer()))
-                                              .then((value) {
-                                            setState(() {
-                                              changeState = !changeState;
-                                            });
-                                          });
-                                        },
-                                      ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                      ),
-                                    ),
-                                  ),
-                                  if (index != _finalMediaData.length - 1)
-                                    Divider(
-                                      height: 2,
-                                      thickness: 1.5,
-                                    ),
-                                ],
-                              );
-                            }),
+
+                        // updates the media screen based on download state
+                        child: Consumer<MediaScreenBloc>(
+                            builder: (context, _mediaScreenStateBloc, child) {
+                          return StreamBuilder<bool>(
+                              stream: _mediaScreenStateBloc.mediaScreenStream,
+                              builder: (context, snapshot) {
+                                // can use the below commented line to know if updated
+                                // bool screenUpdate = snapshot.data ?? false;
+                                return _mediaItems(isDarkTheme);
+                              });
+                        }),
                       ),
                     ),
                   ),
@@ -271,6 +152,96 @@ class _Media extends State<Media> {
       ),
       bottomNavigationBar: BottomMediaPlayer(),
     );
+  }
+
+  Widget _mediaItems(bool isDarkTheme) {
+    return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        padding: EdgeInsets.only(top: 2, bottom: 2),
+        itemCount: _finalMediaData.length,
+        itemBuilder: (context, index) {
+          String mediaFileName = '${_finalMediaData[index]}$mediaFileType';
+          // replace '_' to ' ' in the text and retain it's original name
+          String mediaName = _finalMediaData[index];
+          mediaName = mediaName.replaceAll('_', ' ');
+          var mediaFilePath = '$_mediaDirectory/$mediaFileName';
+          var mediaFile = new File(mediaFilePath);
+          var isFileExists = mediaFile.existsSync();
+          return Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(left: 8),
+                child: Card(
+                  elevation: 0,
+                  color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                  child: InkWell(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      child: Center(
+                        child: ListTile(
+                          title: Text(mediaName),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Visibility(
+                                visible: !isFileExists,
+                                child: IconButton(
+                                  icon: Icon(Icons.download_outlined),
+                                  splashRadius: 24,
+                                  onPressed: () {
+                                    _downloadMediaFile(_finalMediaLinks[index]);
+                                  },
+                                ),
+                              ),
+                              IconButton(
+                                icon: Icon(CupertinoIcons.add_circled),
+                                splashRadius: 24,
+                                onPressed: () async {
+                                  if (!(AudioService.queue != null &&
+                                      AudioService.queue.length != 0)) {
+                                    startPlayer(mediaName,
+                                        _finalMediaLinks[index], isFileExists);
+                                  } else {
+                                    bool added = await addToQueue(mediaName,
+                                        _finalMediaLinks[index], isFileExists);
+                                    if (added)
+                                      _showSnackBar(context, 'Added to queue',
+                                          Duration(seconds: 1));
+                                    else
+                                      _showSnackBar(context, 'Already in queue',
+                                          Duration(seconds: 1));
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                    onTap: () async {
+                      await startPlayer(
+                          mediaName, _finalMediaLinks[index], isFileExists);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MediaPlayer()));
+                    },
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+              if (index != _finalMediaData.length - 1)
+                Divider(
+                  height: 2,
+                  thickness: 1.5,
+                ),
+            ],
+          );
+        });
   }
 
   //
@@ -370,9 +341,17 @@ class _Media extends State<Media> {
 
     // download only when the file is not available
     // downloading an available file will delete the file
-    DownloadTaskInfo task =
-        new DownloadTaskInfo(name: fileName, link: fileLink);
+    DownloadTaskInfo task = new DownloadTaskInfo(
+        name: fileName,
+        link: fileLink,
+        mediaBaseUrl: mediaBaseUrl,
+        directory: _mediaDirectory);
     if (_downloadTasks.contains(task)) return;
+    var connectionStatus = await InternetConnectionChecker().connectionStatus;
+    if (connectionStatus == InternetConnectionStatus.disconnected) {
+      _showSnackBar(context, 'no internet', Duration(seconds: 1));
+      return;
+    }
     _downloadTasks.add(task);
     _showSnackBar(context, 'downloading', Duration(seconds: 1));
     final taskId = await FlutterDownloader.enqueue(
@@ -427,7 +406,8 @@ class _Media extends State<Media> {
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
     if (AudioService.playbackState.playing) {
       if (AudioService.queue != null && AudioService.queue.length != 0) {
-        String fileId = _getFileFromUri(link, mediaBaseUrl, _mediaDirectory);
+        String fileId =
+            MediaHelper.getFileIdFromUri(link, mediaBaseUrl, _mediaDirectory);
         // if trying to add the current playing media, do nothing
         if (AudioService.currentMediaItem.id == fileId) return;
 
@@ -457,7 +437,8 @@ class _Media extends State<Media> {
   }
 
   void initRadioService(String name, String link, bool isFileExists) async {
-    final tempMediaItem = await getMediaItem(name, link, isFileExists);
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+        name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
 
     try {
       // passing params to send the source to play
@@ -486,7 +467,8 @@ class _Media extends State<Media> {
   // add a new media item to the end of the queue
   // doesn't add and returns false if item already in queue
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
-    final tempMediaItem = await getMediaItem(name, link, isFileExists);
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+        name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
     if (AudioService.queue.contains(tempMediaItem)) {
       return false;
     } else {
@@ -499,58 +481,12 @@ class _Media extends State<Media> {
   // check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (AudioService.queue != null && AudioService.queue.length > 1) {
-      final tempMediaItem = await getMediaItem(name, link, isFileExists);
+      final tempMediaItem = await MediaHelper.generateMediaItem(
+          name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
       await AudioService.removeQueueItem(tempMediaItem);
       await AudioService.addQueueItem(tempMediaItem);
     }
     return;
-  }
-
-  Future<MediaItem> getMediaItem(
-      String name, String link, bool isFileExists) async {
-    // Get the path of image for artUri in notification
-    String path = await getNotificationImage();
-
-    if (isFileExists) {
-      link = _changeLinkToFile(link, mediaBaseUrl, _mediaDirectory);
-    }
-
-    String fileId = _getFileFromUri(link, mediaBaseUrl, _mediaDirectory);
-
-    Map<String, dynamic> _extras = {
-      'uri': link,
-    };
-
-    // Set media item to tell the clients what is playing
-    // extras['uri'] contains the audio source
-    final tempMediaItem = MediaItem(
-      // the file name which includes '_' and file extension is id
-      id: fileId,
-      album: "Radio Sai Global Harmony",
-      // name of the file without '_' or extensions
-      title: name,
-      // art of the media
-      artUri: Uri.parse('file://$path'),
-      // extras['uri'] contain the uri of the media
-      extras: _extras,
-    );
-
-    return tempMediaItem;
-  }
-
-  // changes link to file - removes base url and appends directory
-  // returns file URI
-  String _changeLinkToFile(String link, String baseUrl, String directory) {
-    link = link.replaceAll(baseUrl, '');
-    return 'file://$directory/$link';
-  }
-
-  // changes link to file - removes base url or removes directory
-  // returns file with extension
-  String _getFileFromUri(String link, String baseUrl, String directory) {
-    link = link.replaceAll(baseUrl, '');
-    link = link.replaceAll('file://$directory/', '');
-    return link;
   }
 
   //
@@ -564,31 +500,6 @@ class _Media extends State<Media> {
       _isLoading = true;
       _updateURL();
     });
-  }
-
-  // Get notification image stored in file,
-  // if not stored, then store the image
-  Future<String> getNotificationImage() async {
-    String path = await getFilePath();
-    File file = File(path);
-    bool fileExists = file.existsSync();
-    // if the image already exists, return the path
-    if (fileExists) return path;
-    // store the image into path from assets then return the path
-    final byteData =
-        await rootBundle.load('assets/sai_listens_notification.jpg');
-    // if file is not created, create to write into the file
-    file.create(recursive: true);
-    await file.writeAsBytes(byteData.buffer.asUint8List());
-    return path;
-  }
-
-  // Get the file path of the notification image
-  Future<String> getFilePath() async {
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String appDocPath = appDocDir.path;
-    String filePath = '$appDocPath/sai_listens_notification.jpg';
-    return filePath;
   }
 
   // Shimmer effect while loading the content
@@ -633,91 +544,4 @@ class _Media extends State<Media> {
       ),
     );
   }
-
-  //
-  // Flutter Downloader
-  //
-
-  void _bindBackgroundIsolate() {
-    bool isSuccess = IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
-    if (!isSuccess) {
-      _unbindBackgroundIsolate();
-      _bindBackgroundIsolate();
-      return;
-    }
-    _port.listen((data) async {
-      String id = data[0];
-      DownloadTaskStatus status = data[1];
-      int progress = data[2];
-
-      if (_downloadTasks != null && _downloadTasks.isNotEmpty) {
-        final task =
-            _downloadTasks.firstWhere((element) => element.taskId == id);
-
-        setState(() {
-          task.status = status;
-          task.progress = progress;
-
-          if (status == DownloadTaskStatus.failed) {
-            // remove the file if the task failed
-            FlutterDownloader.remove(taskId: id);
-            setState(() {
-              _showSnackBar(
-                  context, 'failed downloading', Duration(seconds: 1));
-            });
-            return;
-          }
-
-          if (status == DownloadTaskStatus.complete) {
-            // show that it is downloaded
-            setState(() {
-              _showSnackBar(context, 'downloaded', Duration(seconds: 1));
-
-              _replaceMedia(task);
-            });
-            return;
-          }
-        });
-      }
-    });
-  }
-
-  _replaceMedia(DownloadTaskInfo task) async {
-    // replace the uri to downloaded if present in playing queue
-    MediaItem mediaItem = await getMediaItem(task.name, task.link, false);
-    print('-------------- ${task.name}');
-    int index = AudioService.queue.indexOf(mediaItem);
-    if (index != -1) {
-      String uri = _changeLinkToFile(task.link, mediaBaseUrl, _mediaDirectory);
-      Map<String, dynamic> _params = {
-        'name': task.name,
-        'index': index,
-        'uri': uri,
-      };
-      AudioService.customAction('editUri', _params);
-    }
-  }
-
-  void _unbindBackgroundIsolate() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-  }
-
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
-  }
-}
-
-class DownloadTaskInfo {
-  final String name;
-  final String link;
-
-  String taskId = '';
-  int progress = 0;
-  DownloadTaskStatus status = DownloadTaskStatus.undefined;
-
-  DownloadTaskInfo({this.name, this.link});
 }

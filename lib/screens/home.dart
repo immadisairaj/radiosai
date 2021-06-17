@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/screens/radio/radio_home.dart';
 import 'package:radiosai/widgets/top_media_player.dart';
 import 'package:radiosai/widgets/top_menu.dart';
@@ -14,7 +15,6 @@ class Home extends StatefulWidget {
 }
 
 class _Home extends State<Home> {
-
   @override
   void initState() {
     super.initState();
@@ -40,6 +40,9 @@ class _Home extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // to show if the download is happened in the whole app
+      // calling from download helper is a must
+      key: DownloadHelper.getScaffoldKey(),
       body: Stack(
         children: [
           RadioHome(),

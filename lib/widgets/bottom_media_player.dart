@@ -67,8 +67,10 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MediaPlayer()));
+                    Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => MediaPlayer()));
                   },
                   child: Container(
                     height: (isBiggerScreen) ? height * 0.08 : height * 0.1,

@@ -2,12 +2,14 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/bloc/internet_status.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
@@ -50,7 +52,7 @@ class MyApp extends StatelessWidget {
         ),
         // stream for radio loading state
         Provider<RadioLoadingBloc>(
-          create: (_) => RadioLoadingBloc(false),
+          create: (_) => RadioLoadingBloc(),
           dispose: (_, RadioLoadingBloc radioLoadingBloc) =>
               radioLoadingBloc.dispose(),
         ),
@@ -76,6 +78,14 @@ class MyApp extends StatelessWidget {
         Provider<TimeZoneBloc>(
           create: (_) => TimeZoneBloc(),
           dispose: (_, TimeZoneBloc timeZoneBloc) => timeZoneBloc.dispose(),
+        ),
+        // stream for media screen updates
+        Provider<MediaScreenBloc>(
+          // updates the media screen based on download state
+          // calling from download helper is a must
+          create: (_) => DownloadHelper.getMediaScreenBloc(),
+          dispose: (_, MediaScreenBloc mediaScreenBloc) =>
+              mediaScreenBloc.dispose(),
         ),
       ],
       child: Consumer<AppThemeBloc>(
