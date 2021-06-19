@@ -1,11 +1,9 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:isolate';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +26,6 @@ class MediaPlayer extends StatefulWidget {
 }
 
 class _MediaPlayer extends State<MediaPlayer> {
-  String mediaBaseUrl = 'https://dl.radiosai.org/';
-
   String _mediaDirectory = '';
   List<DownloadTaskInfo> _downloadTasks;
 
@@ -95,7 +91,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                             ),
                             Row(
                               children: [
-                                // TODO: media top menu widget
+                                // TODO: maybe add a share?
                                 _options(isDarkTheme),
                               ],
                             ),
@@ -510,7 +506,8 @@ class _MediaPlayer extends State<MediaPlayer> {
                               builder: (context) => PlayingQueue()));
                       break;
                     case 'Download':
-                      _downloadMediaFile('$mediaBaseUrl$mediaId');
+                      _downloadMediaFile(
+                          MediaHelper.getLinkFromFileId(mediaId));
                       break;
                   }
                 },
@@ -561,19 +558,11 @@ class _MediaPlayer extends State<MediaPlayer> {
   // sets the path for directory
   // doesn't care if the directory is created or not
   _getDirectoryPath() async {
-    final publicDirectoryPath = await _getPublicPath();
-    final albumName = 'Sai Voice/Media';
-    final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
-
+    final mediaDirectoryPath = await MediaHelper.getDirectoryPath();
     setState(() {
       // update the media directory
       _mediaDirectory = mediaDirectoryPath;
     });
-  }
-
-  Future<String> _getPublicPath() async {
-    var path = await ExtStorage.getExternalStorageDirectory();
-    return path;
   }
 
   _downloadMediaFile(String fileLink) async {
@@ -584,15 +573,14 @@ class _MediaPlayer extends State<MediaPlayer> {
       return;
     }
     await new Directory(_mediaDirectory).create(recursive: true);
-    final fileName = fileLink.replaceAll('$mediaBaseUrl', '');
+    final fileName = fileLink.replaceAll('${MediaHelper.mediaBaseUrl}', '');
 
     // download only when the file is not available
     // downloading an available file will delete the file
     DownloadTaskInfo task = new DownloadTaskInfo(
-        name: fileName,
-        link: fileLink,
-        mediaBaseUrl: mediaBaseUrl,
-        directory: _mediaDirectory);
+      name: fileName,
+      link: fileLink,
+    );
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {

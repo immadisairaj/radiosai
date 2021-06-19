@@ -149,7 +149,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                                     bool isCurrentItem = false;
                                     if (mediaItem == currentMediaItem)
                                       isCurrentItem = true;
-                                    return queueItemWidget(context, mediaItem,
+                                    return _queueItemWidget(context, mediaItem,
                                         isCurrentItem, queueList.length, isDarkTheme);
                                   },
                                 ),
@@ -192,7 +192,7 @@ class _PlayingQueue extends State<PlayingQueue> {
     );
   }
 
-  Widget queueItemWidget(BuildContext context, MediaItem mediaItem,
+  Widget _queueItemWidget(BuildContext context, MediaItem mediaItem,
       bool isCurrentItem, int length, bool isDarkTheme) {
     Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
     return Material(

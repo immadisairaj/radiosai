@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:radiosai/helper/media_helper.dart';
 
 class MediaPlayerTask extends BackgroundAudioTask {
   AudioPlayer _player;
@@ -15,11 +17,18 @@ class MediaPlayerTask extends BackgroundAudioTask {
   int get index => _player.currentIndex;
   MediaItem get mediaItem => index == null ? null : queue[index];
 
+  String cachedMediaDirectoy;
+  String mediaDirectory;
+
   @override
   Future<void> onStart(Map<String, dynamic> params) async {
     // initialize the just_audio player
     // global declaration might not create new player
     _player = new AudioPlayer();
+
+    // set the mediaDirectory
+    cachedMediaDirectoy = await MediaHelper.getCachedDirectoryPath();
+    mediaDirectory = await MediaHelper.getDirectoryPath();
 
     // initialize the queue
     mediaQueue = [];
@@ -42,7 +51,17 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
     // Broadcast media item changes.
     _player.currentIndexStream.listen((index) {
-      if (index != null) AudioServiceBackground.setMediaItem(queue[index]);
+      if (index != null) {
+        AudioServiceBackground.setMediaItem(queue[index]);
+        if (index - 1 >= 0) {
+          // Change the uri of previous played file if file exists
+          _dynamicallyUpdateAudioSourceWithUri(index - 1);
+        }
+        if (index + 1 <= queue.length - 1) {
+          // Change the uri of upcoming played file if file exists
+          _dynamicallyUpdateAudioSourceWithUri(index + 1);
+        }
+      }
     });
     // Propagate all events from the audio player to AudioService clients.
     _eventSubscription = _player.playbackEventStream.listen((event) {
@@ -69,7 +88,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     AudioServiceBackground.setQueue(queue);
     concatenatingAudioSource = new ConcatenatingAudioSource(
       children: queue
-          .map((item) => AudioSource.uri(Uri.parse(item.extras['uri'])))
+          .map((item) => getAudioSourceFromUri(item.extras['uri']))
           .toList(),
     );
 
@@ -101,9 +120,12 @@ class MediaPlayerTask extends BackgroundAudioTask {
         Duration position = _player.position;
         int index = params['index'];
         bool isCurrentItem = _player.currentIndex == index;
+        // return if playing because we don't want to interrupt the playback
+        // change the audio source after the index is changed
+        if (isCurrentItem && isPlaying) return;
         await concatenatingAudioSource.removeAt(index);
         await concatenatingAudioSource.insert(
-            index, AudioSource.uri(Uri.parse(params['uri'])));
+            index, getAudioSourceFromUri(params['uri']));
         mediaQueue[index].extras['uri'] = params['uri'];
 
         // broadcast the queue
@@ -124,7 +146,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     mediaQueue.add(mediaItem);
     await concatenatingAudioSource
-        .add(AudioSource.uri(Uri.parse(mediaItem.extras['uri'])));
+        .add(getAudioSourceFromUri(mediaItem.extras['uri']));
 
     // broadcast the queue
     await AudioServiceBackground.setQueue(queue);
@@ -151,7 +173,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     await concatenatingAudioSource.clear();
     // add all new audio sources
     await concatenatingAudioSource.addAll(queueList
-        .map((item) => AudioSource.uri(Uri.parse(item.extras['uri'])))
+        .map((item) => getAudioSourceFromUri(item.extras['uri']))
         .toList());
 
     // broadcast the queue
@@ -321,18 +343,21 @@ class MediaPlayerTask extends BackgroundAudioTask {
         (_player.shuffleModeEnabled)
             ? AudioServiceShuffleMode.all
             : AudioServiceShuffleMode.none;
+
+    bool isNextEnabled = _player.playbackEvent.currentIndex != queue.length - 1;
+
     await AudioServiceBackground.setState(
       controls: [
         MediaControl.skipToPrevious,
         _player.playing ? MediaControl.pause : MediaControl.play,
-        MediaControl.skipToNext,
+        if (isNextEnabled) MediaControl.skipToNext,
       ],
       systemActions: [
         MediaAction.seekTo,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
-      androidCompactActions: [0, 1, 2],
+      androidCompactActions: (isNextEnabled) ? [0, 1, 2] : [0, 1],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,
@@ -360,6 +385,55 @@ class MediaPlayerTask extends BackgroundAudioTask {
         return AudioProcessingState.completed;
       default:
         throw Exception("Invalid state: ${_player.processingState}");
+    }
+  }
+
+  /// Dynamically update the audiosource if the media item
+  /// at the "index" with either file Uri or link Uri
+  Future<void> _dynamicallyUpdateAudioSourceWithUri(int index) async {
+    String fileId = queue[index].id;
+    bool fileExists = await File('$mediaDirectory/$fileId').exists();
+    if (!queue[index].extras['uri'].toString().contains('file://')) {
+      if (fileExists) {
+        print('dynamically updating source of $fileId from url to file');
+        String fileUri = MediaHelper.getFileUriFromFileIdWithDirectory(
+            fileId, mediaDirectory);
+        await concatenatingAudioSource.removeAt(index);
+        await concatenatingAudioSource.insert(
+            index, getAudioSourceFromUri(fileUri));
+        mediaQueue[index].extras['uri'] = fileUri;
+      }
+      // changing to link happens dynamically
+      // everytime we want to add file uri, we edit the queue extras
+      // from the UI part (after downloading)
+    } else {
+      if (!fileExists) {
+        // if suppose a user delete's the file, and doesn't want to keep
+        // then we change teh uri back to link if it is in play queue
+        print('dynamically updating source of $fileId from file to url');
+        String link = MediaHelper.getLinkFromFileId(fileId);
+        await concatenatingAudioSource.removeAt(index);
+        await concatenatingAudioSource.insert(
+            index, getAudioSourceFromUri(link));
+        mediaQueue[index].extras['uri'] = link;
+      }
+    }
+  }
+
+  /// Returns the AudioSource based on if it is a file or a link.
+  /// File Uri plays directly from the file.
+  /// Link Uri can cache the files
+  AudioSource getAudioSourceFromUri(String uri) {
+    String id = MediaHelper.getFileIdFromUriWithDirectory(uri, mediaDirectory);
+    if (uri.contains('file://')) {
+      // file Uri
+      // make the cache file from the external directory
+      return LockCachingAudioSource(Uri.parse('${MediaHelper.mediaBaseUrl}$id'),
+          cacheFile: File('$mediaDirectory/$id'));
+    } else {
+      // Http Uri
+      return LockCachingAudioSource(Uri.parse(uri),
+          cacheFile: File('$cachedMediaDirectoy/$id'));
     }
   }
 }

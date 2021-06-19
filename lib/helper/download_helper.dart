@@ -85,14 +85,15 @@ class DownloadHelper {
 
   static _replaceMedia(DownloadTaskInfo task) async {
     // replace the uri to downloaded if present in playing queue
-    MediaItem mediaItem = await MediaHelper.generateMediaItem(
-        task.name, task.link, task.mediaBaseUrl, task.directory, false);
+    MediaItem mediaItem =
+        await MediaHelper.generateMediaItem(task.name, task.link, false);
     if (AudioService.queue == null) return;
     int index = AudioService.queue.indexOf(mediaItem);
     if (index != -1) {
-      String uri = MediaHelper.changeLinkToFileUri(
-          task.link, task.mediaBaseUrl, task.directory);
+      String uri = await MediaHelper.changeLinkToFileUri(task.link);
+      String id = await MediaHelper.getFileIdFromUri(task.link);
       Map<String, dynamic> _params = {
+        'id': id,
         'name': task.name,
         'index': index,
         'uri': uri,
@@ -117,12 +118,9 @@ class DownloadTaskInfo {
   final String name;
   final String link;
 
-  final String mediaBaseUrl;
-  final String directory;
-
   String taskId = '';
   int progress = 0;
   DownloadTaskStatus status = DownloadTaskStatus.undefined;
 
-  DownloadTaskInfo({this.name, this.link, this.mediaBaseUrl, this.directory});
+  DownloadTaskInfo({this.name, this.link});
 }

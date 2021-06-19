@@ -1,28 +1,42 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
 // Media Helper is useful to handle common methods used by media/media player
 class MediaHelper {
-  // Generates and returns a future media item
-  // name - file name without any '_'
-  // link - file link which includes dl......
-  // mediaBaseUrl - string which contains dl...../
-  // directory - path where the file is being saved
-  // isFileExists - mention if the file exists to set uri for audio
-  static Future<MediaItem> generateMediaItem(String name, String link,
-      String mediaBaseUrl, String directory, bool isFileExists) async {
+  /// returns a constant url for media - https://dl.radiosai.org/
+  static String mediaBaseUrl = 'https://dl.radiosai.org/';
+
+  /// returns a file type ".mp3"
+  static String mediaFileType = '.mp3';
+
+  /// Generates and returns a Future\<MediaItem\>
+  ///
+  /// Parameters:
+  ///
+  /// name - file name without any '_'
+  ///
+  /// link - file link which includes dl......
+  ///
+  /// mediaBaseUrl - string which contains dl...../
+  ///
+  /// directory - path where the file is being saved
+  ///
+  /// isFileExists - mention if the file exists to set uri for audio
+  static Future<MediaItem> generateMediaItem(
+      String name, String link, bool isFileExists) async {
     // Get the path of image for artUri in notification
     String path = await getNotificationImage();
 
     // if file exists, then add file uri
     if (isFileExists) {
-      link = changeLinkToFileUri(link, mediaBaseUrl, directory);
+      link = await changeLinkToFileUri(link);
     }
 
-    String fileId = getFileIdFromUri(link, mediaBaseUrl, directory);
+    String fileId = await getFileIdFromUri(link);
 
     Map<String, dynamic> _extras = {
       'uri': link,
@@ -45,25 +59,84 @@ class MediaHelper {
     return tempMediaItem;
   }
 
-  // changes link to file - removes base url and appends directory
-  // returns file URI
-  static String changeLinkToFileUri(
-      String link, String mediaBaseUrl, String directory) {
+  /// returns the link for file when provided file id.
+  /// Fild Id is "something.mp3"
+  static String getLinkFromFileId(String id) {
+    return '$mediaBaseUrl$id';
+  }
+
+  /// changes http link to file - removes base url and appends directory
+  ///
+  /// returns file URI
+  static Future<String> changeLinkToFileUri(String link) async {
+    String directory = await getDirectoryPath();
     link = link.replaceAll(mediaBaseUrl, '');
     return 'file://$directory/$link';
   }
 
-  // changes link to file - removes base url or removes directory
-  // returns file with extension
-  static String getFileIdFromUri(
-      String link, String mediaBaseUrl, String directory) {
-    link = link.replaceAll(mediaBaseUrl, '');
-    link = link.replaceAll('file://$directory/', '');
-    return link;
+  /// Generate a file uri from file id 'something.mp3'
+  ///
+  /// Takes in directory path (the external path)
+  ///
+  /// returns file URI
+  static String getFileUriFromFileIdWithDirectory(String id, String directory) {
+    return 'file://$directory/$id';
   }
 
-  // Get notification image stored in file,
-  // if not stored, then store the image
+  /// changes link to file - removes base url or removes directory
+  ///
+  /// returns file with extension
+  static Future<String> getFileIdFromUri(String uri) async {
+    String directory = await getDirectoryPath();
+    uri = uri.replaceAll(mediaBaseUrl, '');
+    uri = uri.replaceAll('file://$directory/', '');
+    return uri;
+  }
+
+  /// changes link to file - removes base url or removes directory
+  ///
+  /// returns file with extension
+  ///
+  /// difference form getFileIdFromUri is to provide a directory and remove future
+  static String getFileIdFromUriWithDirectory(String uri, String directory) {
+    uri = uri.replaceAll(mediaBaseUrl, '');
+    uri = uri.replaceAll('file://$directory/', '');
+    return uri;
+  }
+
+  /// returns the path for media directory
+  ///
+  /// doesn't care if the directory is created or not
+  static Future<String> getDirectoryPath() async {
+    final publicDirectoryPath = await _getPublicPath();
+    final albumName = 'Sai Voice/Media';
+    final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
+    return mediaDirectoryPath;
+  }
+
+  /// returns the path for cached media directory
+  ///
+  /// doesn't care if the directory is created or not
+  static Future<String> getCachedDirectoryPath() async {
+    String cachedPath = await _getCachedPath();
+    return '$cachedPath/Media';
+  }
+
+  static Future<String> _getPublicPath() async {
+    var path = await ExtStorage.getExternalStorageDirectory();
+    return path;
+  }
+
+  /// Get the file path of the notification image
+  static Future<String> _getCachedPath() async {
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    return appDocPath;
+  }
+
+  /// Get notification image stored in file,
+  ///
+  /// if not stored, then store the image
   static Future<String> getNotificationImage() async {
     String path = await _getNotificationFilePath();
     File file = File(path);
@@ -79,7 +152,7 @@ class MediaHelper {
     return path;
   }
 
-  // Get the file path of the notification image
+  /// Get the file path of the notification image
   static Future<String> _getNotificationFilePath() async {
     Directory appDocDir = await getApplicationDocumentsDirectory();
     String appDocPath = appDocDir.path;

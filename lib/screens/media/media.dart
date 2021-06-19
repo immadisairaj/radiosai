@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,9 +42,7 @@ class Media extends StatefulWidget {
 class _Media extends State<Media> {
   bool _isLoading = true;
 
-  String baseUrl = 'https://radiosai.org/program/Download.php';
-  String mediaBaseUrl = 'https://dl.radiosai.org/';
-  String mediaFileType = '.mp3';
+  final String baseUrl = 'https://radiosai.org/program/Download.php';
   String finalUrl = '';
 
   List<String> _finalMediaData = ['null'];
@@ -161,7 +158,8 @@ class _Media extends State<Media> {
         padding: EdgeInsets.only(top: 2, bottom: 2),
         itemCount: _finalMediaData.length,
         itemBuilder: (context, index) {
-          String mediaFileName = '${_finalMediaData[index]}$mediaFileType';
+          String mediaFileName =
+              '${_finalMediaData[index]}${MediaHelper.mediaFileType}';
           // replace '_' to ' ' in the text and retain it's original name
           String mediaName = _finalMediaData[index];
           mediaName = mediaName.replaceAll('_', ' ');
@@ -312,7 +310,8 @@ class _Media extends State<Media> {
       mediaFiles.add(temp);
 
       // append string to get media link
-      mediaLinks.add('$mediaBaseUrl${mediaFiles[i]}$mediaFileType');
+      mediaLinks.add(
+          '${MediaHelper.mediaBaseUrl}${mediaFiles[i]}${MediaHelper.mediaFileType}');
     }
 
     setState(() {
@@ -337,15 +336,14 @@ class _Media extends State<Media> {
       return;
     }
     await new Directory(_mediaDirectory).create(recursive: true);
-    final fileName = fileLink.replaceAll('$mediaBaseUrl', '');
+    final fileName = fileLink.replaceAll('${MediaHelper.mediaBaseUrl}', '');
 
     // download only when the file is not available
     // downloading an available file will delete the file
     DownloadTaskInfo task = new DownloadTaskInfo(
-        name: fileName,
-        link: fileLink,
-        mediaBaseUrl: mediaBaseUrl,
-        directory: _mediaDirectory);
+      name: fileName,
+      link: fileLink,
+    );
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {
@@ -367,19 +365,11 @@ class _Media extends State<Media> {
   // sets the path for directory
   // doesn't care if the directory is created or not
   _getDirectoryPath() async {
-    final publicDirectoryPath = await _getPublicPath();
-    final albumName = 'Sai Voice/Media';
-    final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
-
+    final mediaDirectoryPath = await MediaHelper.getDirectoryPath();
     setState(() {
       // update the media directory
       _mediaDirectory = mediaDirectoryPath;
     });
-  }
-
-  Future<String> _getPublicPath() async {
-    var path = await ExtStorage.getExternalStorageDirectory();
-    return path;
   }
 
   Future<bool> _canSave() async {
@@ -406,8 +396,7 @@ class _Media extends State<Media> {
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
     if (AudioService.playbackState.playing) {
       if (AudioService.queue != null && AudioService.queue.length != 0) {
-        String fileId =
-            MediaHelper.getFileIdFromUri(link, mediaBaseUrl, _mediaDirectory);
+        String fileId = await MediaHelper.getFileIdFromUri(link);
         // if trying to add the current playing media, do nothing
         if (AudioService.currentMediaItem.id == fileId) return;
 
@@ -437,8 +426,8 @@ class _Media extends State<Media> {
   }
 
   void initRadioService(String name, String link, bool isFileExists) async {
-    final tempMediaItem = await MediaHelper.generateMediaItem(
-        name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
+    final tempMediaItem =
+        await MediaHelper.generateMediaItem(name, link, isFileExists);
 
     try {
       // passing params to send the source to play
@@ -467,8 +456,8 @@ class _Media extends State<Media> {
   // add a new media item to the end of the queue
   // doesn't add and returns false if item already in queue
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
-    final tempMediaItem = await MediaHelper.generateMediaItem(
-        name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
+    final tempMediaItem =
+        await MediaHelper.generateMediaItem(name, link, isFileExists);
     if (AudioService.queue.contains(tempMediaItem)) {
       return false;
     } else {
@@ -481,8 +470,8 @@ class _Media extends State<Media> {
   // check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (AudioService.queue != null && AudioService.queue.length > 1) {
-      final tempMediaItem = await MediaHelper.generateMediaItem(
-          name, link, mediaBaseUrl, _mediaDirectory, isFileExists);
+      final tempMediaItem =
+          await MediaHelper.generateMediaItem(name, link, isFileExists);
       await AudioService.removeQueueItem(tempMediaItem);
       await AudioService.addQueueItem(tempMediaItem);
     }

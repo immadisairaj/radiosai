@@ -31,6 +31,7 @@ class MyConstants extends InheritedWidget {
     'Schedule',
     'Sai Inspires',
     'Audio Archive',
+    'Search',
     'Settings',
   ];
 

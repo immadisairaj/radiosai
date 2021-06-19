@@ -51,6 +51,7 @@ dependencies:
   sliding_up_panel: ^2.0.0+1
   shimmer: ^2.0.0
   cached_network_image: ^3.0.0
+  webview_flutter: ^2.0.8
   # Audio packages
   just_audio: ^0.7.5
   audio_service: ^0.17.1

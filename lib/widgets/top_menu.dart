@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
+import 'package:radiosai/screens/search/search.dart';
 import 'package:radiosai/screens/settings/settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -70,6 +71,12 @@ class _TopMenu extends State<TopMenu> {
                   case 'Audio Archive':
                     _urlLaunch(
                         'https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm');
+                    break;
+                    case 'Search':
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => Search()));
                     break;
                 }
               },

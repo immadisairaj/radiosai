@@ -46,7 +46,7 @@ class _ScheduleData extends State<ScheduleData> {
   int oldStreamId = 0;
   final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
 
-  String baseUrl = 'https://radiosai.org/program/Index.php';
+  final String baseUrl = 'https://radiosai.org/program/Index.php';
   String finalUrl = '';
   String streamId = '';
   String selectedStream = '';
@@ -339,7 +339,7 @@ class _ScheduleData extends State<ScheduleData> {
     );
   }
 
-  _updateURL(DateTime date) async {
+  _updateURL(DateTime date) {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
     var data = new Map<String, dynamic>();
