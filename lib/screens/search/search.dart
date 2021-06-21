@@ -8,6 +8,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:radiosai/screens/media/media.dart';
+import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -40,35 +41,36 @@ class _Search extends State<Search> {
     'Special',
   ];
   String description = '';
-  String category = ''; // from categoriesList
+  String category = 'Any'; // from categoriesList
+  // String language = '';
+
   final DateTime now = DateTime.now();
   DateTime selectedDate;
-  int page = 1;
+  String selectedDateString = '';
+
+  int currentPage = 1;
   final int filesPerPage = 100; // max 3 digits
-  int lastPage;
+  int lastPage = 0;
+  bool _isChangingPage = false;
 
   List<String> _finalTableHead = [];
   List<List<String>> _finalTableData = [
-    ['null']
+    ['start']
   ];
 
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController _dateController = new TextEditingController();
+
   bool _isFirstLoading = true;
+  bool _isSecondLoading = false;
 
   @override
   void initState() {
     selectedDate = null;
 
-    // TODO: below are just temporary
-    description = 'sri ram jai ram';
-    category = 'Any';
-    _isLoading = true;
-    _isFirstLoading = true;
-
     super.initState();
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
-
-    _updateURL();
   }
 
   @override
@@ -85,200 +87,194 @@ class _Search extends State<Search> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         color: backgroundColor,
-        // child: Expanded(
-        child: Stack(
+        child: Column(
           children: [
-            if (_isLoading == false || _finalTableData[0][0] != 'null')
-              RefreshIndicator(
-                onRefresh: () {
-                  return;
-                },
-                // onRefresh: _refresh,
-                child: Scrollbar(
-                  radius: Radius.circular(8),
-                  child: SingleChildScrollView(
-                    // controller: _scrollController,
-                    physics: BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    child: Card(
-                      elevation: 0,
-                      color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
-                      child: ListView.builder(
-                          shrinkWrap: true,
-                          primary: false,
-                          padding: EdgeInsets.only(top: 2, bottom: 2),
-                          itemCount: _finalTableData.length,
-                          itemBuilder: (context, index) {
-                            List<String> rowData = _finalTableData[index];
+            _searchForm(isDarkTheme),
+            Expanded(
+              child: Stack(
+                children: [
+                  if (_isLoading == false &&
+                      _finalTableData[0][0] != 'null' &&
+                      _finalTableData[0][0] != 'timeout' &&
+                      _finalTableData[0][0] != 'wrong' &&
+                      _finalTableData[0][0] != 'start')
+                    RefreshIndicator(
+                      onRefresh: _refresh,
+                      // onRefresh: _refresh,
+                      child: Scrollbar(
+                        radius: Radius.circular(8),
+                        child: SingleChildScrollView(
+                          // controller: _scrollController,
+                          physics: BouncingScrollPhysics(
+                              parent: AlwaysScrollableScrollPhysics()),
+                          child: Card(
+                            elevation: 0,
+                            color: isDarkTheme
+                                ? Colors.grey[800]
+                                : Colors.grey[200],
+                            child: ListView.builder(
+                                shrinkWrap: true,
+                                primary: false,
+                                padding: EdgeInsets.only(top: 2, bottom: 2),
+                                itemCount: _finalTableData.length,
+                                itemBuilder: (context, index) {
+                                  List<String> rowData = _finalTableData[index];
 
-                            String category = rowData[1];
-                            String programe = rowData[3];
-                            String language = rowData[4];
-                            String duration = '${rowData[5]} min';
-                            String fids = rowData[6];
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.only(left: 2, right: 2),
-                                  child: Card(
-                                    elevation: 0,
-                                    color: isDarkTheme
-                                        ? Colors.grey[800]
-                                        : Colors.grey[200],
-                                    child: InkWell(
-                                      child: Padding(
+                                  String category = rowData[1];
+                                  String programe = rowData[3];
+                                  String language = rowData[4];
+                                  String duration = '${rowData[5]} min';
+                                  String fids = rowData[6];
+                                  return Column(
+                                    children: [
+                                      Padding(
                                         padding:
-                                            EdgeInsets.only(top: 2, bottom: 2),
-                                        child: Center(
-                                          child: ListTile(
-                                            title: Text(
-                                              category,
-                                              style: TextStyle(
-                                                color: Theme.of(context)
-                                                    .accentColor,
-                                                fontWeight: FontWeight.w600,
+                                            EdgeInsets.only(left: 2, right: 2),
+                                        child: Card(
+                                          elevation: 0,
+                                          color: isDarkTheme
+                                              ? Colors.grey[800]
+                                              : Colors.grey[200],
+                                          child: InkWell(
+                                            child: Padding(
+                                              padding: EdgeInsets.only(
+                                                  top: 2, bottom: 2),
+                                              child: Center(
+                                                child: ListTile(
+                                                  title: Text(
+                                                    category,
+                                                    style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .accentColor,
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                                  subtitle: Text(programe),
+                                                  trailing: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text(
+                                                        language,
+                                                        style: TextStyle(
+                                                          color: isDarkTheme
+                                                              ? Colors.grey[300]
+                                                              : Colors
+                                                                  .grey[700],
+                                                        ),
+                                                      ),
+                                                      Text(
+                                                        duration,
+                                                        style: TextStyle(
+                                                          color: isDarkTheme
+                                                              ? Colors.grey[300]
+                                                              : Colors
+                                                                  .grey[700],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                            subtitle: Text(programe),
-                                            trailing: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                  language,
-                                                  style: TextStyle(
-                                                    color: isDarkTheme
-                                                        ? Colors.grey[300]
-                                                        : Colors.grey[700],
-                                                  ),
-                                                ),
-                                                Text(
-                                                  duration,
-                                                  style: TextStyle(
-                                                    color: isDarkTheme
-                                                        ? Colors.grey[300]
-                                                        : Colors.grey[700],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
+                                            focusColor: isDarkTheme
+                                                ? Colors.grey[700]
+                                                : Colors.grey[300],
+                                            onTap: () {
+                                              if (fids != '')
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            Media(fids: fids)));
+                                            },
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(8.0),
                                           ),
                                         ),
                                       ),
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      focusColor: isDarkTheme
-                                          ? Colors.grey[700]
-                                          : Colors.grey[300],
-                                      onTap: () {
-                                        if (fids != '')
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      Media(fids: fids)));
-                                      },
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                  ),
-                                ),
-                                if (index != _finalTableData.length - 1)
-                                  Divider(
-                                    height: 2,
-                                    thickness: 1.5,
-                                  ),
-                              ],
-                            );
-                          }),
+                                      if (index != _finalTableData.length - 1)
+                                        Divider(
+                                          height: 2,
+                                          thickness: 1.5,
+                                        ),
+                                    ],
+                                  );
+                                }),
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                  // show the below when wrong string is typed
+                  if (_finalTableData[0][0] == 'wrong' && _isLoading == false)
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text('No Data Available for the search values'),
+                      ),
+                    ),
+                  // show the below when at start
+                  if (_finalTableData[0][0] == 'start' && _isLoading == false)
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Text('Start by entering value in Search'),
+                      ),
+                    ),
+                  // show when no data is retrieved
+                  if (_finalTableData[0][0] == 'null' && _isLoading == false)
+                    NoData(
+                      backgroundColor: backgroundColor,
+                      text:
+                          'No Data Available,\ncheck your internet and try again',
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          _updateURL();
+                        });
+                      },
+                    ),
+                  // show when no data is retrieved and timeout
+                  if (_finalTableData[0][0] == 'timeout' && _isLoading == false)
+                    NoData(
+                      backgroundColor: backgroundColor,
+                      text:
+                          'No Data Available,\nURL timeout, try again after some time',
+                      onPressed: () {
+                        setState(() {
+                          _isLoading = true;
+                          _updateURL();
+                        });
+                      },
+                    ),
+                  // Shown but hidden when loading the data
+                  if (_isGettingData) _hiddenWebView(),
+                  // Shown when it is loading
+                  if (_isLoading)
+                    Container(
+                      color: backgroundColor,
+                      child: Center(
+                        // TODO: show loading
+                        // child: _showLoading(isDarkTheme),
+                        child: SingleChildScrollView(
+                          child: Text('loading'),
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            // show when no data is retrieved
-            if (_finalTableData[0][0] == 'null' && _isLoading == false)
-              NoData(
-                backgroundColor: backgroundColor,
-                text: 'No Data Available,\ncheck your internet and try again',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL();
-                  });
-                },
-              ),
-            // show when no data is retrieved and timeout
-            if (_finalTableData[0][0] == 'timeout' && _isLoading == false)
-              NoData(
-                backgroundColor: backgroundColor,
-                text:
-                    'No Data Available,\nURL timeout, try again after some time',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL();
-                  });
-                },
-              ),
-            // Shown but hidden when loading the data
-            if (_isGettingData)
-              Positioned.fill(
-                child: WebView(
-                  initialUrl: baseUrl,
-                  gestureNavigationEnabled: true,
-                  onWebViewCreated: (controller) {
-                    _webViewController = controller;
-                  },
-                  javascriptMode: JavascriptMode.unrestricted,
-                  onPageFinished: (url) async {
-                    if (_isFirstLoading) {
-                      await _webViewController.evaluateJavascript(
-                          "document.forms[1].description_s.value=\"${globalFormData['description_s']}\";");
-                      await _webViewController.evaluateJavascript(
-                          "document.forms[1].filesperpage_s.value=${globalFormData['filesperpage_s']};");
-                      await _webViewController.evaluateJavascript(
-                          "document.forms[1].category_s.value=\"${globalFormData['category_s']}\";");
-                      await _webViewController.evaluateJavascript(
-                          "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
-                      await _webViewController.evaluateJavascript(
-                          "document.forms[1].page.value=${globalFormData['page']};");
-                      await _webViewController
-                          .evaluateJavascript("javascript:check()");
-                      _isFirstLoading = false;
-                    } else {
-                      String tempResponse = await _webViewController.evaluateJavascript(
-                          "encodeURIComponent(document.documentElement.outerHTML)");
-                      tempResponse = Uri.decodeComponent(tempResponse);
-
-                      // put data into cache after getting from internet
-                      List<int> list = tempResponse.codeUnits;
-                      Uint8List fileBytes = Uint8List.fromList(list);
-                      DefaultCacheManager().putFile(finalUrl, fileBytes);
-                      setState(() {
-                        _isFirstLoading = true;
-                        _isGettingData = false;
-                      });
-                      _parseData(tempResponse);
-                    }
-                  },
-                ),
-              ),
-            // Shown when it is loading
-            if (_isLoading)
-              Container(
-                color: backgroundColor,
-                child: Center(
-                  // TODO: show loading
-                  // child: _showLoading(isDarkTheme),
-                  child: SingleChildScrollView(
-                    child: Text('loading'),
-                  ),
-                ),
-              ),
+            ),
+            _pagination(),
           ],
         ),
-        // ),
       ),
+      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 
@@ -300,14 +296,16 @@ class _Search extends State<Search> {
     data['description_s'] = description;
     data['filesperpage_s'] = '$filesPerPage';
     data['category_s'] = categoryPass;
+    // data['language_s'] = language;
     data['pdate_s'] = formattedDate;
-    data['page'] = '$page';
+    data['page'] = '$currentPage';
 
     // unique url for putting data into cache and getting it
     String url = '$baseUrl?form=${data['form']}' +
         '&filesperpage_s=${data['filesperpage_s']}' +
         '&description_s=${data['description_s']}' +
         '&category_s=${data['category_s']}' +
+        // '&language_s=${data['language_s']}' +
         '&pdate_s=${data['pdate_s']}' +
         '&page=${data['page']}';
     finalUrl = url;
@@ -334,6 +332,17 @@ class _Search extends State<Search> {
 
   _parseData(String response) {
     var document = parse(response);
+
+    if (!_isChangingPage) {
+      var paging = document.getElementsByTagName('p');
+      if (paging != null && paging.length > 0) {
+        var pages = paging[0].getElementsByTagName('a');
+
+          lastPage = (pages.length == 0) ? 1 : pages.length;
+          _isChangingPage = true;
+      }
+    }
+
     var table = document.getElementById('sea');
     // parsing table heads
     List<String> tableHead = [];
@@ -367,7 +376,7 @@ class _Search extends State<Search> {
         _isLoading = false;
       });
       return;
-    } else if (dataLength == 1 &&
+    } else if (dataLength == 2 &&
         table.getElementsByTagName('td').length == 1) {
       tableData = [
         ['wrong']
@@ -442,9 +451,9 @@ class _Search extends State<Search> {
     // [4] Language [5] Duration(min)
     // [6] Download-fids
 
-    if (tableData == [])
+    if (tableData == null || tableData.isEmpty)
       tableData = [
-        ['null']
+        ['wrong']
       ];
 
     setState(() {
@@ -457,8 +466,334 @@ class _Search extends State<Search> {
     });
   }
 
-  Future<void> waitTillGettingData() async {
-    while (_isGettingData);
-    return;
+  // for refreshing the data
+  Future<void> _refresh() async {
+    await DefaultCacheManager().removeFile(finalUrl);
+    setState(() {
+      _isLoading = true;
+      _updateURL();
+    });
+  }
+
+  void _submit() {
+    if (_formKey.currentState.validate()) {
+      FocusScope.of(context).unfocus();
+      setState(() {
+        _isLoading = true;
+        _isChangingPage = false;
+        _isSecondLoading = false;
+        _updateURL();
+      });
+    }
+  }
+
+  Widget _searchForm(bool isDarkTheme) {
+    return Form(
+      key: _formKey,
+      child: Container(
+        child: Material(
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 5, bottom: 8),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: TextFormField(
+                    autofocus: false,
+                    maxLines: 1,
+                    expands: false,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      contentPadding: EdgeInsets.only(left: 20, right: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text';
+                      }
+                      description = value;
+                      return null;
+                    },
+                  ),
+                ),
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 1),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: Center(
+                                  child: Text(
+                                    'Category:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: _categoryDropDown(isDarkTheme),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 5),
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: Center(
+                                  child: Text(
+                                    'Played on:',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(
+                                width: (selectedDateString != '') ? 110 : 140,
+                                child: Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: TextField(
+                                      autofocus: false,
+                                      textAlign: TextAlign.center,
+                                      controller: _dateController,
+                                      decoration: InputDecoration(
+                                        hintText: 'Select Date',
+                                        hintStyle: TextStyle(
+                                          fontSize: 18,
+                                        ),
+                                        suffixIcon: (selectedDateString == '') ? Icon(
+                                          Icons.date_range_outlined,
+                                          size: 20,
+                                        ) : null,
+                                        contentPadding: EdgeInsets.all(0),
+                                        border: OutlineInputBorder(
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      onTap: () {
+                                        // Below lines stop keyboard from appearing
+                                        FocusScope.of(context)
+                                            .requestFocus(new FocusNode());
+
+                                        // Show Date Picker
+                                        _selectDate(context);
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              if (selectedDateString != '')
+                                IconButton(
+                                  icon: Icon(CupertinoIcons.clear_circled),
+                                  splashRadius: 24,
+                                  iconSize: 20,
+                                  onPressed: _clearDate,
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    child: ElevatedButton(
+                      child: Icon(Icons.search_outlined),
+                      onPressed: _submit,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _categoryDropDown(bool isDarkTheme) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: DropdownButton<String>(
+        value: category,
+        items: categoriesList.map((String value) {
+          return DropdownMenuItem<String>(
+            value: value,
+            child: Text(value),
+          );
+        }).toList(),
+        underline: SizedBox(),
+        icon: Icon(Icons.arrow_drop_down_circle_outlined),
+        iconSize: 20,
+        isDense: true,
+        onChanged: (value) {
+          if (value != category) {
+            setState(() {
+              category = value;
+            });
+          }
+        },
+      ),
+    );
+  }
+
+  // select the date
+  Future<void> _selectDate(BuildContext context) async {
+    if (selectedDate == null) selectedDate = now;
+    final DateTime picked = await showDatePicker(
+      context: context,
+      // Schedule started on 8th Nov 2019
+      firstDate: DateTime(2019, 11, 8),
+      initialDate: selectedDate,
+      // Schedule is available for 1 day after current date
+      lastDate: now,
+    );
+    if (picked != null) {
+      selectedDate = picked;
+      selectedDateString = DateFormat('MMMM dd, yyyy').format(selectedDate);
+      _dateController.text = selectedDateString;
+    }
+  }
+
+  _clearDate() {
+    setState(() {
+      selectedDate = null;
+      selectedDateString = '';
+      _dateController.text = selectedDateString;
+    });
+  }
+
+  Widget _pagination() {
+    if (lastPage <= 1) {
+      return Container(
+        height: 0,
+        width: 0,
+      );
+    }
+
+    // because we have 2 scroll bar's in the screen
+    // and this scroll bar is always shown
+    ScrollController scrollController = new ScrollController();
+
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.07,
+      child: Material(
+        color: Colors.transparent,
+        child: Scrollbar(
+          radius: Radius.circular(8),
+          isAlwaysShown: true,
+          controller: scrollController,
+          child: ListView.builder(
+            padding: EdgeInsets.all(0),
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            controller: scrollController,
+            itemCount: lastPage,
+            itemBuilder: (context, index) {
+              bool isSelectedPage = (currentPage == index + 1);
+              return SizedBox(
+                width: 50,
+                child: Card(
+                  elevation: 0,
+                  color: isSelectedPage ? Theme.of(context).accentColor : null,
+                  child: InkWell(
+                    child: Center(
+                      child: Text('${index + 1}'),
+                    ),
+                    onTap: () {
+                      if (!isSelectedPage)
+                        setState(() {
+                          currentPage = index + 1;
+                          _isChangingPage = true;
+                          _isSecondLoading = true;
+                          _isLoading = true;
+                          _updateURL();
+                        });
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _hiddenWebView() {
+    return Positioned.fill(
+      child: WebView(
+        initialUrl: baseUrl,
+        gestureNavigationEnabled: true,
+        onWebViewCreated: (controller) {
+          _webViewController = controller;
+        },
+        javascriptMode: JavascriptMode.unrestricted,
+        onPageFinished: (url) async {
+          if (_isFirstLoading) {
+            await _webViewController.evaluateJavascript(
+                "document.forms[1].description_s.value=\"${globalFormData['description_s']}\";");
+            await _webViewController.evaluateJavascript(
+                "document.forms[1].filesperpage_s.value=${globalFormData['filesperpage_s']};");
+            await _webViewController.evaluateJavascript(
+                "document.forms[1].category_s.value=\"${globalFormData['category_s']}\";");
+            // await _webViewController.evaluateJavascript(
+            //     "document.forms[1].language_s.value=\"${globalFormData['language_s']}\";");
+            await _webViewController.evaluateJavascript(
+                "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
+            await _webViewController.evaluateJavascript(
+                "document.forms[1].page.value=${globalFormData['page']};");
+            await _webViewController.evaluateJavascript("javascript:check()");
+            _isFirstLoading = false;
+          } else if (_isSecondLoading) {
+            await _webViewController.evaluateJavascript(
+                'javascript:pager(${globalFormData['page']})');
+            _isSecondLoading = false;
+          } else {
+            String tempResponse = await _webViewController.evaluateJavascript(
+                "encodeURIComponent(document.documentElement.outerHTML)");
+            tempResponse = Uri.decodeComponent(tempResponse);
+
+            // put data into cache after getting from internet
+            List<int> list = tempResponse.codeUnits;
+            Uint8List fileBytes = Uint8List.fromList(list);
+            DefaultCacheManager().putFile(finalUrl, fileBytes);
+            setState(() {
+              _isFirstLoading = true;
+              _isSecondLoading = false;
+              _isGettingData = false;
+            });
+            _parseData(tempResponse);
+          }
+        },
+      ),
+    );
   }
 }

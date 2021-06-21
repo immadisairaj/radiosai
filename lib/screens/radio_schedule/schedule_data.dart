@@ -178,7 +178,9 @@ class _ScheduleData extends State<ScheduleData> {
             Expanded(
               child: Stack(
                 children: [
-                  if (_isLoading == false || _finalTableData[0][0] != 'null')
+                  if (_isLoading == false &&
+                      _finalTableData[0][0] != 'null' &&
+                      _finalTableData[0][0] != 'timeout')
                     RefreshIndicator(
                       onRefresh: _refresh,
                       child: Scrollbar(
@@ -493,7 +495,7 @@ class _ScheduleData extends State<ScheduleData> {
     // [0] Sl. No. [1] Loacl Time [2] GMT Time
     // [3] Programe List [4] Duration(min)
 
-    if (tableData == [])
+    if (tableData == null || tableData.isEmpty)
       tableData = [
         ['null']
       ];

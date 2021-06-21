@@ -77,7 +77,9 @@ class _Media extends State<Media> {
         color: backgroundColor,
         child: Stack(
           children: [
-            if (_isLoading == false || _finalMediaData[0] != 'null')
+            if (_isLoading == false &&
+                _finalMediaData[0][0] != 'null' &&
+                _finalMediaData[0][0] != 'timeout')
               RefreshIndicator(
                 onRefresh: _refresh,
                 child: Scrollbar(
