@@ -3,6 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 
+/// Top Media Player -
+/// media player to be attached in stack
+///
+/// To be used inside stack (at top) to display overlay behaviour
+///
+/// shows if the media player is playing.
+/// else, returns a empty (zero container) widget
 class TopMediaPlayer extends StatefulWidget {
   TopMediaPlayer({
     key,

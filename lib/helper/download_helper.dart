@@ -20,14 +20,24 @@ class DownloadHelper {
     return _downloadTasks;
   }
 
+  /// returns the scaffold key which is used by the whole app
+  ///
+  /// attaches to the base page of the app
   static GlobalKey<ScaffoldState> getScaffoldKey() {
     return _scaffoldKey;
   }
 
+  /// returns the bloc for media screen
+  /// which is used by the whole app
+  ///
+  /// attaches to the initialize providers of the app
   static MediaScreenBloc getMediaScreenBloc() {
     return _mediaScreenBloc;
   }
 
+  /// Bind the background task for the whole app to download
+  ///
+  /// also listens to the progress
   static void bindBackgroundIsolate() {
     bool isSuccess = IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
@@ -74,6 +84,7 @@ class DownloadHelper {
     });
   }
 
+  /// shows the snack bar using the global scaffold key
   static void _showSnackBar(
       BuildContext context, String text, Duration duration) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -83,6 +94,7 @@ class DownloadHelper {
     ));
   }
 
+  /// replace the media item with updated source if the item is in playing queue
   static _replaceMedia(DownloadTaskInfo task) async {
     // replace the uri to downloaded if present in playing queue
     MediaItem mediaItem =
@@ -102,6 +114,7 @@ class DownloadHelper {
     }
   }
 
+  /// callback for the download regarding the status
   static void downloadCallback(
       String id, DownloadTaskStatus status, int progress) {
     final SendPort send =
@@ -109,6 +122,7 @@ class DownloadHelper {
     send.send([id, status, progress]);
   }
 
+  /// Unbind the background task for the whole app to download
   static void unbindBackgroundIsolate() {
     IsolateNameServer.removePortNameMapping('downloader_send_port');
   }

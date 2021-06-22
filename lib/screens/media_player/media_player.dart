@@ -26,7 +26,13 @@ class MediaPlayer extends StatefulWidget {
 }
 
 class _MediaPlayer extends State<MediaPlayer> {
+  /// external media directory to where the files have to
+  /// download.
+  ///
+  /// Sets when initState is called
   String _mediaDirectory = '';
+
+  /// set of download tasks
   List<DownloadTaskInfo> _downloadTasks;
 
   @override
@@ -48,7 +54,7 @@ class _MediaPlayer extends State<MediaPlayer> {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
-    bool isBiggerScreen = (height * 0.1 >= 70); // full screen
+    // bool isBiggerScreen = (height * 0.1 >= 70); // full screen
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
     return Scaffold(
@@ -444,6 +450,9 @@ class _MediaPlayer extends State<MediaPlayer> {
     );
   }
 
+  /// widget for top menu
+  ///
+  /// options for the current playing song/player
   Widget _options(bool isDarkTheme) {
     List<String> optionsList = [
       'Download',
@@ -533,6 +542,7 @@ class _MediaPlayer extends State<MediaPlayer> {
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
+  /// play button
   IconButton playButton(double iconSize) => IconButton(
         icon: Icon(CupertinoIcons.play),
         splashRadius: 25,
@@ -540,6 +550,7 @@ class _MediaPlayer extends State<MediaPlayer> {
         onPressed: AudioService.play,
       );
 
+  /// pause button
   IconButton pauseButton(double iconSize) => IconButton(
         icon: Icon(CupertinoIcons.pause),
         splashRadius: 25,
@@ -555,8 +566,9 @@ class _MediaPlayer extends State<MediaPlayer> {
     ));
   }
 
-  // sets the path for directory
-  // doesn't care if the directory is created or not
+  /// sets the path for directory
+  ///
+  /// doesn't care if the directory is created or not
   _getDirectoryPath() async {
     final mediaDirectoryPath = await MediaHelper.getDirectoryPath();
     setState(() {
@@ -565,6 +577,9 @@ class _MediaPlayer extends State<MediaPlayer> {
     });
   }
 
+  /// call to download the media file.
+  ///
+  /// pass the url [fileLink] to where it is in the internet
   _downloadMediaFile(String fileLink) async {
     var permission = await _canSave();
     if (!permission) {
@@ -599,6 +614,7 @@ class _MediaPlayer extends State<MediaPlayer> {
     _downloadTasks[i].taskId = taskId;
   }
 
+  /// returns if the app has permission to save in external path
   Future<bool> _canSave() async {
     var status = await Permission.storage.request();
     if (status.isGranted || status.isLimited) {

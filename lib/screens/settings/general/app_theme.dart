@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 
+/// App Theme - option to change the app theme
 class AppTheme extends StatefulWidget {
   AppTheme({
     Key key,

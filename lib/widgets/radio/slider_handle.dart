@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// Slider Handle - small oval shape widget
 class SliderHandle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

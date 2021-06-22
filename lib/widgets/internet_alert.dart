@@ -1,7 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// To be used inside stack (at top) to display overlay behaviour
+/// Internet Alert - alerts if there is no internet connection
+///
+/// To be used inside stack (at top) to display overlay behaviour
+///
+/// takes in [hasInternet] value (have to input with stream of data false/true)
 class InternetAlert extends StatefulWidget {
   InternetAlert({
     key,

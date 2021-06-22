@@ -6,6 +6,7 @@ import 'package:radiosai/constants/constants.dart';
 
 final String recentlyPlayed = 'Recently played';
 
+/// StartingRadioStream - Option to change the radio stream open on app start
 class StartingRadioStream extends StatefulWidget {
   StartingRadioStream({
     Key key,

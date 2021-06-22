@@ -12,12 +12,19 @@ class MediaPlayerTask extends BackgroundAudioTask {
   Seeker _seeker;
   StreamSubscription<PlaybackEvent> _eventSubscription;
 
+  /// a media queue which comes up when playing and is disposed when finished
   List<MediaItem> mediaQueue;
+
+  /// returns a temporary media queue (not persistant)
   List<MediaItem> get queue => mediaQueue;
+
   int get index => _player.currentIndex;
   MediaItem get mediaItem => index == null ? null : queue[index];
 
+  /// Get the cache directory using media helper (onStart)
   String cachedMediaDirectoy;
+
+  /// Get the external directory using media helper (onStart)
   String mediaDirectory;
 
   @override
@@ -26,18 +33,21 @@ class MediaPlayerTask extends BackgroundAudioTask {
     // global declaration might not create new player
     _player = new AudioPlayer();
 
-    // set the mediaDirectory
+    // set the mediaDirectory using media helper
     cachedMediaDirectoy = await MediaHelper.getCachedDirectoryPath();
     mediaDirectory = await MediaHelper.getDirectoryPath();
 
-    // initialize the queue
+    // initialize the queue (disposes when serves disposes)
     mediaQueue = [];
 
+    // the main uri contains in the extras['uri'] inside a media item
     Map<String, dynamic> _extras = {
       'uri': params['extrasUri'],
     };
 
     // extras['uri'] contains the audio source
+    // set the media item sent from params (when initializing the player)
+    // for now, initializes with only 1 media item
     final tempMediaItem = MediaItem(
       id: params['id'],
       album: params['album'],
@@ -71,7 +81,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
     _player.processingStateStream.listen((state) {
       switch (state) {
         case ProcessingState.completed:
-          // In this example, the service pauses when reaching the end.
+          // In this, the service pauses when reaching the end.
           onPause();
           break;
         case ProcessingState.ready:
@@ -99,7 +109,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
 
     try {
       await _player.setAudioSource(concatenatingAudioSource);
-      // In this example, we automatically start playing on start.
+      // In this, we automatically start playing on start.
       onPlay();
     } catch (e) {
       print("Error: $e");
@@ -115,6 +125,8 @@ class MediaPlayerTask extends BackgroundAudioTask {
       case 'stop':
         await onStop();
         break;
+      // edit the uri when the media is downloaded
+      // trigger is from the downlaod helper
       case 'editUri':
         bool isPlaying = _player.playing;
         Duration position = _player.position;
@@ -131,9 +143,8 @@ class MediaPlayerTask extends BackgroundAudioTask {
         // broadcast the queue
         await AudioServiceBackground.setQueue(queue);
 
-        // Note: a small break might occur when changing the state
-
         // return to it's original state after changing uri
+        // if the player is not playing (paused state)
         if (!isCurrentItem) break;
         await _player.seek(position, index: index);
         if (isPlaying) _player.play();
@@ -145,6 +156,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   @override
   Future<void> onAddQueueItem(MediaItem mediaItem) async {
     mediaQueue.add(mediaItem);
+    // add the media source to the just audio player
     await concatenatingAudioSource
         .add(getAudioSourceFromUri(mediaItem.extras['uri']));
 
@@ -182,8 +194,9 @@ class MediaPlayerTask extends BackgroundAudioTask {
     return super.onUpdateQueue(queueList);
   }
 
-  // updates the media item data with duration after decoding
-  // reference from audio_service github issue 543
+  /// updates the media item data with duration after decoding.
+  /// 
+  /// referred from audio_service github issue 543
   void updateQueueWithCurrentDuration(Duration duration) {
     final songIndex = _player.playbackEvent.currentIndex;
     print('current index: $songIndex, duration: $duration');
@@ -389,7 +402,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   }
 
   /// Dynamically update the audiosource if the media item
-  /// at the "index" with either file Uri or link Uri
+  /// at the [index] with either file Uri or link Uri
   Future<void> _dynamicallyUpdateAudioSourceWithUri(int index) async {
     String fileId = queue[index].id;
     bool fileExists = await File('$mediaDirectory/$fileId').exists();

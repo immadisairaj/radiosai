@@ -29,7 +29,7 @@ class MediaHelper {
   static Future<MediaItem> generateMediaItem(
       String name, String link, bool isFileExists) async {
     // Get the path of image for artUri in notification
-    String path = await getNotificationImage();
+    String path = await getDefaultNotificationImage();
 
     // if file exists, then add file uri
     if (isFileExists) {
@@ -135,9 +135,8 @@ class MediaHelper {
   }
 
   /// Get notification image stored in file,
-  ///
   /// if not stored, then store the image
-  static Future<String> getNotificationImage() async {
+  static Future<String> getDefaultNotificationImage() async {
     String path = await _getNotificationFilePath();
     File file = File(path);
     bool fileExists = file.existsSync();

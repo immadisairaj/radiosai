@@ -55,6 +55,9 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
     );
   }
 
+  /// widget for slide widget
+  ///
+  /// shows the selection of different radio streams
   Widget _slide(
       RadioIndexBloc _radioIndexBloc, int radioIndex, bool isDarkTheme) {
     double height = MediaQuery.of(context).size.height;

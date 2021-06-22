@@ -33,7 +33,7 @@ class _Settings extends State<Settings> {
     _initPackageInfo();
   }
 
-  // Get package information
+  /// Get app package information
   Future<void> _initPackageInfo() async {
     final PackageInfo info = await PackageInfo.fromPlatform();
     setState(() {
@@ -76,6 +76,7 @@ class _Settings extends State<Settings> {
     );
   }
 
+  /// general section
   Widget _generalSection() {
     return SettingsSection(
       title: 'General Settings',
@@ -92,6 +93,7 @@ class _Settings extends State<Settings> {
     );
   }
 
+  /// storage section
   Widget _storageSection() {
     return SettingsSection(
       title: 'Storage',
@@ -114,6 +116,7 @@ class _Settings extends State<Settings> {
     );
   }
 
+  /// about section
   Widget _aboutSection() {
     return SettingsSection(
       title: 'About',
@@ -147,6 +150,7 @@ class _Settings extends State<Settings> {
     );
   }
 
+  /// more details section
   Widget _moreDetailsSection() {
     return SettingsSection(
       title: 'More details',
@@ -192,6 +196,7 @@ class _Settings extends State<Settings> {
     );
   }
 
+  /// launch the url from url_launcher
   _urlLaunch(urlString) async {
     try {
       if (await canLaunch(urlString)) {

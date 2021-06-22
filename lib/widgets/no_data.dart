@@ -1,7 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-// To be used when no data is available
+/// No Data - a widget to show that no data is present
+///
+/// returns the widget with a text and a retry button
+///
+/// [backgroundColor] - specify the background color
+///
+/// [text] - specify the text to display above retry button
+///
+/// [onPressed] - specify the function to do when press retry button
 class NoData extends StatefulWidget {
   NoData({
     key,

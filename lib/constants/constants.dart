@@ -6,7 +6,7 @@ class MyConstants extends InheritedWidget {
 
   const MyConstants({Widget child, Key key}) : super(key: key, child: child);
 
-  // The list of radio sai stream sources
+  /// The list of radio sai stream sources (links)
   final List<String> radioStreamLink = const [
     'http://stream.radiosai.net:8002',
     'http://stream.radiosai.net:8004',
@@ -16,7 +16,7 @@ class MyConstants extends InheritedWidget {
     'http://stream.radiosai.net:8020'
   ];
 
-  // The list of radio sai stream source names
+  /// The list of radio sai stream source names
   final List<String> radioStreamName = const [
     'Asia Stream',
     'Africa Stream',
@@ -26,7 +26,7 @@ class MyConstants extends InheritedWidget {
     'Telugu Stream',
   ];
 
-  // The list of items in the top menu bar
+  /// The list of items in the top menu bar
   final List<String> menuTitles = const [
     'Schedule',
     'Sai Inspires',
@@ -35,7 +35,7 @@ class MyConstants extends InheritedWidget {
     'Settings',
   ];
 
-  // list of radio streams for radio schedule
+  /// list of radio streams for radio sai schedule
   final Map<String, int> scheduleStream = const {
     'Asia Stream': 1,
     'Africa Stream': 3,
@@ -44,7 +44,7 @@ class MyConstants extends InheritedWidget {
     'Telugu Stream': 5,
   };
 
-  // list of countries for radio sai schedule
+  /// list of countries for radio sai schedule
   final Map<String, int> timeZones = const {
     'ANTIGUA AND BARBUDA': 89,
     'ARGENTINA': 2,
@@ -137,7 +137,8 @@ class MyConstants extends InheritedWidget {
     'ZIMBABWE': 86,
   };
 
-  // list of themes, don't change or move the values
+  /// list of app themes
+  // Note: don't change or move the values
   final List<String> appThemes = const [
     'Light',
     'Dark',

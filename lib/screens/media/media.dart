@@ -40,15 +40,35 @@ class Media extends StatefulWidget {
 }
 
 class _Media extends State<Media> {
+  /// variable to show the loading screen
   bool _isLoading = true;
 
+  /// contains the base url of the downloads page
   final String baseUrl = 'https://radiosai.org/program/Download.php';
+
+  /// the url with all the parameters (a unique url)
   String finalUrl = '';
 
+  /// final data retrieved from the net
+  ///
+  /// connected with [_finalMediaLinks] and have same length
+  ///
+  /// can be ['null'] or ['timeout'] or data.
+  /// Each have their own display widgets
   List<String> _finalMediaData = ['null'];
+
+  /// final data (media links) retrieved from the net
+  ///
+  /// connected with [_finalMediaData] and have same length
   List<String> _finalMediaLinks = [];
 
+  /// external media directory to where the files have to
+  /// download.
+  ///
+  /// Sets when initState is called
   String _mediaDirectory = '';
+
+  /// set of download tasks
   List<DownloadTaskInfo> _downloadTasks;
 
   @override
@@ -153,6 +173,9 @@ class _Media extends State<Media> {
     );
   }
 
+  /// widget for media items (contains the list)
+  ///
+  /// showed after getting data
   Widget _mediaItems(bool isDarkTheme) {
     return ListView.builder(
         shrinkWrap: true,
@@ -244,10 +267,15 @@ class _Media extends State<Media> {
         });
   }
 
-  //
-  // Retrieve Data
-  //
+  // ****************** //
+  //   Retrieve Data    //
+  // ****************** //
 
+  /// sets the [finalUrl]
+  ///
+  /// called when initState
+  ///
+  /// continues the process by retrieving the data
   _updateURL() {
     var data = new Map<String, dynamic>();
     data['allfids'] = widget.fids;
@@ -257,6 +285,10 @@ class _Media extends State<Media> {
     _getData(data);
   }
 
+  /// retrieve the data from finalUrl
+  ///
+  /// continues the process by sending it to parse
+  /// if the data is retrieved
   _getData(Map<String, dynamic> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
@@ -298,6 +330,8 @@ class _Media extends State<Media> {
     _parseData(tempResponse);
   }
 
+  /// parses the data retrieved from url.
+  /// sets the final data to display
   _parseData(String response) async {
     var document = parse(response);
     var mediaTags = document.getElementsByTagName('a');
@@ -326,10 +360,13 @@ class _Media extends State<Media> {
     });
   }
 
-  //
-  // Download Media
-  //
+  // ****************** //
+  //   Download Media   //
+  // ****************** //
 
+  /// call to download the media file.
+  ///
+  /// pass the url [fileLink] to where it is in the internet
   _downloadMediaFile(String fileLink) async {
     var permission = await _canSave();
     if (!permission) {
@@ -364,8 +401,9 @@ class _Media extends State<Media> {
     _downloadTasks[i].taskId = taskId;
   }
 
-  // sets the path for directory
-  // doesn't care if the directory is created or not
+  /// sets the path for directory
+  ///
+  /// doesn't care if the directory is created or not
   _getDirectoryPath() async {
     final mediaDirectoryPath = await MediaHelper.getDirectoryPath();
     setState(() {
@@ -374,6 +412,7 @@ class _Media extends State<Media> {
     });
   }
 
+  /// returns if the app has permission to save in external path
   Future<bool> _canSave() async {
     var status = await Permission.storage.request();
     if (status.isGranted || status.isLimited) {
@@ -383,6 +422,11 @@ class _Media extends State<Media> {
     }
   }
 
+  /// show snack bar for the current context
+  ///
+  /// pass current [context],
+  /// [text] to display and
+  /// [duration] for how much time to display
   void _showSnackBar(BuildContext context, String text, Duration duration) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(text),
@@ -391,10 +435,22 @@ class _Media extends State<Media> {
     ));
   }
 
-  //
-  // Audio Service
-  //
+  // ****************** //
+  //   Audio Service    //
+  // ****************** //
 
+  /// start the media player
+  ///
+  /// when there is no media playing,
+  /// there is media playing (skips to play this)
+  ///
+  /// handles the stop if the radio player is playing
+  ///
+  /// pass the following parameters:
+  ///
+  /// [name] - media name;
+  /// [link] - media link (url);
+  /// [isFileExists] - if whether file exists in external storage
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
     if (AudioService.playbackState.playing) {
       if (AudioService.queue != null && AudioService.queue.length != 0) {
@@ -414,20 +470,21 @@ class _Media extends State<Media> {
       } else {
         // if radio player is playing
         await AudioService.stop();
-        initRadioService(name, link, isFileExists);
+        initMediaService(name, link, isFileExists);
       }
     } else {
       if (AudioService.running) {
         // if the radio player is paused
         await AudioService.stop();
-        initRadioService(name, link, isFileExists);
+        initMediaService(name, link, isFileExists);
       }
       // initialize the radio service
-      initRadioService(name, link, isFileExists);
+      initMediaService(name, link, isFileExists);
     }
   }
 
-  void initRadioService(String name, String link, bool isFileExists) async {
+  /// initialize the media player when no player is playing
+  void initMediaService(String name, String link, bool isFileExists) async {
     final tempMediaItem =
         await MediaHelper.generateMediaItem(name, link, isFileExists);
 
@@ -455,8 +512,11 @@ class _Media extends State<Media> {
     }
   }
 
-  // add a new media item to the end of the queue
-  // doesn't add and returns false if item already in queue
+  /// add a new media item to the end of the queue
+  ///
+  /// doesn't add and returns false, if item already in queue
+  ///
+  /// else, adds to the queue and returns true
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
     final tempMediaItem =
         await MediaHelper.generateMediaItem(name, link, isFileExists);
@@ -468,8 +528,9 @@ class _Media extends State<Media> {
     }
   }
 
-  // move the media item to the end of the queue
-  // check if the item is already in queue before calling
+  /// move the media item to the end of the queue
+  ///
+  /// Note: check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (AudioService.queue != null && AudioService.queue.length > 1) {
       final tempMediaItem =
@@ -480,11 +541,11 @@ class _Media extends State<Media> {
     return;
   }
 
-  //
-  // Methods/widgets
-  //
+  // ****************** //
+  //   Methods/widgets  //
+  // ****************** //
 
-  // for refreshing the data
+  /// refresh the data
   Future<void> _refresh() async {
     await DefaultCacheManager().removeFile(finalUrl);
     setState(() {
@@ -493,7 +554,7 @@ class _Media extends State<Media> {
     });
   }
 
-  // Shimmer effect while loading the content
+  /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
       padding: EdgeInsets.all(20),
@@ -503,7 +564,7 @@ class _Media extends State<Media> {
         enabled: true,
         child: Column(
           children: [
-            // 2 shimmer boxes
+            // 2 shimmer content
             for (int i = 0; i < 2; i++) _shimmerContent(),
           ],
         ),
@@ -511,6 +572,7 @@ class _Media extends State<Media> {
     );
   }
 
+  /// individual shimmer content for loading shimmer
   Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(

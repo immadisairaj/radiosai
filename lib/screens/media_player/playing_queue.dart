@@ -24,8 +24,8 @@ class _PlayingQueue extends State<PlayingQueue> {
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
-    bool isBiggerScreen = (height * 0.1 >= 70); // full screen
+    // bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
+    // bool isBiggerScreen = (height * 0.1 >= 70); // full screen
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
     return Scaffold(
@@ -149,8 +149,12 @@ class _PlayingQueue extends State<PlayingQueue> {
                                     bool isCurrentItem = false;
                                     if (mediaItem == currentMediaItem)
                                       isCurrentItem = true;
-                                    return _queueItemWidget(context, mediaItem,
-                                        isCurrentItem, queueList.length, isDarkTheme);
+                                    return _queueItemWidget(
+                                        context,
+                                        mediaItem,
+                                        isCurrentItem,
+                                        queueList.length,
+                                        isDarkTheme);
                                   },
                                 ),
                               ),
@@ -192,6 +196,9 @@ class _PlayingQueue extends State<PlayingQueue> {
     );
   }
 
+  /// widget for each queue item
+  ///
+  /// also shows if the widget is playing (with different color)
   Widget _queueItemWidget(BuildContext context, MediaItem mediaItem,
       bool isCurrentItem, int length, bool isDarkTheme) {
     Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
@@ -218,16 +225,15 @@ class _PlayingQueue extends State<PlayingQueue> {
                 ),
                 title: Text(mediaItem.title),
                 trailing: IconButton(
-                  icon: Icon(CupertinoIcons.minus_circle),
-                  splashRadius: 24,
-                  onPressed: () async {
-                    if (length == 1) {
-                      await AudioService.customAction('stop');
-                      Navigator.maybePop(context);
-                    }
-                    else await AudioService.removeQueueItem(mediaItem);
-                  }
-                ),
+                    icon: Icon(CupertinoIcons.minus_circle),
+                    splashRadius: 24,
+                    onPressed: () async {
+                      if (length == 1) {
+                        await AudioService.customAction('stop');
+                        Navigator.maybePop(context);
+                      } else
+                        await AudioService.removeQueueItem(mediaItem);
+                    }),
               ),
             ),
             onTap: () {
@@ -252,6 +258,7 @@ class _PlayingQueue extends State<PlayingQueue> {
           AudioService.currentMediaItemStream,
           (queue, mediaItem) => QueueState(queue, mediaItem));
 
+  /// play button
   IconButton playButton() => IconButton(
         icon: Icon(CupertinoIcons.play),
         splashRadius: 24,
@@ -259,6 +266,7 @@ class _PlayingQueue extends State<PlayingQueue> {
         onPressed: AudioService.play,
       );
 
+  /// pause button
   IconButton pauseButton() => IconButton(
         icon: Icon(CupertinoIcons.pause),
         splashRadius: 24,

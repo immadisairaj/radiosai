@@ -22,17 +22,30 @@ class SaiInspires extends StatefulWidget {
 }
 
 class _SaiInspires extends State<SaiInspires> {
+  /// contains the base url of the images/new SI source
   final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
+
+  /// contains the base url of the sai inspires page
   final String baseUrl = 'https://www.radiosai.org/pages/ThoughtText.asp';
 
   final DateTime now = DateTime.now();
+
+  /// date for the sai inspires
   DateTime selectedDate;
+
+  /// image url for the selected date
   String imageFinalUrl;
+
+  /// sai inspires source url for the selected date
   String finalUrl;
 
+  /// hero tag for the hero widgets (2 screen widget animation)
   final String heroTag = 'SaiInspiresImage';
 
+  /// variable to show the loading screen
   bool _isLoading = true;
+
+  // used by snackbar
   bool _isCopying = false;
 
   String _dateText = ''; // date text id is 'Head'
@@ -40,6 +53,9 @@ class _SaiInspires extends State<SaiInspires> {
   String _contentText = ''; // content text id is 'Content'
   String _byBaba = '-BABA';
   String _quote = '';
+
+  /// variable to know if the url fetch
+  /// is old data source / new data source
   bool _isOldData = false;
 
   @override
@@ -164,7 +180,7 @@ class _SaiInspires extends State<SaiInspires> {
     );
   }
 
-  // navigate to new page to view full image
+  /// navigate to new page to view full image
   _viewImage() {
     int urlLength = imageFinalUrl.length;
     String fileName =
@@ -179,7 +195,13 @@ class _SaiInspires extends State<SaiInspires> {
                 )));
   }
 
-  // update the URL after picking the new date
+  /// update the URL after picking the new date
+  ///
+  /// sets the [imageFinalUrl] and [finalUrl]
+  ///
+  /// takes in [date] as input
+  ///
+  /// continues the process by retrieving the data
   _updateURL(DateTime date) async {
     String imageFormattedDate = DateFormat('yyyyMMdd').format(date);
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
@@ -194,7 +216,11 @@ class _SaiInspires extends State<SaiInspires> {
     }
   }
 
-  // get data of date from 26 Aug 2011
+  /// get data of date from 26 Aug 2011
+  ///
+  /// retrieve the data from finalUrl
+  ///
+  /// parses the data too
   _getNewData() async {
     var file;
     try {
@@ -317,7 +343,11 @@ class _SaiInspires extends State<SaiInspires> {
     });
   }
 
-  // get data of date before Aug 26 2011
+  /// get data of date before Aug 26 2011
+  ///
+  /// retrieve the data from finalUrl
+  ///
+  /// parses the data too
   _getOldData() async {
     var file;
     try {
@@ -370,7 +400,7 @@ class _SaiInspires extends State<SaiInspires> {
     });
   }
 
-  // select the date and update the url
+  /// select the date and update the url
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -388,7 +418,7 @@ class _SaiInspires extends State<SaiInspires> {
     }
   }
 
-  // copy text if data is visible
+  /// copy text content if data is visible
   void _copyText(BuildContext context) {
     if (!_isCopying) {
       _isCopying = true;
@@ -405,12 +435,17 @@ class _SaiInspires extends State<SaiInspires> {
           _showSnackBar(context, 'Copied to clipboard');
         });
       } else {
-        // is there is no data, show snackbar that no data is available
+        // if there is no data, show snackbar that no data is available
         _showSnackBar(context, 'No data available to copy');
       }
     }
   }
 
+  /// show snack bar for the current context
+  ///
+  /// pass current [context],
+  /// [text] to display and
+  /// [duration] for how much time to display
   void _showSnackBar(BuildContext context, String text) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(
@@ -424,7 +459,7 @@ class _SaiInspires extends State<SaiInspires> {
     });
   }
 
-  // for new data >= 26 Aug 2011
+  /// widget for new data >= 26 Aug 2011
   Widget _newContent(bool isDarkTheme) {
     return Column(
       children: [
@@ -485,7 +520,7 @@ class _SaiInspires extends State<SaiInspires> {
     );
   }
 
-  // for old data < 26 Aug 2011
+  /// widget for old data < 26 Aug 2011
   Widget _oldContent(bool isDarkTheme) {
     return Column(
       children: [
@@ -532,7 +567,7 @@ class _SaiInspires extends State<SaiInspires> {
     );
   }
 
-  // Shimmer effect while loading the content
+  /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
       padding: EdgeInsets.only(top: 30, left: 20, right: 20),
@@ -558,6 +593,7 @@ class _SaiInspires extends State<SaiInspires> {
     );
   }
 
+  /// individual shimmer limes for loading shimmer
   Widget _shimmerLine() {
     return Padding(
       padding: EdgeInsets.only(bottom: 10),

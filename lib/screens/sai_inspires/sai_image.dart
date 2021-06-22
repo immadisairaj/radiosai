@@ -136,6 +136,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   // Below are image saving to gallery methods
 
+  /// save image to gallery
   void _saveImage() async {
     if (!_isCopying) {
       _isCopying = true;
@@ -167,15 +168,18 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     }
   }
 
+  /// get the external storage path
   Future<String> _getPublicPath() async {
     var path = await ExtStorage.getExternalStorageDirectory();
     return path;
   }
 
+  /// get the cached file where image is saved
   Future<File> _getCachedFile() async {
     return await DefaultCacheManager().getSingleFile(widget.imageUrl);
   }
 
+  /// returns if the app has permission to save in external storage
   Future<bool> _canSave() async {
     var status = await Permission.storage.request();
     if (status.isGranted || status.isLimited) {
@@ -185,6 +189,11 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     }
   }
 
+  /// show snack bar for the current context
+  ///
+  /// pass current [context],
+  /// [text] to display and
+  /// [duration] for how much time to display
   void _showSnackBar(BuildContext context, String text, Duration duration) {
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(
@@ -200,12 +209,14 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   // Below are toggling full screen methods
 
+  /// toggle the full screen to view the image
   void _toggleFullScreen() {
     _fullScreen = !_fullScreen;
     _toogleAppBar();
     _toogleStatusBar();
   }
 
+  /// toggles the app bar visibility
   Future<void> _toogleAppBar() async {
     if (!_fullScreen) {
       await _animationController.reverse();
@@ -214,6 +225,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     }
   }
 
+  /// toggles the status bar visibility
   void _toogleStatusBar() {
     if (_fullScreen) {
       SystemChrome.setEnabledSystemUIOverlays([]);

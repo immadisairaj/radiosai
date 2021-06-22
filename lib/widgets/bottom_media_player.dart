@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:rxdart/rxdart.dart';
 
+/// Bottom Media Player -
+/// media player to be attached in the bottomNavigationBar
+///
+/// shows if the media player is playing.
+/// else, returns a empty (zero container) widget
 class BottomMediaPlayer extends StatefulWidget {
   BottomMediaPlayer({
     Key key,
@@ -67,10 +72,8 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MediaPlayer()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MediaPlayer()));
                   },
                   child: Container(
                     height: (isBiggerScreen) ? height * 0.08 : height * 0.1,

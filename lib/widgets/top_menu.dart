@@ -7,6 +7,9 @@ import 'package:radiosai/screens/search/search.dart';
 import 'package:radiosai/screens/settings/settings.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+/// Top Menu - menu bar to show in base page
+/// 
+/// shows a pop-up menu for different screen navigations
 class TopMenu extends StatefulWidget {
   TopMenu({
     Key key,
@@ -87,6 +90,7 @@ class _TopMenu extends State<TopMenu> {
     );
   }
 
+  /// launch the url from url_launcher
   _urlLaunch(urlString) async {
     try {
       if (await canLaunch(urlString)) {

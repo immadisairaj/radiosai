@@ -10,8 +10,8 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/radio/radio_stream_select.dart';
 
-// entry point used to initialize the audio_service to handle media controls
-// and audio running in background
+/// entry point used to initialize the audio_service to handle media controls
+/// and audio running in background
 void _entrypoint() => AudioServiceBackground.run(() => RadioPlayerTask());
 
 class RadioPlayer extends StatefulWidget {
@@ -38,19 +38,20 @@ class RadioPlayer extends StatefulWidget {
 
 class _RadioPlayer extends State<RadioPlayer>
     with SingleTickerProviderStateMixin {
-  // Controller used for animating pause and play
+  /// Controller used for animating pause and play
   AnimationController _pausePlayController;
-  // Controller used for handling sliding panel
+
+  /// Controller used for handling sliding panel
   PanelController _panelController = new PanelController();
 
-  // Temporary index used for handling the radio stream index
-  // change while radio is in playing state
+  /// Temporary index used for handling the radio stream index
+  /// change while radio is in playing state
   int _tempRadioStreamIndex = 0;
 
-  // to check if the app is built for first time
+  /// to check if the app is built for first time
   bool initialBuild = false;
 
-  // reduce multiple snackbars when clicking many times
+  /// reduce multiple snackbars when clicking many times
   bool _isSnackBarActive = false;
 
   @override
@@ -172,7 +173,7 @@ class _RadioPlayer extends State<RadioPlayer>
     );
   }
 
-  // main radio player widget after all streams
+  /// main radio player widget after all streams
   Widget _slidingPanelCollapsed(Radius radius) {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
@@ -206,6 +207,9 @@ class _RadioPlayer extends State<RadioPlayer>
     );
   }
 
+  /// widget for player display
+  ///
+  /// shows the stream and play/pause button
   Widget _playerDisplay(int streamIndex, bool isPlaying, bool loadingState,
       RadioLoadingBloc radioLoadingBloc, bool hasInternet) {
     double height = MediaQuery.of(context).size.height;
@@ -323,6 +327,7 @@ class _RadioPlayer extends State<RadioPlayer>
     );
   }
 
+  /// initial the radio service to start playing
   Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
     try {
@@ -350,15 +355,17 @@ class _RadioPlayer extends State<RadioPlayer>
     }
   }
 
+  /// play the radio
   void playRadioService() {
     AudioService.play();
   }
 
+  /// stop the radio
   Future<void> stopRadioService() async {
     await AudioService.stop();
   }
 
-  // handle the player when pause/play button is pressed
+  /// handle the player when pause/play button is pressed
   void _handleOnPressed(int index, bool isPlaying, bool hasInternet) async {
     if (!isPlaying) {
       if (AudioService.running) {
@@ -374,6 +381,9 @@ class _RadioPlayer extends State<RadioPlayer>
     }
   }
 
+  /// start the radio player
+  ///
+  /// handles stop if any media is playing
   void _startRadioPlayer(int index, bool isPlaying, bool hasInternet) {
     if (hasInternet) {
       initRadioService(index);
@@ -397,7 +407,7 @@ class _RadioPlayer extends State<RadioPlayer>
     }
   }
 
-  // handle play icon to animate based on audio playing state
+  /// handle play icon to animate based on audio playing state
   void _handlePlayingState(bool isPlaying) {
     if (isPlaying) {
       _pausePlayController.forward();
@@ -406,7 +416,7 @@ class _RadioPlayer extends State<RadioPlayer>
     }
   }
 
-  // handle the loading progressing widget based on the running state
+  /// handle the loading progressing widget based on the running state
   void _handleLoadingState(RadioLoadingBloc loadingStreamBloc) {
     // change state only when radio player is playing
     if (!(AudioService.queue != null && AudioService.queue.length != 0)) {
@@ -414,7 +424,7 @@ class _RadioPlayer extends State<RadioPlayer>
     }
   }
 
-  // handle the player when radio stream changes
+  /// handle the player when radio stream changes
   void _handleRadioStreamChange(int radioStreamIndex, bool isPlaying,
       RadioLoadingBloc loadingStreamBloc) async {
     // if the the index is changed, stop the radio service

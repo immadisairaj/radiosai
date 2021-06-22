@@ -4,12 +4,14 @@ import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
 import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class Search extends StatefulWidget {
@@ -22,15 +24,25 @@ class Search extends StatefulWidget {
 }
 
 class _Search extends State<Search> {
+  /// webview controller for hidden web view
   WebViewController _webViewController;
+
+  /// variable to show the loading screen
   bool _isLoading = false;
+
+  /// variable to show the hidden web view
   bool _isGettingData = false;
+
+  /// form data to send to web view after updating url
   Map<String, String> globalFormData;
 
+  /// contains the base url of the radio sai search page
   final String baseUrl = 'https://radiosai.org/program/SearchProgramme.php';
 
+  /// the url with all the parameters (a unique url)
   String finalUrl = '';
 
+  /// list of categories supported for search
   final List<String> categoriesList = const [
     'Any',
     'Bhajan',
@@ -40,28 +52,87 @@ class _Search extends State<Search> {
     'Song',
     'Special',
   ];
+
+  /// the search key
+  ///
+  /// required for loading data
   String description = '';
+
+  /// current selected category
   String category = 'Any'; // from categoriesList
   // String language = '';
 
   final DateTime now = DateTime.now();
+
+  /// date for the search (played on)
+  ///
+  /// set this null to unselect date
   DateTime selectedDate;
+
+  /// selected date string to display in the selection widget
+  ///
+  /// associated with [selectedDate]
   String selectedDateString = '';
 
+  /// current page to display
   int currentPage = 1;
+
+  /// files to display per page.
+  /// value is 100
+  ///
+  /// max 3 digits allowed
   final int filesPerPage = 100; // max 3 digits
+  /// last page exists / total no. of pages
   int lastPage = 0;
+
+  /// set true if changing page -
+  /// have to load for 3rd time also
+  /// for page change
+  ///
+  /// set false if searching new
   bool _isChangingPage = false;
 
+  /// table head data retrieved from net
+  ///
+  /// doesn't use this as of now
+  ///
+  /// return data from tableHead
+  /// [0] Sl.No. [1] Category
+  /// [2] First Broad Cast [3] Programme Description
+  /// [4] Language [5] Duration(min)
+  /// [6] Download-fids
   List<String> _finalTableHead = [];
+
+  /// final table body data retrieved from the net
+  ///
+  /// can be [['start']] or [['wrong']] or
+  /// [['null']] or [['timeout']] or data.
+  /// Each have their own display widgets
+  ///
+  /// return data from table body
+  /// [0] Sl.No. [1] Category
+  /// [2] First Broad Cast [3] Programme Description
+  /// [4] Language [5] Duration(min)
+  /// [6] Download-fids
   List<List<String>> _finalTableData = [
     ['start']
   ];
 
+  /// form key used to validate search key
   final _formKey = GlobalKey<FormState>();
+
+  /// used to change the text in date field
   TextEditingController _dateController = new TextEditingController();
 
+  // below are used to hide/show the form widget
+  ScrollController _scrollController;
+  bool _showDropDown = true;
+  bool _isScrollingDown = false;
+
+  /// used to know if the web page is loading first time
   bool _isFirstLoading = true;
+
+  /// used to know if the web page is loading second time
   bool _isSecondLoading = false;
 
   @override
@@ -70,7 +141,18 @@ class _Search extends State<Search> {
 
     super.initState();
 
+    _scrollController = new ScrollController();
+    _scrollController.addListener(_scrollListener);
+
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_scrollListener);
+    _scrollController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -79,6 +161,10 @@ class _Search extends State<Search> {
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
     Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+
+    // get the heights of the screen (useful for split screen)
+    double height = MediaQuery.of(context).size.height;
+    bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
     return Scaffold(
       appBar: AppBar(
@@ -89,7 +175,12 @@ class _Search extends State<Search> {
         color: backgroundColor,
         child: Column(
           children: [
-            _searchForm(isDarkTheme),
+            if (!isSmallerScreen)
+              AnimatedContainer(
+                height: _showDropDown ? null : 0,
+                duration: Duration(milliseconds: 500),
+                child: _searchForm(isDarkTheme),
+              ),
             Expanded(
               child: Stack(
                 children: [
@@ -100,11 +191,10 @@ class _Search extends State<Search> {
                       _finalTableData[0][0] != 'start')
                     RefreshIndicator(
                       onRefresh: _refresh,
-                      // onRefresh: _refresh,
                       child: Scrollbar(
                         radius: Radius.circular(8),
                         child: SingleChildScrollView(
-                          // controller: _scrollController,
+                          controller: _scrollController,
                           physics: BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                           child: Card(
@@ -260,11 +350,7 @@ class _Search extends State<Search> {
                     Container(
                       color: backgroundColor,
                       child: Center(
-                        // TODO: show loading
-                        // child: _showLoading(isDarkTheme),
-                        child: SingleChildScrollView(
-                          child: Text('loading'),
-                        ),
+                        child: _showLoading(isDarkTheme),
                       ),
                     ),
                 ],
@@ -278,6 +364,9 @@ class _Search extends State<Search> {
     );
   }
 
+  /// sets the [finalUrl]
+  ///
+  /// continues the process by retrieving the data
   _updateURL() async {
     String formattedDate;
     if (selectedDate == null) {
@@ -312,6 +401,13 @@ class _Search extends State<Search> {
     _getData(data);
   }
 
+  /// retrieve the data from finalUrl
+  ///
+  /// if file is not in cache, enable to
+  /// load data from web view
+  ///
+  /// else continues the process by sending it to parse
+  /// if the data is retrieved
   _getData(Map<String, String> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
@@ -330,6 +426,8 @@ class _Search extends State<Search> {
     _parseData(tempResponse);
   }
 
+  /// parses the data retrieved from url.
+  /// sets the final data to display
   _parseData(String response) {
     var document = parse(response);
 
@@ -338,8 +436,11 @@ class _Search extends State<Search> {
       if (paging != null && paging.length > 0) {
         var pages = paging[0].getElementsByTagName('a');
 
-          lastPage = (pages.length == 0) ? 1 : pages.length;
-          _isChangingPage = true;
+        lastPage = (pages.length == 0) ? 1 : pages.length;
+        // set changing page to true.
+        // assumes that user can change page
+        // after data is loaded
+        _isChangingPage = true;
       }
     }
 
@@ -466,7 +567,7 @@ class _Search extends State<Search> {
     });
   }
 
-  // for refreshing the data
+  /// refresh the data
   Future<void> _refresh() async {
     await DefaultCacheManager().removeFile(finalUrl);
     setState(() {
@@ -475,6 +576,8 @@ class _Search extends State<Search> {
     });
   }
 
+  /// submits the form if it is valid.
+  /// else, shows the error
   void _submit() {
     if (_formKey.currentState.validate()) {
       FocusScope.of(context).unfocus();
@@ -487,6 +590,31 @@ class _Search extends State<Search> {
     }
   }
 
+  /// scroll listener to show/hide the form widget
+  void _scrollListener() {
+    int sensitivity = 8;
+    if (_scrollController.offset > sensitivity ||
+        _scrollController.offset < -sensitivity) {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        if (!_isScrollingDown) {
+          _isScrollingDown = true;
+          _showDropDown = false;
+          setState(() {});
+        }
+      }
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        if (_isScrollingDown) {
+          _isScrollingDown = false;
+          _showDropDown = true;
+          setState(() {});
+        }
+      }
+    }
+  }
+
+  /// widget to show and select the new search value
   Widget _searchForm(bool isDarkTheme) {
     return Form(
       key: _formKey,
@@ -512,7 +640,7 @@ class _Search extends State<Search> {
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter some text';
+                        return 'Please enter some text to search';
                       }
                       description = value;
                       return null;
@@ -584,10 +712,12 @@ class _Search extends State<Search> {
                                         hintStyle: TextStyle(
                                           fontSize: 18,
                                         ),
-                                        suffixIcon: (selectedDateString == '') ? Icon(
-                                          Icons.date_range_outlined,
-                                          size: 20,
-                                        ) : null,
+                                        suffixIcon: (selectedDateString == '')
+                                            ? Icon(
+                                                Icons.date_range_outlined,
+                                                size: 20,
+                                              )
+                                            : null,
                                         contentPadding: EdgeInsets.all(0),
                                         border: OutlineInputBorder(
                                           borderSide: BorderSide.none,
@@ -634,6 +764,7 @@ class _Search extends State<Search> {
     );
   }
 
+  /// widget - dropdown for selecting category
   Widget _categoryDropDown(bool isDarkTheme) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -664,7 +795,7 @@ class _Search extends State<Search> {
     );
   }
 
-  // select the date
+  /// select the played on date
   Future<void> _selectDate(BuildContext context) async {
     if (selectedDate == null) selectedDate = now;
     final DateTime picked = await showDatePicker(
@@ -682,6 +813,7 @@ class _Search extends State<Search> {
     }
   }
 
+  /// clear the selected date
   _clearDate() {
     setState(() {
       selectedDate = null;
@@ -690,6 +822,9 @@ class _Search extends State<Search> {
     });
   }
 
+  /// widget - pagination
+  ///
+  /// shows the scroll of pages to navigate
   Widget _pagination() {
     if (lastPage <= 1) {
       return Container(
@@ -747,6 +882,100 @@ class _Search extends State<Search> {
     );
   }
 
+  /// Shimmer effect while loading the content
+  Widget _showLoading(bool isDarkTheme) {
+    return Padding(
+      padding: EdgeInsets.all(20),
+      child: Shimmer.fromColors(
+        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
+        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
+        enabled: true,
+        child: Column(
+          children: [
+            // 3 shimmer context
+            for (int i = 0; i < 3; i++) _shimmerContent(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// individual shimmer content for loading shimmer
+  Widget _shimmerContent() {
+    double width = MediaQuery.of(context).size.width;
+    return Padding(
+      padding: EdgeInsets.only(bottom: 20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    width: width * 0.4,
+                    height: 9,
+                    color: Colors.white,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    width: width * 0.6,
+                    height: 8,
+                    color: Colors.white,
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    width: width * 0.6,
+                    height: 8,
+                    color: Colors.white,
+                  ),
+                  Container(
+                    width: width * 0.6,
+                    height: 8,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(bottom: 10),
+                    width: width * 0.2,
+                    height: 8,
+                    color: Colors.white,
+                  ),
+                  Container(
+                    width: width * 0.2,
+                    height: 8,
+                    color: Colors.white,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// widget - hidden web view.
+  /// uses webview inside stack below loading screen
+  ///
+  /// while loading with [_isChangingPage] as false:
+  ///
+  /// first load: loads the page;
+  /// second load: loads the table and gets data
+  ///
+  /// while loading with [_isChangingPage] as true:
+  ///
+  /// first load: loads the page;
+  /// second load: loads the table;
+  /// third load: changes the page and gets data
   Widget _hiddenWebView() {
     return Positioned.fill(
       child: WebView(

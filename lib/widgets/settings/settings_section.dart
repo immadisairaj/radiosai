@@ -1,6 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+/// Settings Section - used in settings page
+///
+/// [title] - title of the section
+///
+/// [child] - the content of the section
 class SettingsSection extends StatelessWidget {
   const SettingsSection({Key key, this.title, this.child}) : super(key: key);
 

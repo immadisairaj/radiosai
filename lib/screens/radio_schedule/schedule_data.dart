@@ -33,29 +33,69 @@ class ScheduleData extends StatefulWidget {
 }
 
 class _ScheduleData extends State<ScheduleData> {
+  /// variable to show the loading screen
   bool _isLoading = true;
 
   final DateTime now = DateTime.now();
+
+  /// date for the radio sai schedule
   DateTime selectedDate;
 
+  // below are used to hide/show the selection widget
   ScrollController _scrollController;
   bool _showDropDown = true;
   bool _isScrollingDown = false;
 
-  // used for the first build
+  // used for the initial build
   int oldStreamId = 0;
   final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
 
+  /// contains the base url of the radio sai schedule page
   final String baseUrl = 'https://radiosai.org/program/Index.php';
+
+  /// the url with all the parameters (a unique url)
   String finalUrl = '';
+
+  /// radio stream id
+  ///
+  /// associated with [selectedStream]
   String streamId = '';
+
+  /// selected radio stream
+  ///
+  /// associated with [streamId]
   String selectedStream = '';
+
+  /// selected time zone id
   String zoneId = '';
 
+  /// table head data retrieved from net
+  ///
+  /// doesn't use this as of now
+  ///
+  /// return data from tableHead
+  /// [0] Sl. No. [1] Loacl Time [2] GMT Time
+  /// [3] Programe List [4] Duration(min)
   List<String> _finalTableHead = [];
+
+  /// final table body data retrieved from the net
+  ///
+  /// can be [['null']] or [['timeout']] or data.
+  /// Each have their own display widgets
+  ///
+  /// return data from table body
+  /// [0] Sl. No. [1] Loacl Time [2] GMT Time
+  /// [3] Programe List [4] Duration(min)
+  ///
+  /// data of [3] will be:
+  /// category\<split\>content\<split\>[fids] ;
+  /// fids is empty if it is a live session;
+  /// content might also contain "- NEW"
   List<List<String>> _finalTableData = [
     ['null']
   ];
+
+  /// local time for the selected timezone
   String _finalLocalTime = '';
 
   @override
@@ -64,7 +104,9 @@ class _ScheduleData extends State<ScheduleData> {
     selectedDate = now;
     selectedStream = 'Asia Stream';
     oldStreamId = widget.radioStreamIndex;
+
     super.initState();
+
     _scrollController = new ScrollController();
     _scrollController.addListener(_scrollListener);
   }
@@ -73,6 +115,7 @@ class _ScheduleData extends State<ScheduleData> {
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+
     super.dispose();
   }
 
@@ -83,8 +126,14 @@ class _ScheduleData extends State<ScheduleData> {
 
     Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
 
+    // get the heights of the screen (useful for split screen)
+    double height = MediaQuery.of(context).size.height;
+    bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
+
+    // handle the screen for the initial build
     _handleFirstBuild();
 
+    // handle stream name display
     _handleStreamName();
 
     return Scaffold(
@@ -104,77 +153,78 @@ class _ScheduleData extends State<ScheduleData> {
         color: backgroundColor,
         child: Column(
           children: [
-            AnimatedContainer(
-              height: _showDropDown ? null : 0,
-              duration: Duration(milliseconds: 500),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Text(
-                        'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
-                        style: TextStyle(
-                          fontSize: 19,
+            if (!isSmallerScreen)
+              AnimatedContainer(
+                height: _showDropDown ? null : 0,
+                duration: Duration(milliseconds: 500),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
+                          style: TextStyle(
+                            fontSize: 19,
+                          ),
                         ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              flex: 1,
+                              child: Center(
+                                child: Text(
+                                  'Select Zone',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              flex: 1,
+                              child: Center(
+                                child: Text(
+                                  'Select Stream',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Row(
                         children: [
                           Flexible(
-                            flex: 1,
                             child: Center(
-                              child: Text(
-                                'Select Zone',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: _timeZoneDropDown(isDarkTheme),
                               ),
                             ),
                           ),
                           Flexible(
-                            flex: 1,
                             child: Center(
-                              child: Text(
-                                'Select Stream',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: _streamDropDown(isDarkTheme),
                               ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: _timeZoneDropDown(isDarkTheme),
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 5),
-                              child: _streamDropDown(isDarkTheme),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
             Expanded(
               child: Stack(
                 children: [
@@ -207,7 +257,7 @@ class _ScheduleData extends State<ScheduleData> {
                                   String duration = '${rowData[4]} min';
                                   List<String> mainRowData =
                                       rowData[3].split('<split>');
-                                  String tag = mainRowData[0];
+                                  String category = mainRowData[0];
                                   String programe = mainRowData[1];
                                   String fids = mainRowData[2]
                                       .substring(1, mainRowData[2].length - 1);
@@ -228,7 +278,7 @@ class _ScheduleData extends State<ScheduleData> {
                                               child: Center(
                                                 child: ListTile(
                                                   title: Text(
-                                                    tag,
+                                                    category,
                                                     style: TextStyle(
                                                       color: Theme.of(context)
                                                           .accentColor,
@@ -341,6 +391,11 @@ class _ScheduleData extends State<ScheduleData> {
     );
   }
 
+  /// sets the [finalUrl]
+  ///
+  /// takes in [date] as input
+  ///
+  /// continues the process by retrieving the data
   _updateURL(DateTime date) {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
@@ -358,6 +413,10 @@ class _ScheduleData extends State<ScheduleData> {
     _getData(data);
   }
 
+  /// retrieve the data from finalUrl
+  ///
+  /// continues the process by sending it to parse
+  /// if the data is retrieved
   _getData(Map<String, dynamic> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
@@ -403,6 +462,8 @@ class _ScheduleData extends State<ScheduleData> {
     _parseData(tempResponse);
   }
 
+  /// parses the data retrieved from url.
+  /// sets the final data to display
   _parseData(String response) {
     var document = parse(response);
     var table = document.getElementById('sch');
@@ -511,7 +572,7 @@ class _ScheduleData extends State<ScheduleData> {
     });
   }
 
-  // select the date and update the url
+  /// select the date and update the url
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
@@ -530,7 +591,7 @@ class _ScheduleData extends State<ScheduleData> {
     }
   }
 
-  // for refreshing the data
+  /// refresh the data
   Future<void> _refresh() async {
     await DefaultCacheManager().removeFile(finalUrl);
     setState(() {
@@ -539,7 +600,10 @@ class _ScheduleData extends State<ScheduleData> {
     });
   }
 
-  // handle the first build data
+  /// handle the initial build data display
+  ///
+  /// used for getting the radio stream which is being
+  /// selected in radio player
   void _handleFirstBuild() {
     if (widget.radioStreamIndex == oldStreamId) {
       return;
@@ -550,13 +614,14 @@ class _ScheduleData extends State<ScheduleData> {
     _updateURL(selectedDate);
   }
 
-  // handle stream name to show in dropdown
+  /// handle stream name to show in dropdown
   void _handleStreamName() {
     if (streamId == '') return;
     int index = firstStreamMap.indexOf(int.parse(streamId));
     selectedStream = MyConstants.of(context).radioStreamName[index];
   }
 
+  /// scroll listener to show/hide the selecting widget
   void _scrollListener() {
     int sensitivity = 8;
     if (_scrollController.offset > sensitivity ||
@@ -580,6 +645,7 @@ class _ScheduleData extends State<ScheduleData> {
     }
   }
 
+  /// widget - dropdown for selecting radio stream
   Widget _streamDropDown(bool isDarkTheme) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -612,6 +678,9 @@ class _ScheduleData extends State<ScheduleData> {
     );
   }
 
+  /// widget - dropdown for selecting time zone
+  ///
+  /// updates the data in shared prefs
   Widget _timeZoneDropDown(bool isDarkTheme) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -645,7 +714,7 @@ class _ScheduleData extends State<ScheduleData> {
     );
   }
 
-  // Shimmer effect while loading the content
+  /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
       padding: EdgeInsets.all(20),
@@ -663,6 +732,7 @@ class _ScheduleData extends State<ScheduleData> {
     );
   }
 
+  /// individual shimmer content for loading shimmer
   Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(
