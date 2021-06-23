@@ -195,7 +195,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
   }
 
   /// updates the media item data with duration after decoding.
-  /// 
+  ///
   /// referred from audio_service github issue 543
   void updateQueueWithCurrentDuration(Duration duration) {
     final songIndex = _player.playbackEvent.currentIndex;
@@ -357,20 +357,18 @@ class MediaPlayerTask extends BackgroundAudioTask {
             ? AudioServiceShuffleMode.all
             : AudioServiceShuffleMode.none;
 
-    bool isNextEnabled = _player.playbackEvent.currentIndex != queue.length - 1;
-
     await AudioServiceBackground.setState(
       controls: [
         MediaControl.skipToPrevious,
         _player.playing ? MediaControl.pause : MediaControl.play,
-        if (isNextEnabled) MediaControl.skipToNext,
+        MediaControl.skipToNext,
       ],
       systemActions: [
         MediaAction.seekTo,
         MediaAction.seekForward,
         MediaAction.seekBackward,
       ],
-      androidCompactActions: (isNextEnabled) ? [0, 1, 2] : [0, 1],
+      androidCompactActions: [0, 1, 2],
       processingState: _getProcessingState(),
       playing: _player.playing,
       position: _player.position,

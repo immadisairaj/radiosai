@@ -4,6 +4,7 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -129,13 +130,23 @@ class _MediaPlayer extends State<MediaPlayer> {
                           stream: _mediaStateStream,
                           builder: (context, snapshot) {
                             final mediaState = snapshot.data;
-                            return SeekBar(
-                              duration: mediaState?.mediaItem?.duration ??
-                                  Duration.zero,
-                              position: mediaState?.position ?? Duration.zero,
-                              onChangeEnd: (newPosition) {
-                                AudioService.seekTo(newPosition);
-                              },
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 16, right: 16),
+                              child: ProgressBar(
+                                total: mediaState?.mediaItem?.duration ??
+                                    Duration.zero,
+                                progress: mediaState?.position ?? Duration.zero,
+                                buffered: mediaState
+                                        ?.playbackState?.bufferedPosition ??
+                                    Duration.zero,
+                                timeLabelType: TimeLabelType.remainingTime,
+                                timeLabelTextStyle:
+                                    Theme.of(context).textTheme.caption,
+                                onSeek: (newPosition) {
+                                  AudioService.seekTo(newPosition);
+                                },
+                              ),
                             );
                           },
                         ),
@@ -526,13 +537,15 @@ class _MediaPlayer extends State<MediaPlayer> {
         });
   }
 
-  /// A stream reporting the combined state of the current media item and its
-  /// current position.
+  /// A stream reporting the combined state of the current media item, its
+  /// current position and playback state.
   Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest2<MediaItem, Duration, MediaState>(
+      Rx.combineLatest3<MediaItem, Duration, PlaybackState, MediaState>(
           AudioService.currentMediaItemStream,
           AudioService.positionStream,
-          (mediaItem, position) => MediaState(mediaItem, position));
+          AudioService.playbackStateStream,
+          (mediaItem, position, playbackState) =>
+              MediaState(mediaItem, position, playbackState));
 
   /// A stream reporting the combined state of the current queue and the current
   /// media item within that queue.
@@ -635,85 +648,7 @@ class QueueState {
 class MediaState {
   final MediaItem mediaItem;
   final Duration position;
+  final PlaybackState playbackState;
 
-  MediaState(this.mediaItem, this.position);
-}
-
-class SeekBar extends StatefulWidget {
-  final Duration duration;
-  final Duration position;
-  final ValueChanged<Duration> onChanged;
-  final ValueChanged<Duration> onChangeEnd;
-
-  SeekBar({
-    @required this.duration,
-    @required this.position,
-    this.onChanged,
-    this.onChangeEnd,
-  });
-
-  @override
-  _SeekBarState createState() => _SeekBarState();
-}
-
-class _SeekBarState extends State<SeekBar> {
-  double _dragValue;
-  bool _dragging = false;
-
-  @override
-  Widget build(BuildContext context) {
-    final value = min(_dragValue ?? widget.position.inMilliseconds.toDouble(),
-        widget.duration.inMilliseconds.toDouble());
-    if (_dragValue != null && !_dragging) {
-      _dragValue = null;
-    }
-
-    Duration remaining = widget.duration - widget.position;
-    return Stack(
-      children: [
-        Slider.adaptive(
-          min: 0.0,
-          max: widget.duration.inMilliseconds.toDouble(),
-          value: value,
-          onChanged: (value) {
-            if (!_dragging) {
-              _dragging = true;
-            }
-            setState(() {
-              _dragValue = value;
-            });
-            if (widget.onChanged != null) {
-              widget.onChanged(Duration(milliseconds: value.round()));
-            }
-          },
-          onChangeEnd: (value) {
-            if (widget.onChangeEnd != null) {
-              widget.onChangeEnd(Duration(milliseconds: value.round()));
-            }
-            _dragging = false;
-          },
-        ),
-        Positioned(
-          left: 16.0,
-          bottom: 0.0,
-          child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch('${widget.position}')
-                      ?.group(1) ??
-                  '${widget.position}',
-              style: Theme.of(context).textTheme.caption),
-        ),
-        Positioned(
-          right: 16.0,
-          bottom: 0.0,
-          child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                      .firstMatch('$remaining')
-                      ?.group(1) ??
-                  '${widget.duration}',
-              style: Theme.of(context).textTheme.caption),
-        ),
-      ],
-    );
-  }
+  MediaState(this.mediaItem, this.position, this.playbackState);
 }
