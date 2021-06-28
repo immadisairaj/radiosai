@@ -108,10 +108,9 @@ class _Media extends State<Media> {
                     physics: BouncingScrollPhysics(
                         parent: AlwaysScrollableScrollPhysics()),
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(
-                        // have minimum height to reload even when 1 item is present
-                        minHeight: MediaQuery.of(context).size.height * 0.9,
-                      ),
+                      // have minimum height to reload even when 1 item is present
+                      constraints: BoxConstraints.tightFor(
+                          height: MediaQuery.of(context).size.height * 0.9),
                       child: Card(
                         elevation: 0,
                         color:

@@ -135,6 +135,9 @@ class _Search extends State<Search> {
   /// used to know if the web page is loading second time
   bool _isSecondLoading = false;
 
+  /// focus node attached to TextFormField of Search
+  FocusNode _textFocusNode = FocusNode();
+
   @override
   void initState() {
     selectedDate = null;
@@ -145,6 +148,8 @@ class _Search extends State<Search> {
     _scrollController.addListener(_scrollListener);
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+
+    _textFocusNode.requestFocus();
   }
 
   @override
@@ -197,106 +202,117 @@ class _Search extends State<Search> {
                           controller: _scrollController,
                           physics: BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
-                          child: Card(
-                            elevation: 0,
-                            color: isDarkTheme
-                                ? Colors.grey[800]
-                                : Colors.grey[200],
-                            child: ListView.builder(
-                                shrinkWrap: true,
-                                primary: false,
-                                padding: EdgeInsets.only(top: 2, bottom: 2),
-                                itemCount: _finalTableData.length,
-                                itemBuilder: (context, index) {
-                                  List<String> rowData = _finalTableData[index];
+                          child: ConstrainedBox(
+                            // have minimum height to reload even when 1 item is present
+                            constraints: BoxConstraints.tightFor(
+                                height: (isSmallerScreen || !_showDropDown)
+                                    ? MediaQuery.of(context).size.height * 0.9
+                                    : MediaQuery.of(context).size.height * 0.7),
+                            child: Card(
+                              elevation: 0,
+                              color: isDarkTheme
+                                  ? Colors.grey[800]
+                                  : Colors.grey[200],
+                              child: ListView.builder(
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  padding: EdgeInsets.only(top: 2, bottom: 2),
+                                  itemCount: _finalTableData.length,
+                                  itemBuilder: (context, index) {
+                                    List<String> rowData =
+                                        _finalTableData[index];
 
-                                  String category = rowData[1];
-                                  String programe = rowData[3];
-                                  String language = rowData[4];
-                                  String duration = '${rowData[5]} min';
-                                  String fids = rowData[6];
-                                  return Column(
-                                    children: [
-                                      Padding(
-                                        padding:
-                                            EdgeInsets.only(left: 2, right: 2),
-                                        child: Card(
-                                          elevation: 0,
-                                          color: isDarkTheme
-                                              ? Colors.grey[800]
-                                              : Colors.grey[200],
-                                          child: InkWell(
-                                            child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  top: 2, bottom: 2),
-                                              child: Center(
-                                                child: ListTile(
-                                                  title: Text(
-                                                    category,
-                                                    style: TextStyle(
-                                                      color: Theme.of(context)
-                                                          .accentColor,
-                                                      fontWeight:
-                                                          FontWeight.w600,
+                                    String category = rowData[1];
+                                    String programe = rowData[3];
+                                    String language = rowData[4];
+                                    String duration = '${rowData[5]} min';
+                                    String fids = rowData[6];
+                                    return Column(
+                                      children: [
+                                        Padding(
+                                          padding: EdgeInsets.only(
+                                              left: 2, right: 2),
+                                          child: Card(
+                                            elevation: 0,
+                                            color: isDarkTheme
+                                                ? Colors.grey[800]
+                                                : Colors.grey[200],
+                                            child: InkWell(
+                                              child: Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 2, bottom: 2),
+                                                child: Center(
+                                                  child: ListTile(
+                                                    title: Text(
+                                                      category,
+                                                      style: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .accentColor,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                      ),
                                                     ),
-                                                  ),
-                                                  subtitle: Text(programe),
-                                                  trailing: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      Text(
-                                                        language,
-                                                        style: TextStyle(
-                                                          color: isDarkTheme
-                                                              ? Colors.grey[300]
-                                                              : Colors
-                                                                  .grey[700],
+                                                    subtitle: Text(programe),
+                                                    trailing: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Text(
+                                                          language,
+                                                          style: TextStyle(
+                                                            color: isDarkTheme
+                                                                ? Colors
+                                                                    .grey[300]
+                                                                : Colors
+                                                                    .grey[700],
+                                                          ),
                                                         ),
-                                                      ),
-                                                      Text(
-                                                        duration,
-                                                        style: TextStyle(
-                                                          color: isDarkTheme
-                                                              ? Colors.grey[300]
-                                                              : Colors
-                                                                  .grey[700],
+                                                        Text(
+                                                          duration,
+                                                          style: TextStyle(
+                                                            color: isDarkTheme
+                                                                ? Colors
+                                                                    .grey[300]
+                                                                : Colors
+                                                                    .grey[700],
+                                                          ),
                                                         ),
-                                                      ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
                                                 ),
                                               ),
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                              focusColor: isDarkTheme
+                                                  ? Colors.grey[700]
+                                                  : Colors.grey[300],
+                                              onTap: () {
+                                                if (fids != '')
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              Media(
+                                                                  fids: fids)));
+                                              },
                                             ),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                            focusColor: isDarkTheme
-                                                ? Colors.grey[700]
-                                                : Colors.grey[300],
-                                            onTap: () {
-                                              if (fids != '')
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            Media(fids: fids)));
-                                            },
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8.0),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      if (index != _finalTableData.length - 1)
-                                        Divider(
-                                          height: 2,
-                                          thickness: 1.5,
-                                        ),
-                                    ],
-                                  );
-                                }),
+                                        if (index != _finalTableData.length - 1)
+                                          Divider(
+                                            height: 2,
+                                            thickness: 1.5,
+                                          ),
+                                      ],
+                                    );
+                                  }),
+                            ),
                           ),
                         ),
                       ),
@@ -628,6 +644,7 @@ class _Search extends State<Search> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: TextFormField(
+                    focusNode: _textFocusNode,
                     autofocus: false,
                     maxLines: 1,
                     expands: false,
