@@ -394,7 +394,9 @@ class _Media extends State<Media> {
       url: fileLink,
       savedDir: _mediaDirectory,
       fileName: fileName,
-      showNotification: false,
+      // showNotification: false,
+      showNotification: true,
+      openFileFromNotification: false,
     );
     int i = _downloadTasks.indexOf(task);
     _downloadTasks[i].taskId = taskId;
@@ -451,7 +453,9 @@ class _Media extends State<Media> {
   /// [link] - media link (url);
   /// [isFileExists] - if whether file exists in external storage
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
-    if (AudioService.playbackState.playing) {
+    // checks if the audio service is running
+    if (AudioService.running) {
+      // check if radio is running / media is running
       if (AudioService.queue != null && AudioService.queue.length != 0) {
         String fileId = await MediaHelper.getFileIdFromUri(link);
         // if trying to add the current playing media, do nothing
@@ -465,19 +469,15 @@ class _Media extends State<Media> {
         }
 
         // play the media
-        AudioService.skipToQueueItem(fileId);
+        await AudioService.skipToQueueItem(fileId);
+        AudioService.play();
       } else {
-        // if radio player is playing
+        // if radio player is running, stop and play media
         await AudioService.stop();
         initMediaService(name, link, isFileExists);
       }
     } else {
-      if (AudioService.running) {
-        // if the radio player is paused
-        await AudioService.stop();
-        initMediaService(name, link, isFileExists);
-      }
-      // initialize the radio service
+      // initialize the media service
       initMediaService(name, link, isFileExists);
     }
   }

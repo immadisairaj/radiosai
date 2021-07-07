@@ -621,7 +621,9 @@ class _MediaPlayer extends State<MediaPlayer> {
       url: fileLink,
       savedDir: _mediaDirectory,
       fileName: fileName,
-      showNotification: false,
+      // showNotification: false,
+      showNotification: true,
+      openFileFromNotification: false,
     );
     int i = _downloadTasks.indexOf(task);
     _downloadTasks[i].taskId = taskId;
