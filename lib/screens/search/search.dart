@@ -644,6 +644,10 @@ class _Search extends State<Search> {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.9,
                   child: TextFormField(
+                    textInputAction: TextInputAction.search,
+                    onFieldSubmitted: (value) {
+                      _submit();
+                    },
                     focusNode: _textFocusNode,
                     autofocus: false,
                     maxLines: 1,

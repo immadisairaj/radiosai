@@ -50,6 +50,7 @@ class MediaHelper {
       album: "Radio Sai Global Harmony",
       // name of the file without '_' or extensions
       title: name,
+      artist: "radiosai",
       // art of the media
       artUri: Uri.parse('file://$path'),
       // extras['uri'] contain the uri of the media

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
@@ -16,6 +15,7 @@ import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MediaPlayer extends StatefulWidget {
   MediaPlayer({
@@ -98,7 +98,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                             ),
                             Row(
                               children: [
-                                // TODO: maybe add a share?
+                                _shareButton(),
                                 _options(isDarkTheme),
                               ],
                             ),
@@ -466,7 +466,9 @@ class _MediaPlayer extends State<MediaPlayer> {
   /// options for the current playing song/player
   Widget _options(bool isDarkTheme) {
     List<String> optionsList = [
-      'Download',
+      // TODO: fix download and then uncomment below line
+      // 'Download',
+      'Share',
       'View Playing Queue',
     ];
     return StreamBuilder<MediaItem>(
@@ -529,10 +531,41 @@ class _MediaPlayer extends State<MediaPlayer> {
                       _downloadMediaFile(
                           MediaHelper.getLinkFromFileId(mediaId));
                       break;
+                    case 'Share':
+                      _shareMediaFileLink(
+                          MediaHelper.getLinkFromFileId(mediaId));
+                      break;
                   }
                 },
               ),
             ),
+          );
+        });
+  }
+
+  Widget _shareButton() {
+    return StreamBuilder<MediaItem>(
+        stream: AudioService.currentMediaItemStream,
+        builder: (context, snapshot) {
+          final mediaItem = snapshot.data;
+          final mediaId = (mediaItem != null && mediaItem?.id != null)
+              ? mediaItem.id
+              : 'loading media...';
+          if (mediaId == 'loading media...')
+            return IconButton(
+              icon: Icon(Icons.share_outlined),
+              iconSize: 25,
+              splashRadius: 24,
+              onPressed: () {},
+            );
+
+          return IconButton(
+            icon: Icon(Icons.share_outlined),
+            splashRadius: 24,
+            iconSize: 25,
+            onPressed: () {
+              _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId));
+            },
           );
         });
   }
@@ -627,6 +660,17 @@ class _MediaPlayer extends State<MediaPlayer> {
     );
     int i = _downloadTasks.indexOf(task);
     _downloadTasks[i].taskId = taskId;
+  }
+
+  /// call to share the media link.
+  ///
+  /// pass the url [fileLink] to where it is in the internet
+  _shareMediaFileLink(String fileLink) {
+    String subject = "Checkout this audio from radiosai!";
+    String text = fileLink +
+        "\n\nShared using Sai Voice app" +
+        "\nInstall from https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai";
+    Share.share(text, subject: subject);
   }
 
   /// returns if the app has permission to save in external path

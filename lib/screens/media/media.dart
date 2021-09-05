@@ -206,16 +206,17 @@ class _Media extends State<Media> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Visibility(
-                                visible: !isFileExists,
-                                child: IconButton(
-                                  icon: Icon(Icons.download_outlined),
-                                  splashRadius: 24,
-                                  onPressed: () {
-                                    _downloadMediaFile(_finalMediaLinks[index]);
-                                  },
-                                ),
-                              ),
+                              // TODO: fix download and then uncomment below lines
+                              // Visibility(
+                              //   visible: !isFileExists,
+                              //   child: IconButton(
+                              //     icon: Icon(Icons.download_outlined),
+                              //     splashRadius: 24,
+                              //     onPressed: () {
+                              //       _downloadMediaFile(_finalMediaLinks[index]);
+                              //     },
+                              //   ),
+                              // ),
                               IconButton(
                                 icon: Icon(CupertinoIcons.add_circled),
                                 splashRadius: 24,
@@ -493,6 +494,7 @@ class _Media extends State<Media> {
         'id': tempMediaItem.id,
         'album': tempMediaItem.album,
         'title': tempMediaItem.title,
+        'artist': tempMediaItem.artist,
         'artUri': tempMediaItem.artUri.toString(),
         'extrasUri': tempMediaItem.extras['uri'],
       };

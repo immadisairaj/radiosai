@@ -52,6 +52,7 @@ class MediaPlayerTask extends BackgroundAudioTask {
       id: params['id'],
       album: params['album'],
       title: params['title'],
+      artist: params['artist'],
       artUri: Uri.parse(params['artUri']),
       extras: _extras,
     );
