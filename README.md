@@ -10,7 +10,8 @@ Om Sri Sai Ram :pray:
 
 Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Global Harmony.
 
-:warning: __Internet is needed for the app to function properly.__
+| :warning: Internet is needed for the app to function properly. |
+|-|
 
 _*All the data inside the app is taken from [radiosai.org](https://www.radiosai.org)_
 
@@ -35,6 +36,9 @@ __Split Screen:__ The app is suitable for split screen. Operate this app while d
 __Schedule:__ Look at the radio schedule of different streams from within the app (Redirects to the official website).
 
 __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard). One can also view and save the image.
+
+| :zap: To save image into gallery, it is required to give access to external location. No other files will be tracked/added/deleted other than the "Sai Voice" folder created. If you don't want to save the original image, taking screenshot is also a good idea. |
+|-|
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 

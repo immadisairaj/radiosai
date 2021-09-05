@@ -48,37 +48,40 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                         return AlertDialog(
                           title: Text('Starting radio stream'),
                           contentPadding: EdgeInsets.only(top: 10),
-                          content: Scrollbar(
-                            radius: Radius.circular(8),
-                            isAlwaysShown: true,
-                            child: SingleChildScrollView(
-                              child: ListView.builder(
-                                  itemCount: MyConstants.of(context)
-                                          .radioStreamName
-                                          .length +
-                                      1,
-                                  shrinkWrap: true,
-                                  primary: false,
-                                  itemBuilder: (context, index) {
-                                    int value = index - 1;
-                                    return RadioListTile(
-                                        activeColor:
-                                            Theme.of(context).accentColor,
-                                        value: value,
-                                        selected:
-                                            value == initialRadioStreamIndex,
-                                        title: (value >= 0)
-                                            ? Text(MyConstants.of(context)
-                                                .radioStreamName[value])
-                                            : Text(recentlyPlayed),
-                                        groupValue: initialRadioStreamIndex,
-                                        onChanged: (value) {
-                                          _initialRadioIndexBloc
-                                              .changeInitialRadioIndex
-                                              .add(value);
-                                          Navigator.of(context).pop();
-                                        });
-                                  }),
+                          content: SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            child: Scrollbar(
+                              radius: Radius.circular(8),
+                              isAlwaysShown: true,
+                              child: SingleChildScrollView(
+                                child: ListView.builder(
+                                    itemCount: MyConstants.of(context)
+                                            .radioStreamName
+                                            .length +
+                                        1,
+                                    shrinkWrap: true,
+                                    primary: false,
+                                    itemBuilder: (context, index) {
+                                      int value = index - 1;
+                                      return RadioListTile(
+                                          activeColor:
+                                              Theme.of(context).accentColor,
+                                          value: value,
+                                          selected:
+                                              value == initialRadioStreamIndex,
+                                          title: (value >= 0)
+                                              ? Text(MyConstants.of(context)
+                                                  .radioStreamName[value])
+                                              : Text(recentlyPlayed),
+                                          groupValue: initialRadioStreamIndex,
+                                          onChanged: (value) {
+                                            _initialRadioIndexBloc
+                                                .changeInitialRadioIndex
+                                                .add(value);
+                                            Navigator.of(context).pop();
+                                          });
+                                    }),
+                              ),
                             ),
                           ),
                           buttonPadding: EdgeInsets.all(4),

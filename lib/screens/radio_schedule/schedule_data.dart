@@ -244,7 +244,8 @@ class _ScheduleData extends State<ScheduleData> {
                             constraints: BoxConstraints(
                                 minHeight: (isSmallerScreen || !_showDropDown)
                                     ? MediaQuery.of(context).size.height * 0.9
-                                    : MediaQuery.of(context).size.height * 0.7),
+                                    : MediaQuery.of(context).size.height *
+                                        0.75),
                             child: Card(
                               elevation: 0,
                               color: isDarkTheme
@@ -363,7 +364,7 @@ class _ScheduleData extends State<ScheduleData> {
                     NoData(
                       backgroundColor: backgroundColor,
                       text:
-                          'No Data Available,\ncheck your internet and try again',
+                          'No Data Available,\ncheck your internet or try again',
                       onPressed: () {
                         setState(() {
                           _isLoading = true;

@@ -145,7 +145,9 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       final imageDirectoryPath = '$publicDirectoryPath/$albumName';
       var permission = await _canSave();
       if (!permission) {
-        _showSnackBar(context, 'Accept storage permission to save image',
+        _showSnackBar(
+            context,
+            'Accept manage storage permission to save image to gallery',
             Duration(seconds: 2));
         return;
       }
@@ -182,8 +184,13 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   /// returns if the app has permission to save in external storage
   Future<bool> _canSave() async {
     var status = await Permission.storage.request();
+    var externalStatus = await Permission.manageExternalStorage.request();
     if (status.isGranted || status.isLimited) {
-      return true;
+      if (externalStatus.isGranted || externalStatus.isLimited) {
+        return true;
+      } else {
+        return false;
+      }
     } else {
       return false;
     }
