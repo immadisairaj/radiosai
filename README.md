@@ -42,7 +42,7 @@ __Open Source:__ We believe that there is nothing to hide and like you to experi
 
 __File Permissions:__ File write permission is requested only to save images from Sai Inspires. One can deny these permissions from the settings.
 
-> "Sai Ram, and Happy Listening" - _a quote from Radio Sai_
+> "Sai Ram, and Happy Listening"
 
 ## Future Updates
 
