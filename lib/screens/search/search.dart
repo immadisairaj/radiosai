@@ -204,8 +204,8 @@ class _Search extends State<Search> {
                               parent: AlwaysScrollableScrollPhysics()),
                           child: ConstrainedBox(
                             // have minimum height to reload even when 1 item is present
-                            constraints: BoxConstraints.tightFor(
-                                height: (isSmallerScreen || !_showDropDown)
+                            constraints: BoxConstraints(
+                                minHeight: (isSmallerScreen || !_showDropDown)
                                     ? MediaQuery.of(context).size.height * 0.9
                                     : MediaQuery.of(context).size.height * 0.7),
                             child: Card(
