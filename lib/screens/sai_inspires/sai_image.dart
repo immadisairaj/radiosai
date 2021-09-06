@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_saver/gallery_saver.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SaiImage extends StatefulWidget {
@@ -141,7 +141,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     if (!_isCopying) {
       _isCopying = true;
       final publicDirectoryPath = await _getPublicPath();
-      final albumName = 'Sai Voice/Sai Inspires';
+      final albumName = 'Sai Voice';
       final imageDirectoryPath = '$publicDirectoryPath/$albumName';
       var permission = await _canSave();
       if (!permission) {
@@ -172,8 +172,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   /// get the external storage path
   Future<String> _getPublicPath() async {
-    var path = await ExtStorage.getExternalStorageDirectory();
-    return path;
+    Directory pathDirectory = await getApplicationDocumentsDirectory();
+    return pathDirectory.path;
   }
 
   /// get the cached file where image is saved
@@ -184,13 +184,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   /// returns if the app has permission to save in external storage
   Future<bool> _canSave() async {
     var status = await Permission.storage.request();
-    var externalStatus = await Permission.manageExternalStorage.request();
     if (status.isGranted || status.isLimited) {
-      if (externalStatus.isGranted || externalStatus.isLimited) {
-        return true;
-      } else {
-        return false;
-      }
+      return true;
     } else {
       return false;
     }

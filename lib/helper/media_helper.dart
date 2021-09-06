@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
-import 'package:ext_storage/ext_storage.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -110,7 +109,7 @@ class MediaHelper {
   /// doesn't care if the directory is created or not
   static Future<String> getDirectoryPath() async {
     final publicDirectoryPath = await _getPublicPath();
-    final albumName = 'Sai Voice/Media';
+    final albumName = 'Sai Voice';
     final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
     return mediaDirectoryPath;
   }
@@ -124,8 +123,8 @@ class MediaHelper {
   }
 
   static Future<String> _getPublicPath() async {
-    var path = await ExtStorage.getExternalStorageDirectory();
-    return path;
+    Directory pathDirectory = await getApplicationDocumentsDirectory();
+    return pathDirectory.path;
   }
 
   /// Get the file path of the notification image
