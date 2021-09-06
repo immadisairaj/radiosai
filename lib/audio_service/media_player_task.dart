@@ -270,6 +270,15 @@ class MediaPlayerTask extends BackgroundAudioTask {
   Future<void> onSetShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     await _player
         .setShuffleModeEnabled(shuffleMode == AudioServiceShuffleMode.all);
+
+    // TODO: broadcast shuffle when shuffled internally
+    // _player.sequenceStateStream
+    //     .map((state) => state.effectiveSequence)
+    //     .distinct()
+    //     .map((sequence) =>
+    //         sequence.map((source) => source.tag as MediaItem).toList())
+    //     .pipe(mediaQueue); // to be used in audio_service 0.18
+
     // broadcast shuffle state to the UI
     await _broadcastState();
     return super.onSetShuffleMode(shuffleMode);

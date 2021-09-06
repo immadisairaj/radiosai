@@ -338,6 +338,11 @@ class _ScheduleData extends State<ScheduleData> {
                                                           builder: (context) =>
                                                               Media(
                                                                   fids: fids)));
+                                                else
+                                                  _showSnackBar(
+                                                      context,
+                                                      'No media found!',
+                                                      Duration(seconds: 1));
                                               },
                                             ),
                                             shape: RoundedRectangleBorder(
@@ -724,6 +729,19 @@ class _ScheduleData extends State<ScheduleData> {
         },
       ),
     );
+  }
+
+  /// show snack bar for the current context
+  ///
+  /// pass current [context],
+  /// [text] to display and
+  /// [duration] for how much time to display
+  void _showSnackBar(BuildContext context, String text, Duration duration) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(text),
+      behavior: SnackBarBehavior.floating,
+      duration: duration,
+    ));
   }
 
   /// Shimmer effect while loading the content
