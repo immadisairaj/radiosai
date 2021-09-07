@@ -14,10 +14,16 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+/// If using [initialSearch], it is recommended to use [initialSearchTItle] also
 class Search extends StatefulWidget {
   Search({
     Key key,
+    this.initialSearch,
+    this.initialSearchTitle,
   }) : super(key: key);
+
+  final String initialSearch;
+  final String initialSearchTitle;
 
   @override
   _Search createState() => _Search();
@@ -138,6 +144,9 @@ class _Search extends State<Search> {
   /// focus node attached to TextFormField of Search
   FocusNode _textFocusNode = FocusNode();
 
+  /// text controller to add text for initial value
+  TextEditingController _textController;
+
   @override
   void initState() {
     selectedDate = null;
@@ -149,7 +158,16 @@ class _Search extends State<Search> {
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
-    _textFocusNode.requestFocus();
+    if (widget.initialSearch == null) {
+      _textController = new TextEditingController();
+      // focus the search if the search field is empty
+      _textFocusNode.requestFocus();
+    } else {
+      // initialize the search with the initialSearch
+      _textController = new TextEditingController(text: widget.initialSearch);
+      // calls the submit method after the widget is build
+      WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
+    }
   }
 
   @override
@@ -173,7 +191,11 @@ class _Search extends State<Search> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search'),
+        title: Text(widget.initialSearch == null
+            ? 'Search'
+            : ((widget.initialSearchTitle != null)
+                ? widget.initialSearchTitle
+                : widget.initialSearch)),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -670,6 +692,7 @@ class _Search extends State<Search> {
                     autofocus: false,
                     maxLines: 1,
                     expands: false,
+                    controller: _textController,
                     decoration: InputDecoration(
                       hintText: 'Search...',
                       contentPadding: EdgeInsets.only(left: 20, right: 20),
