@@ -31,9 +31,11 @@ class Media extends StatefulWidget {
   Media({
     Key key,
     @required this.fids,
+    this.title,
   }) : super(key: key);
 
   final String fids;
+  final String title;
 
   @override
   _Media createState() => _Media();
@@ -90,7 +92,7 @@ class _Media extends State<Media> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Media'),
+        title: (widget.title == null) ? Text('Media') : widget.title,
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,

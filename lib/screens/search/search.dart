@@ -713,7 +713,7 @@ class _Search extends State<Search> {
               Row(
                 children: [
                   Flexible(
-                    flex: 3,
+                    flex: 4,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -760,7 +760,7 @@ class _Search extends State<Search> {
                                 ),
                               ),
                               SizedBox(
-                                width: (selectedDateString != '') ? 110 : 140,
+                                width: (selectedDateString != '') ? 160 : 170,
                                 child: Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(

@@ -32,57 +32,85 @@ class _TopMenu extends State<TopMenu> {
           top: topPadding,
           right: rightPadding,
         ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: Material(
-            color: Colors.transparent,
-            child: PopupMenuButton<String>(
-              icon: Icon(
-                Icons.more_vert,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Material(
+              color: Colors.transparent,
+              child: IconButton(
+                icon: Icon(Icons.search_outlined),
+                splashRadius: 24,
+                iconSize: 30,
                 color: Colors.white,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, anim1, anim2) => Search(),
+                        transitionsBuilder: (context, anim1, anim2, child) =>
+                            FadeTransition(opacity: anim1, child: child),
+                        transitionDuration: Duration(milliseconds: 300),
+                      ));
+                  // Navigator.push(context,
+                  //     MaterialPageRoute(builder: (context) => Search()));
+                },
               ),
-              iconSize: 30,
-              offset: const Offset(-10, 10),
-              itemBuilder: (context) {
-                // Takes list of data from constants
-                return menuTitles.map<PopupMenuEntry<String>>((value) {
-                  return PopupMenuItem<String>(
-                    value: value,
-                    child: Text(
-                      value,
-                    ),
-                  );
-                }).toList();
-              },
-              onSelected: (value) {
-                switch (value) {
-                  // TODO: don't hardcode this and maybe add enum
-                  case 'Sai Inspires':
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => SaiInspires()));
-                    break;
-                  case 'Settings':
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Settings()));
-                    break;
-                  case 'Schedule':
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RadioSchedule()));
-                    break;
-                  case 'Audio Archive':
-                    _urlLaunch(
-                        'https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm');
-                    break;
-                  case 'Search':
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Search()));
-                    break;
-                }
-              },
             ),
-          ),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Material(
+                color: Colors.transparent,
+                child: PopupMenuButton<String>(
+                  icon: Icon(
+                    Icons.more_vert,
+                    color: Colors.white,
+                  ),
+                  iconSize: 30,
+                  offset: const Offset(-10, 10),
+                  itemBuilder: (context) {
+                    // Takes list of data from constants
+                    return menuTitles.map<PopupMenuEntry<String>>((value) {
+                      return PopupMenuItem<String>(
+                        value: value,
+                        child: Text(
+                          value,
+                        ),
+                      );
+                    }).toList();
+                  },
+                  onSelected: (value) {
+                    switch (value) {
+                      // TODO: don't hardcode this and maybe add enum
+                      case 'Sai Inspires':
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SaiInspires()));
+                        break;
+                      case 'Settings':
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Settings()));
+                        break;
+                      case 'Schedule':
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RadioSchedule()));
+                        break;
+                      // TODO: add and navigate to new screen
+                      case 'Audio Archive':
+                        _urlLaunch(
+                            'https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm');
+                        break;
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
