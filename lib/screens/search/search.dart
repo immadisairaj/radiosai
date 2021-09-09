@@ -146,6 +146,7 @@ class _Search extends State<Search> {
 
   /// text controller to add text for initial value
   TextEditingController _textController;
+  bool _textControllerClear = false;
 
   @override
   void initState() {
@@ -168,12 +169,17 @@ class _Search extends State<Search> {
       // calls the submit method after the widget is build
       WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _textController.addListener(_textControllerListener);
+    });
   }
 
   @override
   void dispose() {
     _scrollController.removeListener(_scrollListener);
     _scrollController.dispose();
+
+    _textController.removeListener(_textControllerListener);
 
     super.dispose();
   }
@@ -619,6 +625,14 @@ class _Search extends State<Search> {
     });
   }
 
+  /// listener for text controller.
+  /// used to add or remove clear button in search text field
+  void _textControllerListener() {
+    setState(() {
+      _textControllerClear = _textController.text != '';
+    });
+  }
+
   /// show snack bar for the current context
   ///
   /// pass current [context],
@@ -699,6 +713,13 @@ class _Search extends State<Search> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
+                      suffixIcon: (_textControllerClear)
+                          ? IconButton(
+                              onPressed: _textController.clear,
+                              icon: Icon(Icons.clear_outlined),
+                              splashRadius: 24,
+                            )
+                          : null,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
