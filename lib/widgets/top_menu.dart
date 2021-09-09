@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/screens/audio_archive/audio_archive.dart';
 import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 import 'package:radiosai/screens/search/search.dart';
 import 'package:radiosai/screens/settings/settings.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Top Menu - menu bar to show in base page
 ///
@@ -100,10 +100,11 @@ class _TopMenu extends State<TopMenu> {
                             MaterialPageRoute(
                                 builder: (context) => RadioSchedule()));
                         break;
-                      // TODO: add and navigate to new screen
                       case 'Audio Archive':
-                        _urlLaunch(
-                            'https://media.radiosai.org/journals/Archives/audio_downloads/downloads_2013.htm');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => AudioArchive()));
                         break;
                     }
                   },
@@ -114,16 +115,5 @@ class _TopMenu extends State<TopMenu> {
         ),
       ),
     );
-  }
-
-  /// launch the url from url_launcher
-  _urlLaunch(urlString) async {
-    try {
-      if (await canLaunch(urlString)) {
-        await launch(urlString);
-      }
-    } catch (e) {
-      // do nothing
-    }
   }
 }

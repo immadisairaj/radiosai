@@ -92,7 +92,7 @@ class _Media extends State<Media> {
 
     return Scaffold(
       appBar: AppBar(
-        title: (widget.title == null) ? Text('Media') : widget.title,
+        title: (widget.title == null) ? Text('Media') : Text(widget.title),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
