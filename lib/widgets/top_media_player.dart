@@ -62,7 +62,7 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
                       color: Colors.transparent,
                       child: Card(
                         elevation: 8,
-                        shadowColor: Theme.of(context).primaryColor,
+                        shadowColor: Theme.of(context).accentColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

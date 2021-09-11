@@ -37,9 +37,6 @@ __Schedule:__ Look at the radio schedule of different streams from within the ap
 
 __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard). One can also view and save the image.
 
-| :zap: To save image into gallery, it is required to give access to external location. No other files will be tracked/added/deleted other than the "Sai Voice" folder created. If you don't want to save the original image, taking screenshot is also a good idea. |
-|-|
-
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
 __Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
@@ -52,7 +49,6 @@ __File Permissions:__ File write permission is requested only to save images fro
 
 _*I cannot guarantee any of the below. But, will try my best to include such features in future releases (if I can)_
 
-- Add a player for vedam which supports all media controls
 - Add android auto support
 - Add google chrome cast support
 
@@ -93,6 +89,7 @@ lib
 ├───constants       # constants
 ├───helper          # helper classes
 ├───screens         # all screens
+│   ├── audio_archive
 │   ├───media
 │   ├───media_player
 │   ├───radio

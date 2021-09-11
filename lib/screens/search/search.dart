@@ -871,6 +871,9 @@ class _Search extends State<Search> {
           if (value != category) {
             setState(() {
               category = value;
+
+              // if the category is changed and text is present, then search
+              if (_textControllerClear) _submit();
             });
           }
         },
@@ -893,6 +896,11 @@ class _Search extends State<Search> {
       selectedDate = picked;
       selectedDateString = DateFormat('MMMM dd, yyyy').format(selectedDate);
       _dateController.text = selectedDateString;
+
+      setState(() {
+        // if the category is changed and text is present, then search
+        if (_textControllerClear) _submit();
+      });
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/screens/search/search.dart';
+import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AudioArchive extends StatefulWidget {
@@ -31,6 +32,7 @@ class _AudioArchive extends State<AudioArchive> {
         color: backgroundColor,
         child: _audioArchiveGrid(),
       ),
+      bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 

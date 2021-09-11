@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 # versioning style <major>.<feature>.<fixes>+<commits>
-version: 0.9.0+107
+version: 0.9.0+108
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -56,7 +56,7 @@ dependencies:
   audio_video_progress_bar: ^0.9.0
   webview_flutter: ^2.0.12
   # Audio packages
-  just_audio: ^0.9.10
+  just_audio: ^0.9.11
   audio_service: ^0.17.1 # ? beta of 0.18.0 has released
 
 flutter_icons:
