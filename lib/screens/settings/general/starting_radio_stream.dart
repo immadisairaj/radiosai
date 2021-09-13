@@ -32,7 +32,9 @@ class _StartingRadioStream extends State<StartingRadioStream> {
 
             String subtitle = (initialRadioStreamIndex >= 0)
                 ? MyConstants.of(context)
-                    .radioStreamName[initialRadioStreamIndex]
+                    .radioStream
+                    .keys
+                    .toList()[initialRadioStreamIndex]
                 : recentlyPlayed;
 
             return Tooltip(
@@ -56,7 +58,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                               child: SingleChildScrollView(
                                 child: ListView.builder(
                                     itemCount: MyConstants.of(context)
-                                            .radioStreamName
+                                            .radioStream
                                             .length +
                                         1,
                                     shrinkWrap: true,
@@ -71,7 +73,9 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                               value == initialRadioStreamIndex,
                                           title: (value >= 0)
                                               ? Text(MyConstants.of(context)
-                                                  .radioStreamName[value])
+                                                  .radioStream
+                                                  .keys
+                                                  .toList()[value])
                                               : Text(recentlyPlayed),
                                           groupValue: initialRadioStreamIndex,
                                           onChanged: (value) {

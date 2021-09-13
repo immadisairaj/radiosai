@@ -1,6 +1,9 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
+import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 
 /// Top Media Player -
@@ -20,21 +23,22 @@ class TopMediaPlayer extends StatefulWidget {
 }
 
 class _TopMediaPlayer extends State<TopMediaPlayer> {
+  AudioManager _audioManager;
+
+  @override
+  void initState() {
+    // get audio manager
+    _audioManager = getIt<AudioManager>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-        stream: AudioService.runningStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.active) {
-            // Don't show anything until we've ascertained whether or not the
-            // service is running, since we want to show a different UI in
-            // each case.
-            return Container(
-              height: 0,
-              width: 0,
-            );
-          }
-          final running = snapshot.data ?? false;
+    return ValueListenableBuilder<List<String>>(
+        valueListenable: _audioManager.queueNotifier,
+        builder: (context, queueList, snapshot) {
+          final running = queueList.length != 0 &&
+              _audioManager.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
           if (!running)
             return Container(
@@ -43,7 +47,7 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
             );
 
           return StreamBuilder<List<MediaItem>>(
-              stream: AudioService.queueStream,
+              stream: _audioManager.queue,
               builder: (context, snapshot) {
                 final queueList = snapshot.data;
                 // empty widget if radio player is running

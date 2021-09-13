@@ -1,8 +1,10 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
+import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
-import 'package:rxdart/rxdart.dart';
 
 /// Bottom Media Player -
 /// media player to be attached in the bottomNavigationBar
@@ -19,6 +21,15 @@ class BottomMediaPlayer extends StatefulWidget {
 }
 
 class _BottomMediaPlayer extends State<BottomMediaPlayer> {
+  AudioManager _audioManager;
+
+  @override
+  void initState() {
+    // get audio manager
+    _audioManager = getIt<AudioManager>();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     // check if dark theme
@@ -39,19 +50,11 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
         width: 0,
       );
 
-    return StreamBuilder<bool>(
-        stream: AudioService.runningStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.active) {
-            // Don't show anything until we've ascertained whether or not the
-            // service is running, since we want to show a different UI in
-            // each case.
-            return Container(
-              height: 0,
-              width: 0,
-            );
-          }
-          final running = snapshot.data ?? false;
+    return ValueListenableBuilder<List<String>>(
+        valueListenable: _audioManager.queueNotifier,
+        builder: (context, queueList, snapshot) {
+          final running = queueList.length != 0 &&
+              _audioManager.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
           if (!running)
             return Container(
@@ -59,10 +62,9 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
               width: 0,
             );
 
-          return StreamBuilder<List<MediaItem>>(
-              stream: AudioService.queueStream,
-              builder: (context, snapshot) {
-                final queueList = snapshot.data;
+          return ValueListenableBuilder<List<String>>(
+              valueListenable: _audioManager.queueNotifier,
+              builder: (context, queueList, snapshot) {
                 // empty widget if radio player is running
                 if (queueList == null || queueList.length == 0)
                   return Container(
@@ -102,15 +104,12 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                               image: AssetImage('assets/sai_listens.jpg'),
                             ),
                           ),
-                          StreamBuilder<QueueState>(
-                            stream: _queueStateStream,
-                            builder: (context, snapshot) {
-                              final queueState = snapshot.data;
-                              final mediaItem = queueState?.mediaItem;
-                              final mediaTitle = (queueState != null &&
-                                      mediaItem?.title != null)
-                                  ? mediaItem.title
-                                  : 'loading media...';
+                          ValueListenableBuilder<String>(
+                            valueListenable:
+                                _audioManager.currentSongTitleNotifier,
+                            builder: (context, mediaTitle, child) {
+                              if (mediaTitle == '')
+                                mediaTitle = 'loading media...';
                               return SizedBox(
                                 width: width * 0.65,
                                 child: Text(
@@ -127,12 +126,11 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                             },
                           ),
                           // Pause/Play button
-                          StreamBuilder<bool>(
-                              stream: AudioService.playbackStateStream
-                                  .map((state) => state.playing)
-                                  .distinct(),
-                              builder: (context, snapshot) {
-                                final playing = snapshot.data ?? false;
+                          ValueListenableBuilder<PlayButtonState>(
+                              valueListenable: _audioManager.playButtonNotifier,
+                              builder: (context, playState, snapshot) {
+                                final playing =
+                                    (playState == PlayButtonState.playing);
 
                                 return playing ? pauseButton() : playButton();
                               }),
@@ -145,25 +143,17 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
         });
   }
 
-  /// A stream reporting the combined state of the current queue and the current
-  /// media item within that queue.
-  Stream<QueueState> get _queueStateStream =>
-      Rx.combineLatest2<List<MediaItem>, MediaItem, QueueState>(
-          AudioService.queueStream,
-          AudioService.currentMediaItemStream,
-          (queue, mediaItem) => QueueState(queue, mediaItem));
-
   IconButton playButton() => IconButton(
         icon: Icon(CupertinoIcons.play),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: AudioService.play,
+        onPressed: _audioManager.play,
       );
 
   IconButton pauseButton() => IconButton(
         icon: Icon(CupertinoIcons.pause),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: AudioService.pause,
+        onPressed: _audioManager.pause,
       );
 }

@@ -1,18 +1,16 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:radiosai/audio_service/radio_player_task.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/notifiers/loading_notifier.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
+import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/widgets/internet_alert.dart';
 import 'package:radiosai/widgets/radio/slider_handle.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/radio/radio_stream_select.dart';
-
-/// entry point used to initialize the audio_service to handle media controls
-/// and audio running in background
-void _entrypoint() => AudioServiceBackground.run(() => RadioPlayerTask());
 
 class RadioPlayer extends StatefulWidget {
   RadioPlayer(
@@ -54,8 +52,12 @@ class _RadioPlayer extends State<RadioPlayer>
   /// reduce multiple snackbars when clicking many times
   bool _isSnackBarActive = false;
 
+  AudioManager _audioManager;
+
   @override
   void initState() {
+    // get audio manager
+    _audioManager = getIt<AudioManager>();
     // initialize the pause play controller
     _pausePlayController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
@@ -71,7 +73,7 @@ class _RadioPlayer extends State<RadioPlayer>
 
   @override
   void dispose() async {
-    await AudioService.stop();
+    _audioManager.stop();
     _pausePlayController.dispose();
     super.dispose();
   }
@@ -216,6 +218,9 @@ class _RadioPlayer extends State<RadioPlayer>
     bool isBigScreen = (height * 0.1 >= 50);
     bool isSmallerScreen = (height * 0.1 < 30);
     double iconSize = isBigScreen ? 40 : 30;
+
+    String playingRadioStreamName =
+        MyConstants.of(context).radioStream.keys.toList()[streamIndex ?? 0];
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -226,7 +231,7 @@ class _RadioPlayer extends State<RadioPlayer>
             Padding(
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
-                MyConstants.of(context).radioStreamName[streamIndex ?? 0],
+                playingRadioStreamName,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 24,
@@ -268,47 +273,15 @@ class _RadioPlayer extends State<RadioPlayer>
         ),
         // Hiding the below widget as other functions are dependent on this
         // Display the status of audio player in text
-        StreamBuilder<AudioProcessingState>(
-          stream: AudioService.playbackStateStream
-              .map((state) => state.processingState),
-          builder: (context, snapshot) {
-            final playerState = snapshot.data;
-            final processingState = playerState ?? AudioProcessingState.none;
-            // to display processingState, use ${describeEnum(processingState)}
-            bool loadingUpdate;
-            switch (processingState) {
-              case AudioProcessingState.none:
-                loadingUpdate = null;
-                break;
-              case AudioProcessingState.ready:
-                loadingUpdate = false;
-                break;
-              case AudioProcessingState.completed:
-              case AudioProcessingState.stopped:
-                loadingUpdate = false;
-                break;
-              case AudioProcessingState.buffering:
-                loadingUpdate = true;
-                if (!hasInternet) {
-                  loadingUpdate = false;
-                  stopRadioService();
-                }
-                break;
-              case AudioProcessingState.connecting:
-                if (!hasInternet) {
-                  loadingUpdate = false;
-                  stopRadioService();
-                }
-                break;
-              case AudioProcessingState.error:
-                loadingUpdate = false;
-                break;
-              default:
-                loadingUpdate = false;
-            }
+        ValueListenableBuilder<LoadingState>(
+          valueListenable: _audioManager.loadingNotifier,
+          builder: (context, loadingState, snapshot) {
+            bool loadingUpdate = loadingState == LoadingState.loading;
             if (loadingUpdate != null) {
               // don't add loading when media player is playing
-              if (loadingUpdate == true && !isPlaying) loadingUpdate = false;
+              if (loadingUpdate == true &&
+                  _audioManager.mediaTypeNotifier.value == MediaType.media)
+                loadingUpdate = false;
               radioLoadingBloc.changeLoadingState.add(loadingUpdate);
             }
             // returning empty widget as there is nothing to display
@@ -330,48 +303,32 @@ class _RadioPlayer extends State<RadioPlayer>
   /// initial the radio service to start playing
   Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
-    try {
-      // passing params to send the source to play
-      Map<String, dynamic> _params = {
-        'audioSource': MyConstants.of(context).radioStreamLink[index],
-        'audioName': MyConstants.of(context).radioStreamName[index],
-      };
-      await AudioService.connect();
-      AudioService.start(
-        backgroundTaskEntrypoint: _entrypoint,
-        params: _params,
-        // clear the notification when paused
-        androidStopForegroundOnPause: true,
-        androidNotificationChannelName: 'Radio Player',
-      );
-
-      // setting the temporary radio stream index to track the
-      // previous data after the index is updated
-      setState(() {
-        _tempRadioStreamIndex = index;
-      });
-    } on PlatformException {
-      print("Execption while registering");
-    }
+    await _audioManager.init(MediaType.radio,
+        {'radioStream': MyConstants.of(context).radioStream, 'index': index});
+    _audioManager.playRadio(index);
+    // setting the temporary radio stream index to track the
+    // previous data after the index is updated
+    setState(() {
+      _tempRadioStreamIndex = index;
+    });
   }
 
   /// play the radio
   void playRadioService() {
-    AudioService.play();
+    _audioManager.play();
   }
 
   /// stop the radio
-  Future<void> stopRadioService() async {
-    await AudioService.stop();
+  void stopRadioService() {
+    _audioManager.stop();
   }
 
   /// handle the player when pause/play button is pressed
   void _handleOnPressed(int index, bool isPlaying, bool hasInternet) async {
     if (!isPlaying) {
-      if (AudioService.running) {
+      if (_audioManager.mediaTypeNotifier.value == MediaType.media) {
         // stop if media player is loaded
-        await AudioService.customAction('stop');
-        await AudioService.disconnect();
+        _audioManager.stop();
         _startRadioPlayer(index, isPlaying, hasInternet);
       } else {
         _startRadioPlayer(index, isPlaying, hasInternet);
@@ -419,8 +376,9 @@ class _RadioPlayer extends State<RadioPlayer>
   /// handle the loading progressing widget based on the running state
   void _handleLoadingState(RadioLoadingBloc loadingStreamBloc) {
     // change state only when radio player is playing
-    if (!(AudioService.queue != null && AudioService.queue.length != 0)) {
-      loadingStreamBloc.changeLoadingState.add(AudioService.running);
+    if (_audioManager.mediaTypeNotifier.value == MediaType.radio) {
+      loadingStreamBloc.changeLoadingState
+          .add(_audioManager.loadingNotifier.value == LoadingState.loading);
     }
   }
 
@@ -433,8 +391,8 @@ class _RadioPlayer extends State<RadioPlayer>
       // load and play the new stream when the user is playing
       // stop and play the stream
       if (isPlaying) {
-        await stopRadioService();
         loadingStreamBloc.changeLoadingState.add(true);
+        _audioManager.stop();
         initRadioService(radioStreamIndex);
       } else {
         // if the index is changed when user is not playing

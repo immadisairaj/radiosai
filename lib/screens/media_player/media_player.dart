@@ -11,10 +11,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/notifiers/loading_notifier.dart';
+import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
+import 'package:radiosai/audio_service/notifiers/progress_notifier.dart';
+import 'package:radiosai/audio_service/notifiers/repeat_button_notifier.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MediaPlayer extends StatefulWidget {
@@ -36,8 +41,12 @@ class _MediaPlayer extends State<MediaPlayer> {
   /// set of download tasks
   List<DownloadTaskInfo> _downloadTasks;
 
+  AudioManager _audioManager;
+
   @override
   void initState() {
+    // get audio manager
+    _audioManager = getIt<AudioManager>();
     super.initState();
     _getDirectoryPath();
 
@@ -63,135 +72,112 @@ class _MediaPlayer extends State<MediaPlayer> {
         child: Container(
           color: backgroundColor,
           child: Center(
-            child: StreamBuilder<bool>(
-              stream: AudioService.runningStream,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState != ConnectionState.active) {
-                  // Don't show anything until we've ascertained whether or not the
-                  // service is running, since we want to show a different UI in
-                  // each case.
-                  return SizedBox();
-                }
-                final running = snapshot.data ?? true;
-                // pop if the media player is not running
-                if (!running) Navigator.maybePop(context);
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // UI to show when we're running, i.e. player state/controls.
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // UI to show when we're running, i.e. player state/controls.
 
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              icon: Icon(Icons.arrow_back_outlined),
-                              splashRadius: 24,
-                              iconSize: 25,
-                              onPressed: () {
-                                Navigator.maybePop(context);
-                              },
-                            ),
-                            Row(
-                              children: [
-                                _shareButton(),
-                                _options(isDarkTheme),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (isBigScreen)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 10),
-                            child: SizedBox(
-                              width: height * 0.35,
-                              height: height * 0.35,
-                              child: Image(
-                                fit: BoxFit.cover,
-                                alignment: Alignment(0, -1),
-                                // TODO: get image from artUri
-                                image: AssetImage('assets/sai_listens.jpg'),
-                              ),
-                            ),
-                          ),
-
-                        // A seek bar.
-                        StreamBuilder<MediaState>(
-                          stream: _mediaStateStream,
-                          builder: (context, snapshot) {
-                            final mediaState = snapshot.data;
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 16, right: 16),
-                              child: ProgressBar(
-                                total: mediaState?.mediaItem?.duration ??
-                                    Duration.zero,
-                                progress: mediaState?.position ?? Duration.zero,
-                                buffered: mediaState
-                                        ?.playbackState?.bufferedPosition ??
-                                    Duration.zero,
-                                timeLabelType: TimeLabelType.remainingTime,
-                                timeLabelTextStyle:
-                                    Theme.of(context).textTheme.caption,
-                                onSeek: (newPosition) {
-                                  AudioService.seekTo(newPosition);
-                                },
-                              ),
-                            );
+                        IconButton(
+                          icon: Icon(Icons.arrow_back_outlined),
+                          splashRadius: 24,
+                          iconSize: 25,
+                          onPressed: () {
+                            Navigator.maybePop(context);
                           },
+                        ),
+                        Row(
+                          children: [
+                            _shareButton(),
+                            _options(isDarkTheme),
+                          ],
                         ),
                       ],
                     ),
+                  ),
+                ),
 
-                    // Text Display.
-                    StreamBuilder<QueueState>(
-                      stream: _queueStateStream,
-                      builder: (context, snapshot) {
-                        final queueState = snapshot.data;
-                        final mediaItem = queueState?.mediaItem;
-                        final mediaTitle =
-                            (queueState != null && mediaItem?.title != null)
-                                ? mediaItem.title
-                                : 'loading media...';
-                        double textSize = (isSmallerScreen) ? 15 : 20;
-                        return SizedBox(
-                          height:
-                              (isSmallerScreen) ? textSize * 2 : textSize * 3.5,
-                          child: Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 20, right: 20),
-                              child: Text(
-                                mediaTitle,
-                                textAlign: TextAlign.start,
-                                style: TextStyle(
-                                  fontSize: textSize,
-                                ),
-                              ),
-                            ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (isBigScreen)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: SizedBox(
+                          width: height * 0.35,
+                          height: height * 0.35,
+                          child: Image(
+                            fit: BoxFit.cover,
+                            alignment: Alignment(0, -1),
+                            // TODO: get image from artUri
+                            image: AssetImage('assets/sai_listens.jpg'),
+                          ),
+                        ),
+                      ),
+
+                    // A seek bar.
+                    ValueListenableBuilder<ProgressBarState>(
+                      valueListenable: _audioManager.progressNotifier,
+                      builder: (context, value, child) {
+                        return Padding(
+                          padding: const EdgeInsets.only(left: 16, right: 16),
+                          child: ProgressBar(
+                            total: value.total,
+                            progress: value.current,
+                            buffered: value.buffered,
+                            timeLabelType: TimeLabelType.remainingTime,
+                            timeLabelTextStyle:
+                                Theme.of(context).textTheme.caption,
+                            onSeek: _audioManager.seek,
                           ),
                         );
                       },
                     ),
+                  ],
+                ),
 
-                    // Queue/player controls.
-                    StreamBuilder<QueueState>(
-                      stream: _queueStateStream,
-                      builder: (context, snapshot) {
-                        final queueState = snapshot.data;
-                        final queue = queueState?.queue ?? [];
-                        final mediaItem = queueState?.mediaItem;
-                        double iconSize = width / 9;
+                // Text Display.
+                ValueListenableBuilder<String>(
+                  valueListenable: _audioManager.currentSongTitleNotifier,
+                  builder: (context, mediaTitle, child) {
+                    double textSize = (isSmallerScreen) ? 15 : 20;
+                    return SizedBox(
+                      height: (isSmallerScreen) ? textSize * 2 : textSize * 3.5,
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: Text(
+                            mediaTitle,
+                            textAlign: TextAlign.start,
+                            style: TextStyle(
+                              fontSize: textSize,
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+
+                // Queue/player controls.
+                ValueListenableBuilder<List<String>>(
+                  valueListenable: _audioManager.queueNotifier,
+                  builder: (context, queueList, child) {
+                    final queue = queueList;
+                    if (queue == null || queue.isEmpty)
+                      Navigator.maybePop(context);
+                    double iconSize = width / 9;
+
+                    return ValueListenableBuilder<String>(
+                      valueListenable: _audioManager.currentSongTitleNotifier,
+                      builder: (context, mediaTitle, child) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 8, right: 8),
                           child: Material(
@@ -201,25 +187,19 @@ class _MediaPlayer extends State<MediaPlayer> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // repeat mode button
-                                StreamBuilder<PlaybackState>(
-                                  stream: AudioService.playbackStateStream,
-                                  builder: (context, snapshot) {
-                                    final playbackState = snapshot.data;
-                                    var repeatMode =
-                                        AudioServiceRepeatMode.none;
-                                    if (playbackState != null)
-                                      repeatMode = playbackState.repeatMode ??
-                                          AudioServiceRepeatMode.none;
-
+                                ValueListenableBuilder<RepeatState>(
+                                  valueListenable:
+                                      _audioManager.repeatButtonNotifier,
+                                  builder: (context, value, child) {
                                     int repeatModeInt = 0;
-                                    switch (repeatMode) {
-                                      case AudioServiceRepeatMode.none:
+                                    switch (value) {
+                                      case RepeatState.off:
                                         repeatModeInt = 0;
                                         break;
-                                      case AudioServiceRepeatMode.all:
+                                      case RepeatState.repeatQueue:
                                         repeatModeInt = 1;
                                         break;
-                                      case AudioServiceRepeatMode.one:
+                                      case RepeatState.repeatSong:
                                         repeatModeInt = 2;
                                         break;
                                       default:
@@ -229,28 +209,6 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         (repeatModeInt == 2)
                                             ? CupertinoIcons.repeat_1
                                             : CupertinoIcons.repeat;
-
-                                    final setRepeatModeInt =
-                                        (repeatModeInt + 1) % 3;
-                                    var setRepeatMode =
-                                        AudioServiceRepeatMode.none;
-                                    switch (setRepeatModeInt) {
-                                      case 0:
-                                        setRepeatMode =
-                                            AudioServiceRepeatMode.none;
-                                        break;
-                                      case 1:
-                                        setRepeatMode =
-                                            AudioServiceRepeatMode.all;
-                                        break;
-                                      case 2:
-                                        setRepeatMode =
-                                            AudioServiceRepeatMode.one;
-                                        break;
-                                      default:
-                                        setRepeatMode =
-                                            AudioServiceRepeatMode.none;
-                                    }
                                     return IconButton(
                                       icon: Icon(repeatModeIcon),
                                       splashRadius: 24,
@@ -258,10 +216,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       color: (repeatModeInt > 0)
                                           ? Theme.of(context).accentColor
                                           : null,
-                                      onPressed: () {
-                                        AudioService.setRepeatMode(
-                                            setRepeatMode);
-                                      },
+                                      onPressed: _audioManager.repeat,
                                     );
                                   },
                                 ),
@@ -269,17 +224,14 @@ class _MediaPlayer extends State<MediaPlayer> {
                                   icon: Icon(CupertinoIcons.backward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
-                                  onPressed: AudioService.skipToPrevious,
+                                  onPressed: _audioManager.previous,
                                 ),
                                 // seek 10 seconds backward
-                                StreamBuilder<MediaState>(
-                                    stream: _mediaStateStream,
-                                    builder: (context, snapshot) {
-                                      final mediaState = snapshot.data;
-                                      Duration position = Duration.zero;
-                                      if (mediaState != null)
-                                        position = mediaState?.position ??
-                                            Duration.zero;
+                                ValueListenableBuilder<ProgressBarState>(
+                                    valueListenable:
+                                        _audioManager.progressNotifier,
+                                    builder: (context, value, child) {
+                                      Duration position = value.current;
                                       Duration seekPosition = (position <
                                               Duration(seconds: 10))
                                           ? Duration.zero
@@ -292,40 +244,29 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         onPressed: (position == Duration.zero)
                                             ? null
                                             : () {
-                                                AudioService.seekTo(
-                                                    seekPosition);
+                                                _audioManager
+                                                    .seek(seekPosition);
                                               },
                                       );
                                     }),
                                 // Play/pause buttons
-                                StreamBuilder<bool>(
-                                  stream: AudioService.playbackStateStream
-                                      .map((state) => state.playing)
-                                      .distinct(),
-                                  builder: (context, snapshot) {
-                                    final playing = snapshot.data ?? false;
+                                ValueListenableBuilder<PlayButtonState>(
+                                  valueListenable:
+                                      _audioManager.playButtonNotifier,
+                                  builder: (context, playState, child) {
+                                    final playing =
+                                        (playState == PlayButtonState.playing);
                                     return Stack(
                                       alignment: Alignment.center,
                                       children: [
                                         // loading indicator
-                                        StreamBuilder<AudioProcessingState>(
-                                          stream: AudioService
-                                              .playbackStateStream
-                                              .map((state) =>
-                                                  state.processingState)
-                                              .distinct(),
-                                          builder: (context, snapshot) {
-                                            final processingState =
-                                                snapshot.data ??
-                                                    AudioProcessingState.none;
-                                            bool isLoading = (processingState ==
-                                                        AudioProcessingState
-                                                            .ready ||
-                                                    processingState ==
-                                                        AudioProcessingState
-                                                            .completed)
-                                                ? false
-                                                : true;
+                                        ValueListenableBuilder<LoadingState>(
+                                          valueListenable:
+                                              _audioManager.loadingNotifier,
+                                          builder: (context, loadingState,
+                                              snapshot) {
+                                            bool isLoading = (loadingState ==
+                                                LoadingState.loading);
                                             return Visibility(
                                               visible: isLoading,
                                               child: SizedBox(
@@ -347,20 +288,12 @@ class _MediaPlayer extends State<MediaPlayer> {
                                   },
                                 ),
                                 // seek 10 seconds forward
-                                StreamBuilder<MediaState>(
-                                    stream: _mediaStateStream,
-                                    builder: (context, snapshot) {
-                                      final mediaState = snapshot.data;
-                                      Duration position = Duration.zero;
-                                      Duration duration = Duration.zero;
-                                      if (mediaState != null) {
-                                        position = mediaState?.position ??
-                                            Duration.zero;
-                                        if (mediaState?.mediaItem != null)
-                                          duration =
-                                              mediaState?.mediaItem?.duration ??
-                                                  Duration.zero;
-                                      }
+                                ValueListenableBuilder<ProgressBarState>(
+                                    valueListenable:
+                                        _audioManager.progressNotifier,
+                                    builder: (context, value, child) {
+                                      Duration position = value.current;
+                                      Duration duration = value.total;
                                       Duration seekPosition = (position >
                                               (duration -
                                                   Duration(seconds: 10)))
@@ -373,8 +306,8 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         onPressed: (position == duration)
                                             ? null
                                             : () {
-                                                AudioService.seekTo(
-                                                    seekPosition);
+                                                _audioManager
+                                                    .seek(seekPosition);
                                               },
                                       );
                                     }),
@@ -382,30 +315,20 @@ class _MediaPlayer extends State<MediaPlayer> {
                                   icon: Icon(CupertinoIcons.forward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
-                                  onPressed: (mediaItem != null &&
-                                          mediaItem == queue.last)
+                                  onPressed: (mediaTitle != null &&
+                                          queue != null &&
+                                          queue.isNotEmpty &&
+                                          mediaTitle == queue.last)
                                       ? null
-                                      : (mediaItem != null)
-                                          ? AudioService.skipToNext
+                                      : (mediaTitle != null)
+                                          ? _audioManager.next
                                           : null,
                                 ),
                                 // shuffle mode button
-                                StreamBuilder<PlaybackState>(
-                                  stream: AudioService.playbackStateStream,
-                                  builder: (context, snapshot) {
-                                    final playbackState = snapshot.data;
-                                    var shuffleMode =
-                                        AudioServiceShuffleMode.none;
-                                    if (playbackState != null)
-                                      shuffleMode = playbackState.shuffleMode ??
-                                          AudioServiceShuffleMode.none;
-
-                                    bool isShuffle = (shuffleMode ==
-                                        AudioServiceShuffleMode.all);
-
-                                    final setShuffleMode = (isShuffle)
-                                        ? AudioServiceShuffleMode.none
-                                        : AudioServiceShuffleMode.all;
+                                ValueListenableBuilder<bool>(
+                                  valueListenable: _audioManager
+                                      .isShuffleModeEnabledNotifier,
+                                  builder: (context, isShuffle, child) {
                                     return IconButton(
                                       icon: Icon(CupertinoIcons.shuffle),
                                       splashRadius: 24,
@@ -413,10 +336,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       color: (isShuffle)
                                           ? Theme.of(context).accentColor
                                           : null,
-                                      onPressed: () {
-                                        AudioService.setShuffleMode(
-                                            setShuffleMode);
-                                      },
+                                      onPressed: _audioManager.shuffle,
                                     );
                                   },
                                 ),
@@ -425,35 +345,34 @@ class _MediaPlayer extends State<MediaPlayer> {
                           ),
                         );
                       },
-                    ),
+                    );
+                  },
+                ),
 
-                    if (!isSmallerScreen)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8, bottom: 8),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              IconButton(
-                                icon: Icon(CupertinoIcons.music_note_list),
-                                splashRadius: 24,
-                                iconSize: 25,
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              PlayingQueue()));
-                                },
-                              ),
-                            ],
+                if (!isSmallerScreen)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          IconButton(
+                            icon: Icon(CupertinoIcons.music_note_list),
+                            splashRadius: 24,
+                            iconSize: 25,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PlayingQueue()));
+                            },
                           ),
-                        ),
+                        ],
                       ),
-                  ],
-                );
-              },
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -472,7 +391,7 @@ class _MediaPlayer extends State<MediaPlayer> {
       'View Playing Queue',
     ];
     return StreamBuilder<MediaItem>(
-        stream: AudioService.currentMediaItemStream,
+        stream: _audioManager.currentMediaItem,
         builder: (context, snapshot) {
           final mediaItem = snapshot.data;
           final mediaId = (mediaItem != null && mediaItem?.id != null)
@@ -545,7 +464,7 @@ class _MediaPlayer extends State<MediaPlayer> {
 
   Widget _shareButton() {
     return StreamBuilder<MediaItem>(
-        stream: AudioService.currentMediaItemStream,
+        stream: _audioManager.currentMediaItem,
         builder: (context, snapshot) {
           final mediaItem = snapshot.data;
           final mediaId = (mediaItem != null && mediaItem?.id != null)
@@ -570,30 +489,12 @@ class _MediaPlayer extends State<MediaPlayer> {
         });
   }
 
-  /// A stream reporting the combined state of the current media item, its
-  /// current position and playback state.
-  Stream<MediaState> get _mediaStateStream =>
-      Rx.combineLatest3<MediaItem, Duration, PlaybackState, MediaState>(
-          AudioService.currentMediaItemStream,
-          AudioService.positionStream,
-          AudioService.playbackStateStream,
-          (mediaItem, position, playbackState) =>
-              MediaState(mediaItem, position, playbackState));
-
-  /// A stream reporting the combined state of the current queue and the current
-  /// media item within that queue.
-  Stream<QueueState> get _queueStateStream =>
-      Rx.combineLatest2<List<MediaItem>, MediaItem, QueueState>(
-          AudioService.queueStream,
-          AudioService.currentMediaItemStream,
-          (queue, mediaItem) => QueueState(queue, mediaItem));
-
   /// play button
   IconButton playButton(double iconSize) => IconButton(
         icon: Icon(CupertinoIcons.play),
         splashRadius: 25,
         iconSize: iconSize,
-        onPressed: AudioService.play,
+        onPressed: _audioManager.play,
       );
 
   /// pause button
@@ -601,7 +502,7 @@ class _MediaPlayer extends State<MediaPlayer> {
         icon: Icon(CupertinoIcons.pause),
         splashRadius: 25,
         iconSize: iconSize,
-        onPressed: AudioService.pause,
+        onPressed: _audioManager.pause,
       );
 
   void _showSnackBar(BuildContext context, String text, Duration duration) {

@@ -1,12 +1,15 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/helper/download_helper.dart';
+import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
 
 class RadioHome extends StatefulWidget {
@@ -19,8 +22,13 @@ class RadioHome extends StatefulWidget {
 }
 
 class _RadioHome extends State<RadioHome> {
+  AudioManager _audioManager;
+
   @override
   void initState() {
+    // get audio manager
+    _audioManager = getIt<AudioManager>();
+
     super.initState();
 
     // Flutter Downloader
@@ -72,21 +80,23 @@ class _RadioHome extends State<RadioHome> {
                         builder: (context, snapshot) {
                           bool loadingState = snapshot.data ?? false;
 
-                          // listen to change of playing state from audio service
-                          return StreamBuilder<bool>(
-                              stream: AudioService.playbackStateStream
-                                  .map((state) => state.playing)
-                                  .distinct(),
-                              builder: (context, snapshot) {
-                                bool isPlaying = snapshot.data ?? false;
+                          // listen to change of playing state
+                          // from audio service
+                          return ValueListenableBuilder<PlayButtonState>(
+                              valueListenable: _audioManager.playButtonNotifier,
+                              builder: (context, playButtonState, snapshot) {
+                                bool isPlaying =
+                                    playButtonState == PlayButtonState.playing;
 
-                                // change the playing state only when radio player is playing
-                                if (AudioService.queue != null &&
-                                    AudioService.queue.length != 0) {
+                                // change the playing state only when radio
+                                // player is playing
+                                if (_audioManager.mediaTypeNotifier.value ==
+                                    MediaType.media) {
                                   isPlaying = false;
                                 }
 
-                                // get the data of the internet connectivity change
+                                // get the data of the internet
+                                // connectivity change
                                 bool hasInternet =
                                     Provider.of<InternetConnectionStatus>(
                                             context) ==

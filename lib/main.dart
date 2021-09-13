@@ -1,7 +1,9 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/bloc/settings/app_theme_bloc.dart';
@@ -20,21 +22,24 @@ void main() async {
   // TODO: change the debug to false later
   await FlutterDownloader.initialize(debug: true);
 
+  // initialize the audio service
+  await setupServiceLocator();
+
   runApp(MyConstants(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   final ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
-    accentColor: Colors.deepOrangeAccent,
     appBarTheme: AppBarTheme(
-      brightness: Brightness.dark,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+      ),
     ),
   );
 
   final ThemeData darkTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
-    accentColor: Colors.deepOrangeAccent,
     brightness: Brightness.dark,
     cardColor: Colors.grey[700],
   );
@@ -106,10 +111,18 @@ class MyApp extends StatelessWidget {
                 title: 'Sai Voice',
                 debugShowCheckedModeBanner: false,
                 theme: isSystemDefault
-                    ? lightTheme
-                    : (isDarkTheme ? darkTheme : lightTheme),
+                    ? lightTheme.copyWith(
+                        colorScheme: lightTheme.colorScheme
+                            .copyWith(secondary: Colors.deepOrange))
+                    : (isDarkTheme
+                        ? darkTheme.copyWith(
+                            colorScheme: darkTheme.colorScheme
+                                .copyWith(secondary: Colors.deepOrange))
+                        : lightTheme.copyWith(
+                            colorScheme: lightTheme.colorScheme
+                                .copyWith(secondary: Colors.deepOrange))),
                 darkTheme: isSystemDefault ? darkTheme : null,
-                home: AudioServiceWidget(child: Home()),
+                home: Home(),
               );
             });
       }),

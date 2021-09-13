@@ -4,6 +4,12 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// mentions if the media type is either radio/media
+enum MediaType {
+  radio,
+  media,
+}
+
 // Media Helper is useful to handle common methods used by media/media player
 class MediaHelper {
   /// returns a constant url for media - https://dl.radiosai.org/

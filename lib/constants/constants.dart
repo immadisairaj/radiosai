@@ -6,25 +6,15 @@ class MyConstants extends InheritedWidget {
 
   const MyConstants({Widget child, Key key}) : super(key: key, child: child);
 
-  /// The list of radio sai stream sources (links)
-  final List<String> radioStreamLink = const [
-    'http://stream.radiosai.net:8002',
-    'http://stream.radiosai.net:8004',
-    'http://stream.radiosai.net:8006',
-    'http://stream.radiosai.net:8000',
-    'http://stream.radiosai.net:8008',
-    'http://stream.radiosai.net:8020'
-  ];
-
-  /// The list of radio sai stream source names
-  final List<String> radioStreamName = const [
-    'Asia Stream',
-    'Africa Stream',
-    'America Stream',
-    'Bhajan Stream',
-    'Discourse Stream',
-    'Telugu Stream',
-  ];
+  /// The list of radio sai stream source names and links
+  final Map<String, String> radioStream = const {
+    'Asia Stream': 'http://stream.radiosai.net:8002',
+    'Africa Stream': 'http://stream.radiosai.net:8004',
+    'America Stream': 'http://stream.radiosai.net:8006',
+    'Bhajan Stream': 'http://stream.radiosai.net:8000',
+    'Discourse Stream': 'http://stream.radiosai.net:8008',
+    'Telugu Stream': 'http://stream.radiosai.net:8020'
+  };
 
   /// The list of items in the top menu bar
   final List<String> menuTitles = const [
