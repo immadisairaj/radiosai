@@ -6,7 +6,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class RadioStreamSelect extends StatefulWidget {
-  RadioStreamSelect({
+  const RadioStreamSelect({
     Key key,
     this.panelController,
     this.radius,
@@ -39,11 +39,11 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   color: isDarkTheme ? Colors.grey[700] : Colors.white,
                   borderRadius: BorderRadius.all(widget.radius),
                 ),
-                margin: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                 child: Column(
                   children: [
-                    SizedBox(height: 12),
-                    SliderHandle(),
+                    const SizedBox(height: 12),
+                    const SliderHandle(),
                     _slide(_radioIndexBloc, index, isDarkTheme),
                   ],
                 ),
@@ -64,13 +64,13 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50);
     return GridView.builder(
-      gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: width * 0.4 / (height * 0.27 / 2),
       ),
       itemCount: MyConstants.of(context).radioStream.length,
       // override the default top padding
-      padding: EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10),
       primary: false,
       shrinkWrap: true,
       itemBuilder: (context, widgetIndex) {
@@ -79,7 +79,8 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
         String radioName =
             MyConstants.of(context).radioStream.keys.toList()[widgetIndex];
         return Padding(
-          padding: isBigScreen ? EdgeInsets.all(4) : EdgeInsets.all(2),
+          padding:
+              isBigScreen ? const EdgeInsets.all(4) : const EdgeInsets.all(2),
           child: Card(
             elevation: 1.5,
             shadowColor:

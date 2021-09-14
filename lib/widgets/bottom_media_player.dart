@@ -12,7 +12,7 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// shows if the media player is playing.
 /// else, returns a empty (zero container) widget
 class BottomMediaPlayer extends StatefulWidget {
-  BottomMediaPlayer({
+  const BottomMediaPlayer({
     Key key,
   }) : super(key: key);
 
@@ -44,38 +44,43 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
     bool isBiggerScreen = (height * 0.1 >= 70); // full screen
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
-    if (isSmallerScreen)
-      return Container(
+    if (isSmallerScreen) {
+      return const SizedBox(
         height: 0,
         width: 0,
       );
+    }
 
     return ValueListenableBuilder<List<String>>(
         valueListenable: _audioManager.queueNotifier,
         builder: (context, queueList, snapshot) {
-          final running = queueList.length != 0 &&
+          final running = queueList.isNotEmpty &&
               _audioManager.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
-          if (!running)
-            return Container(
+          if (!running) {
+            return const SizedBox(
               height: 0,
               width: 0,
             );
+          }
 
           return ValueListenableBuilder<List<String>>(
               valueListenable: _audioManager.queueNotifier,
               builder: (context, queueList, snapshot) {
                 // empty widget if radio player is running
-                if (queueList == null || queueList.length == 0)
-                  return Container(
+                if (queueList == null || queueList.isEmpty) {
+                  return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
 
                 return GestureDetector(
                   onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => MediaPlayer()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MediaPlayer()));
                   },
                   child: Container(
                     height: (isBiggerScreen) ? height * 0.08 : height * 0.1,
@@ -94,7 +99,7 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          SizedBox(
+                          const SizedBox(
                             height: 40,
                             width: 40,
                             child: Image(
@@ -108,8 +113,9 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                             valueListenable:
                                 _audioManager.currentSongTitleNotifier,
                             builder: (context, mediaTitle, child) {
-                              if (mediaTitle == '')
+                              if (mediaTitle == '') {
                                 mediaTitle = 'loading media...';
+                              }
                               return SizedBox(
                                 width: width * 0.65,
                                 child: Text(
@@ -118,7 +124,7 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                                   textAlign: TextAlign.start,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 18,
                                   ),
                                 ),
@@ -144,14 +150,14 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
   }
 
   IconButton playButton() => IconButton(
-        icon: Icon(CupertinoIcons.play),
+        icon: const Icon(CupertinoIcons.play),
         splashRadius: 24,
         iconSize: 25,
         onPressed: _audioManager.play,
       );
 
   IconButton pauseButton() => IconButton(
-        icon: Icon(CupertinoIcons.pause),
+        icon: const Icon(CupertinoIcons.pause),
         splashRadius: 24,
         iconSize: 25,
         onPressed: _audioManager.pause,

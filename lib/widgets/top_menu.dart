@@ -11,7 +11,7 @@ import 'package:radiosai/screens/settings/settings.dart';
 ///
 /// shows a pop-up menu for different screen navigations
 class TopMenu extends StatefulWidget {
-  TopMenu({
+  const TopMenu({
     Key key,
   }) : super(key: key);
 
@@ -39,7 +39,7 @@ class _TopMenu extends State<TopMenu> {
             Material(
               color: Colors.transparent,
               child: IconButton(
-                icon: Icon(Icons.search_outlined),
+                icon: const Icon(Icons.search_outlined),
                 splashRadius: 24,
                 iconSize: 30,
                 color: Colors.white,
@@ -47,10 +47,10 @@ class _TopMenu extends State<TopMenu> {
                   Navigator.push(
                       context,
                       PageRouteBuilder(
-                        pageBuilder: (context, anim1, anim2) => Search(),
+                        pageBuilder: (context, anim1, anim2) => const Search(),
                         transitionsBuilder: (context, anim1, anim2, child) =>
                             FadeTransition(opacity: anim1, child: child),
-                        transitionDuration: Duration(milliseconds: 300),
+                        transitionDuration: const Duration(milliseconds: 300),
                       ));
                   // Navigator.push(context,
                   //     MaterialPageRoute(builder: (context) => Search()));
@@ -62,7 +62,7 @@ class _TopMenu extends State<TopMenu> {
               child: Material(
                 color: Colors.transparent,
                 child: PopupMenuButton<String>(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.more_vert,
                     color: Colors.white,
                   ),
@@ -86,25 +86,25 @@ class _TopMenu extends State<TopMenu> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => SaiInspires()));
+                                builder: (context) => const SaiInspires()));
                         break;
                       case 'Settings':
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => Settings()));
+                                builder: (context) => const Settings()));
                         break;
                       case 'Schedule':
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => RadioSchedule()));
+                                builder: (context) => const RadioSchedule()));
                         break;
                       case 'Audio Archive':
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => AudioArchive()));
+                                builder: (context) => const AudioArchive()));
                         break;
                     }
                   },

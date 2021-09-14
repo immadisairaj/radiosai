@@ -6,7 +6,7 @@ import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AudioArchive extends StatefulWidget {
-  AudioArchive({
+  const AudioArchive({
     Key key,
   }) : super(key: key);
 
@@ -24,23 +24,24 @@ class _AudioArchive extends State<AudioArchive> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Audio Archive'),
+        title: const Text('Audio Archive'),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         color: backgroundColor,
-        child: _audioArchiveGrid(),
+        child: _audioArchiveGrid(isDarkTheme),
       ),
       bottomNavigationBar: BottomMediaPlayer(),
     );
   }
 
-  Widget _audioArchiveGrid() {
+  Widget _audioArchiveGrid(bool isDarkTheme) {
     return Scrollbar(
       child: GridView(
-        physics: BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
-        gridDelegate: new SliverGridDelegateWithFixedCrossAxisCount(
+        physics: const BouncingScrollPhysics(
+            parent: AlwaysScrollableScrollPhysics()),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
         children: MyConstants.of(context).audioArchive.keys.map((imageAsset) {
@@ -50,6 +51,8 @@ class _AudioArchive extends State<AudioArchive> {
               padding: const EdgeInsets.all(5),
               child: Card(
                 elevation: 5,
+                shadowColor:
+                    isDarkTheme ? Colors.white : Theme.of(context).primaryColor,
                 child: InkWell(
                   onTap: () {
                     _navigateAudioArchive(

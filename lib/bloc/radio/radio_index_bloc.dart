@@ -50,7 +50,7 @@ class RadioIndexBloc {
   Stream get radioIndexStream => _indexStream.stream;
   Sink get _addValue => _indexStream.sink;
 
-  StreamController _actionController = StreamController();
+  final StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
   // call the function changeRadioIndex.add(value) to change the value
   StreamSink get changeRadioIndex => _actionController.sink;

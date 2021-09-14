@@ -13,7 +13,7 @@ import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/screens/radio/radio_stream_select.dart';
 
 class RadioPlayer extends StatefulWidget {
-  RadioPlayer(
+  const RadioPlayer(
       {Key key,
       this.radius,
       this.radioStreamIndex,
@@ -40,7 +40,7 @@ class _RadioPlayer extends State<RadioPlayer>
   AnimationController _pausePlayController;
 
   /// Controller used for handling sliding panel
-  PanelController _panelController = new PanelController();
+  final PanelController _panelController = PanelController();
 
   /// Temporary index used for handling the radio stream index
   /// change while radio is in playing state
@@ -59,8 +59,8 @@ class _RadioPlayer extends State<RadioPlayer>
     // get audio manager
     _audioManager = getIt<AudioManager>();
     // initialize the pause play controller
-    _pausePlayController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+    _pausePlayController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 300));
 
     // true when the widgets are building
     initialBuild = true;
@@ -81,7 +81,7 @@ class _RadioPlayer extends State<RadioPlayer>
   @override
   Widget build(BuildContext context) {
     // notification status bar color
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.black26,
       statusBarBrightness: Brightness.dark,
       statusBarIconBrightness: Brightness.light,
@@ -106,7 +106,7 @@ class _RadioPlayer extends State<RadioPlayer>
         if (_panelController.isPanelOpen) return _panelController.close();
         // sends the app to background when backpress on home screen
         // achieved by adding a method in MainActivity.kt to support send app to background
-        return MethodChannel('android_app_retain')
+        return const MethodChannel('android_app_retain')
             .invokeMethod('sendToBackground');
       },
       child: Scaffold(
@@ -185,14 +185,14 @@ class _RadioPlayer extends State<RadioPlayer>
         _panelController.open();
       },
       child: Container(
-        margin: EdgeInsets.only(left: 10, right: 10),
+        margin: const EdgeInsets.only(left: 10, right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: widget.radius, topRight: widget.radius),
           color: isDarkTheme ? Colors.grey[700] : Colors.white,
         ),
         child: Column(
-          children: [
+          children: const [
             SizedBox(height: 12),
             SliderHandle(),
             SizedBox(height: 12),
@@ -232,7 +232,7 @@ class _RadioPlayer extends State<RadioPlayer>
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
                 playingRadioStreamName,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 24,
                 ),
@@ -248,7 +248,7 @@ class _RadioPlayer extends State<RadioPlayer>
                     SizedBox(
                       height: iconSize,
                       width: iconSize,
-                      child: CircularProgressIndicator(),
+                      child: const CircularProgressIndicator(),
                     ),
                   IconButton(
                     splashRadius: 24,
@@ -280,8 +280,9 @@ class _RadioPlayer extends State<RadioPlayer>
             if (loadingUpdate != null) {
               // don't add loading when media player is playing
               if (loadingUpdate == true &&
-                  _audioManager.mediaTypeNotifier.value == MediaType.media)
+                  _audioManager.mediaTypeNotifier.value == MediaType.media) {
                 loadingUpdate = false;
+              }
               radioLoadingBloc.changeLoadingState.add(loadingUpdate);
             }
             // returning empty widget as there is nothing to display

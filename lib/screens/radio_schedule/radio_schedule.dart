@@ -5,7 +5,7 @@ import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/screens/radio_schedule/schedule_data.dart';
 
 class RadioSchedule extends StatefulWidget {
-  RadioSchedule({
+  const RadioSchedule({
     Key key,
   }) : super(key: key);
 

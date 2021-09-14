@@ -6,7 +6,7 @@ import 'package:radiosai/widgets/top_media_player.dart';
 import 'package:radiosai/widgets/top_menu.dart';
 
 class Home extends StatefulWidget {
-  Home({
+  const Home({
     Key key,
   }) : super(key: key);
 
@@ -45,7 +45,7 @@ class _Home extends State<Home> {
       key: DownloadHelper.getScaffoldKey(),
       body: Stack(
         children: [
-          RadioHome(),
+          const RadioHome(),
           TopMenu(),
           TopMediaPlayer(),
         ],

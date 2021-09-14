@@ -22,27 +22,25 @@ class SettingsSection extends StatelessWidget {
       child: Card(
         elevation: 0.2,
         color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
-        child: Container(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    color: Theme.of(context).accentColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                  ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: child,
-              ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: child,
+            ),
+          ],
         ),
       ),
     );

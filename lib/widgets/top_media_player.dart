@@ -14,7 +14,7 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// shows if the media player is playing.
 /// else, returns a empty (zero container) widget
 class TopMediaPlayer extends StatefulWidget {
-  TopMediaPlayer({
+  const TopMediaPlayer({
     key,
   }) : super(key: key);
 
@@ -37,25 +37,27 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
     return ValueListenableBuilder<List<String>>(
         valueListenable: _audioManager.queueNotifier,
         builder: (context, queueList, snapshot) {
-          final running = queueList.length != 0 &&
+          final running = queueList.isNotEmpty &&
               _audioManager.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
-          if (!running)
-            return Container(
+          if (!running) {
+            return const SizedBox(
               height: 0,
               width: 0,
             );
+          }
 
           return StreamBuilder<List<MediaItem>>(
               stream: _audioManager.queue,
               builder: (context, snapshot) {
                 final queueList = snapshot.data;
                 // empty widget if radio player is running
-                if (queueList == null || queueList.length == 0)
-                  return Container(
+                if (queueList == null || queueList.isEmpty) {
+                  return const SizedBox(
                     height: 0,
                     width: 0,
                   );
+                }
 
                 return Align(
                   alignment: Alignment.topLeft,
@@ -66,7 +68,7 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
                       color: Colors.transparent,
                       child: Card(
                         elevation: 8,
-                        shadowColor: Theme.of(context).accentColor,
+                        shadowColor: Theme.of(context).colorScheme.secondary,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -75,10 +77,10 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MediaPlayer()));
+                                    builder: (context) => const MediaPlayer()));
                           },
                           borderRadius: BorderRadius.circular(10),
-                          child: Padding(
+                          child: const Padding(
                             padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
                             child: Text(
                               'Playing..',

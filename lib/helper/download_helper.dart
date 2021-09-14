@@ -9,22 +9,22 @@ import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/helper/media_helper.dart';
 
 class DownloadHelper {
-  static List<DownloadTaskInfo> _downloadTasks = [];
-  static ReceivePort _port = ReceivePort();
+  static List<DownloadTaskInfo> downloadTasks = [];
+  static ReceivePort port = ReceivePort();
 
-  static GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
-  static MediaScreenBloc _mediaScreenBloc = MediaScreenBloc();
+  static MediaScreenBloc mediaScreenBloc = MediaScreenBloc();
 
   static List<DownloadTaskInfo> getDownloadTasks() {
-    return _downloadTasks;
+    return downloadTasks;
   }
 
   /// returns the scaffold key which is used by the whole app
   ///
   /// attaches to the base page of the app
   static GlobalKey<ScaffoldState> getScaffoldKey() {
-    return _scaffoldKey;
+    return scaffoldKey;
   }
 
   /// returns the bloc for media screen
@@ -32,7 +32,7 @@ class DownloadHelper {
   ///
   /// attaches to the initialize providers of the app
   static MediaScreenBloc getMediaScreenBloc() {
-    return _mediaScreenBloc;
+    return mediaScreenBloc;
   }
 
   /// Bind the background task for the whole app to download
@@ -40,21 +40,21 @@ class DownloadHelper {
   /// also listens to the progress
   static void bindBackgroundIsolate() {
     bool isSuccess = IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
+        port.sendPort, 'downloader_send_port');
     if (!isSuccess) {
       unbindBackgroundIsolate();
       bindBackgroundIsolate();
       return;
     }
     // _downloadTasks = [];
-    _port.listen((data) {
+    port.listen((data) {
       String id = data[0];
       DownloadTaskStatus status = data[1];
       int progress = data[2];
 
-      if (_downloadTasks != null && _downloadTasks.isNotEmpty) {
+      if (downloadTasks != null && downloadTasks.isNotEmpty) {
         final task =
-            _downloadTasks.firstWhere((element) => element.taskId == id);
+            downloadTasks.firstWhere((element) => element.taskId == id);
 
         task.status = status;
         task.progress = progress;
@@ -62,22 +62,22 @@ class DownloadHelper {
         if (status == DownloadTaskStatus.failed) {
           // remove the file if the task failed
           FlutterDownloader.remove(taskId: id);
-          _showSnackBar(_scaffoldKey.currentContext, 'failed downloading',
-              Duration(seconds: 1));
+          _showSnackBar(scaffoldKey.currentContext, 'failed downloading',
+              const Duration(seconds: 1));
           return;
         }
 
         if (status == DownloadTaskStatus.complete) {
-          print('downloaded ${task.name}');
+          // print('downloaded ${task.name}');
           // show that it is downloaded
           _showSnackBar(
-              _scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
+              scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
 
           _replaceMedia(task);
 
           // update the media screen state
-          bool currentValue = _mediaScreenBloc.getCurrentValue() ?? false;
-          _mediaScreenBloc.changeMediaScreenState.add(!currentValue);
+          bool currentValue = mediaScreenBloc.getCurrentValue() ?? false;
+          mediaScreenBloc.changeMediaScreenState.add(!currentValue);
           return;
         }
       }

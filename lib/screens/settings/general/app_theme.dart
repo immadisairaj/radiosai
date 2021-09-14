@@ -6,7 +6,7 @@ import 'package:radiosai/constants/constants.dart';
 
 /// App Theme - option to change the app theme
 class AppTheme extends StatefulWidget {
-  AppTheme({
+  const AppTheme({
     Key key,
     this.contentPadding,
   }) : super(key: key);
@@ -33,19 +33,19 @@ class _AppTheme extends State<AppTheme> {
               message: 'change app theme',
               child: ListTile(
                 contentPadding: widget.contentPadding,
-                title: Text('Theme'),
+                title: const Text('Theme'),
                 subtitle: Text(appTheme),
                 onTap: () async {
                   showDialog<void>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Change Theme'),
-                          contentPadding: EdgeInsets.only(top: 10),
+                          title: const Text('Change Theme'),
+                          contentPadding: const EdgeInsets.only(top: 10),
                           content: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.6,
                             child: Scrollbar(
-                              radius: Radius.circular(8),
+                              radius: const Radius.circular(8),
                               isAlwaysShown: true,
                               child: SingleChildScrollView(
                                 child: ListView.builder(
@@ -58,8 +58,9 @@ class _AppTheme extends State<AppTheme> {
                                       String value = MyConstants.of(context)
                                           .appThemes[index];
                                       return RadioListTile(
-                                          activeColor:
-                                              Theme.of(context).accentColor,
+                                          activeColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           value: value,
                                           selected: value == appTheme,
                                           title: Text(value),
@@ -73,10 +74,10 @@ class _AppTheme extends State<AppTheme> {
                               ),
                             ),
                           ),
-                          buttonPadding: EdgeInsets.all(4),
+                          buttonPadding: const EdgeInsets.all(4),
                           actions: [
                             TextButton(
-                              child: Text('Cancel'),
+                              child: const Text('Cancel'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },

@@ -17,7 +17,7 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ScheduleData extends StatefulWidget {
-  ScheduleData({
+  const ScheduleData({
     Key key,
     this.radioStreamIndex,
     this.timeZone,
@@ -107,7 +107,7 @@ class _ScheduleData extends State<ScheduleData> {
 
     super.initState();
 
-    _scrollController = new ScrollController();
+    _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
   }
 
@@ -138,10 +138,10 @@ class _ScheduleData extends State<ScheduleData> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Schedule'),
+        title: const Text('Schedule'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.date_range_outlined),
+            icon: const Icon(Icons.date_range_outlined),
             tooltip: 'Select date',
             splashRadius: 24,
             onPressed: () => _selectDate(context),
@@ -156,7 +156,7 @@ class _ScheduleData extends State<ScheduleData> {
             if (!isSmallerScreen)
               AnimatedContainer(
                 height: _showDropDown ? null : 0,
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
@@ -165,7 +165,7 @@ class _ScheduleData extends State<ScheduleData> {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
                           'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 19,
                           ),
                         ),
@@ -173,7 +173,7 @@ class _ScheduleData extends State<ScheduleData> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Row(
-                          children: [
+                          children: const [
                             Flexible(
                               flex: 1,
                               child: Center(
@@ -234,10 +234,10 @@ class _ScheduleData extends State<ScheduleData> {
                     RefreshIndicator(
                       onRefresh: _refresh,
                       child: Scrollbar(
-                        radius: Radius.circular(8),
+                        radius: const Radius.circular(8),
                         child: SingleChildScrollView(
                           controller: _scrollController,
-                          physics: BouncingScrollPhysics(
+                          physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                           child: ConstrainedBox(
                             // have minimum height to reload even when 1 item is present
@@ -254,7 +254,8 @@ class _ScheduleData extends State<ScheduleData> {
                               child: ListView.builder(
                                   shrinkWrap: true,
                                   primary: false,
-                                  padding: EdgeInsets.only(top: 2, bottom: 2),
+                                  padding:
+                                      const EdgeInsets.only(top: 2, bottom: 2),
                                   itemCount: _finalTableData.length,
                                   itemBuilder: (context, index) {
                                     List<String> rowData =
@@ -272,7 +273,7 @@ class _ScheduleData extends State<ScheduleData> {
                                     return Column(
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.only(
+                                          padding: const EdgeInsets.only(
                                               left: 2, right: 2),
                                           child: Card(
                                             elevation: 0,
@@ -281,7 +282,7 @@ class _ScheduleData extends State<ScheduleData> {
                                                 : Colors.grey[200],
                                             child: InkWell(
                                               child: Padding(
-                                                padding: EdgeInsets.only(
+                                                padding: const EdgeInsets.only(
                                                     top: 2, bottom: 2),
                                                 child: Center(
                                                   child: ListTile(
@@ -289,7 +290,8 @@ class _ScheduleData extends State<ScheduleData> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .accentColor,
+                                                            .colorScheme
+                                                            .secondary,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -331,18 +333,20 @@ class _ScheduleData extends State<ScheduleData> {
                                                   ? Colors.grey[700]
                                                   : Colors.grey[300],
                                               onTap: () {
-                                                if (fids != '')
+                                                if (fids != '') {
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
                                                               Media(
                                                                   fids: fids)));
-                                                else
+                                                } else {
                                                   _showSnackBar(
                                                       context,
                                                       'No media found!',
-                                                      Duration(seconds: 1));
+                                                      const Duration(
+                                                          seconds: 1));
+                                                }
                                               },
                                             ),
                                             shape: RoundedRectangleBorder(
@@ -352,7 +356,7 @@ class _ScheduleData extends State<ScheduleData> {
                                           ),
                                         ),
                                         if (index != _finalTableData.length - 1)
-                                          Divider(
+                                          const Divider(
                                             height: 2,
                                             thickness: 1.5,
                                           ),
@@ -416,16 +420,15 @@ class _ScheduleData extends State<ScheduleData> {
   _updateURL(DateTime date) {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
 
-    var data = new Map<String, dynamic>();
+    var data = <String, dynamic>{};
     data['streamId'] = streamId;
     data['zoneId'] = zoneId;
     data['currentDate'] = formattedDate;
     data['dchange'] = '1';
 
     // unique url for putting data into cache and getting it
-    String url = '$baseUrl?streamId=${data['streamId']}' +
-        '&zoneId=${data['zoneId']}' +
-        '&currentDate=${data['currentDate']}';
+    String url =
+        '$baseUrl?streamId=${data['streamId']}&zoneId=${data['zoneId']}&currentDate=${data['currentDate']}';
     finalUrl = url;
     _getData(data);
   }
@@ -555,9 +558,10 @@ class _ScheduleData extends State<ScheduleData> {
           // TODO: get pdf scripts for discourse stream (click here tags)
 
           String fids = '';
-          if (rowData[j].getElementsByTagName('input').length != 0)
+          if (rowData[j].getElementsByTagName('input').isNotEmpty) {
             fids =
                 rowData[j].getElementsByTagName('input')[0].attributes['value'];
+          }
           tempText += '<split>[$fids]';
 
           tempList.add(tempText);
@@ -573,10 +577,11 @@ class _ScheduleData extends State<ScheduleData> {
     // [0] Sl. No. [1] Loacl Time [2] GMT Time
     // [3] Programe List [4] Duration(min)
 
-    if (tableData == null || tableData.isEmpty)
+    if (tableData == null || tableData.isEmpty) {
       tableData = [
         ['null']
       ];
+    }
 
     setState(() {
       // set the data
@@ -597,7 +602,7 @@ class _ScheduleData extends State<ScheduleData> {
       firstDate: DateTime(2019, 11, 8),
       initialDate: selectedDate,
       // Schedule is available for 1 day after current date
-      lastDate: now.add(Duration(days: 1)),
+      lastDate: now.add(const Duration(days: 1)),
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -665,7 +670,7 @@ class _ScheduleData extends State<ScheduleData> {
   /// widget - dropdown for selecting radio stream
   Widget _streamDropDown(bool isDarkTheme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
@@ -678,8 +683,8 @@ class _ScheduleData extends State<ScheduleData> {
             child: Text(value),
           );
         }).toList(),
-        underline: SizedBox(),
-        icon: Icon(Icons.arrow_drop_down_circle_outlined),
+        underline: const SizedBox(),
+        icon: const Icon(Icons.arrow_drop_down_circle_outlined),
         iconSize: 20,
         isExpanded: true,
         onChanged: (value) {
@@ -700,7 +705,7 @@ class _ScheduleData extends State<ScheduleData> {
   /// updates the data in shared prefs
   Widget _timeZoneDropDown(bool isDarkTheme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
@@ -713,8 +718,8 @@ class _ScheduleData extends State<ScheduleData> {
             child: Text(value),
           );
         }).toList(),
-        underline: SizedBox(),
-        icon: Icon(Icons.arrow_drop_down_circle_outlined),
+        underline: const SizedBox(),
+        icon: const Icon(Icons.arrow_drop_down_circle_outlined),
         iconSize: 20,
         isExpanded: true,
         onChanged: (value) {
@@ -747,7 +752,7 @@ class _ScheduleData extends State<ScheduleData> {
   /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
         baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
         highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
@@ -766,7 +771,7 @@ class _ScheduleData extends State<ScheduleData> {
   Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(
-      padding: EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         children: [
           Row(
@@ -778,19 +783,19 @@ class _ScheduleData extends State<ScheduleData> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.4,
                     height: 9,
                     color: Colors.white,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.6,
                     height: 8,
                     color: Colors.white,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.6,
                     height: 8,
                     color: Colors.white,
@@ -806,7 +811,7 @@ class _ScheduleData extends State<ScheduleData> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 10),
                     width: width * 0.2,
                     height: 8,
                     color: Colors.white,

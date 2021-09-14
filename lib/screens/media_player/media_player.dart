@@ -23,7 +23,7 @@ import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MediaPlayer extends StatefulWidget {
-  MediaPlayer({
+  const MediaPlayer({
     Key key,
   }) : super(key: key);
 
@@ -86,7 +86,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back_outlined),
+                          icon: const Icon(Icons.arrow_back_outlined),
                           splashRadius: 24,
                           iconSize: 25,
                           onPressed: () {
@@ -113,7 +113,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                         child: SizedBox(
                           width: height * 0.35,
                           height: height * 0.35,
-                          child: Image(
+                          child: const Image(
                             fit: BoxFit.cover,
                             alignment: Alignment(0, -1),
                             // TODO: get image from artUri
@@ -171,8 +171,9 @@ class _MediaPlayer extends State<MediaPlayer> {
                   valueListenable: _audioManager.queueNotifier,
                   builder: (context, queueList, child) {
                     final queue = queueList;
-                    if (queue == null || queue.isEmpty)
+                    if (queue == null || queue.isEmpty) {
                       Navigator.maybePop(context);
+                    }
                     double iconSize = width / 9;
 
                     return ValueListenableBuilder<String>(
@@ -214,14 +215,16 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       splashRadius: 24,
                                       iconSize: iconSize - 15,
                                       color: (repeatModeInt > 0)
-                                          ? Theme.of(context).accentColor
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .secondary
                                           : null,
                                       onPressed: _audioManager.repeat,
                                     );
                                   },
                                 ),
                                 IconButton(
-                                  icon: Icon(CupertinoIcons.backward_end),
+                                  icon: const Icon(CupertinoIcons.backward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
                                   onPressed: _audioManager.previous,
@@ -233,12 +236,13 @@ class _MediaPlayer extends State<MediaPlayer> {
                                     builder: (context, value, child) {
                                       Duration position = value.current;
                                       Duration seekPosition = (position <
-                                              Duration(seconds: 10))
+                                              const Duration(seconds: 10))
                                           ? Duration.zero
-                                          : position - Duration(seconds: 10);
+                                          : position -
+                                              const Duration(seconds: 10);
                                       return IconButton(
-                                        icon:
-                                            Icon(CupertinoIcons.gobackward_10),
+                                        icon: const Icon(
+                                            CupertinoIcons.gobackward_10),
                                         splashRadius: 24,
                                         iconSize: iconSize - 10,
                                         onPressed: (position == Duration.zero)
@@ -273,7 +277,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                                 height: iconSize + 3,
                                                 width: iconSize + 3,
                                                 child:
-                                                    CircularProgressIndicator(),
+                                                    const CircularProgressIndicator(),
                                               ),
                                             );
                                           },
@@ -296,11 +300,13 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       Duration duration = value.total;
                                       Duration seekPosition = (position >
                                               (duration -
-                                                  Duration(seconds: 10)))
+                                                  const Duration(seconds: 10)))
                                           ? duration
-                                          : position + Duration(seconds: 10);
+                                          : position +
+                                              const Duration(seconds: 10);
                                       return IconButton(
-                                        icon: Icon(CupertinoIcons.goforward_10),
+                                        icon: const Icon(
+                                            CupertinoIcons.goforward_10),
                                         splashRadius: 24,
                                         iconSize: iconSize - 10,
                                         onPressed: (position == duration)
@@ -312,7 +318,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       );
                                     }),
                                 IconButton(
-                                  icon: Icon(CupertinoIcons.forward_end),
+                                  icon: const Icon(CupertinoIcons.forward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
                                   onPressed: (mediaTitle != null &&
@@ -330,11 +336,13 @@ class _MediaPlayer extends State<MediaPlayer> {
                                       .isShuffleModeEnabledNotifier,
                                   builder: (context, isShuffle, child) {
                                     return IconButton(
-                                      icon: Icon(CupertinoIcons.shuffle),
+                                      icon: const Icon(CupertinoIcons.shuffle),
                                       splashRadius: 24,
                                       iconSize: iconSize - 15,
                                       color: (isShuffle)
-                                          ? Theme.of(context).accentColor
+                                          ? Theme.of(context)
+                                              .colorScheme
+                                              .secondary
                                           : null,
                                       onPressed: _audioManager.shuffle,
                                     );
@@ -358,14 +366,15 @@ class _MediaPlayer extends State<MediaPlayer> {
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           IconButton(
-                            icon: Icon(CupertinoIcons.music_note_list),
+                            icon: const Icon(CupertinoIcons.music_note_list),
                             splashRadius: 24,
                             iconSize: 25,
                             onPressed: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => PlayingQueue()));
+                                      builder: (context) =>
+                                          const PlayingQueue()));
                             },
                           ),
                         ],
@@ -397,13 +406,14 @@ class _MediaPlayer extends State<MediaPlayer> {
           final mediaId = (mediaItem != null && mediaItem?.id != null)
               ? mediaItem.id
               : 'loading media...';
-          if (mediaId == 'loading media...')
+          if (mediaId == 'loading media...') {
             return IconButton(
-              icon: Icon(Icons.more_vert),
+              icon: const Icon(Icons.more_vert),
               iconSize: 25,
               splashRadius: 24,
               onPressed: () {},
             );
+          }
 
           var mediaFilePath = '$_mediaDirectory/$mediaId';
           var mediaFile = File(mediaFilePath);
@@ -414,7 +424,7 @@ class _MediaPlayer extends State<MediaPlayer> {
             child: Material(
               color: Colors.transparent,
               child: PopupMenuButton<String>(
-                icon: Icon(
+                icon: const Icon(
                   Icons.more_vert,
                 ),
                 color: isDarkTheme ? Colors.grey[800] : Colors.grey[300],
@@ -444,7 +454,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => PlayingQueue()));
+                              builder: (context) => const PlayingQueue()));
                       break;
                     case 'Download':
                       _downloadMediaFile(
@@ -470,16 +480,17 @@ class _MediaPlayer extends State<MediaPlayer> {
           final mediaId = (mediaItem != null && mediaItem?.id != null)
               ? mediaItem.id
               : 'loading media...';
-          if (mediaId == 'loading media...')
+          if (mediaId == 'loading media...') {
             return IconButton(
-              icon: Icon(Icons.share_outlined),
+              icon: const Icon(Icons.share_outlined),
               iconSize: 25,
               splashRadius: 24,
               onPressed: () {},
             );
+          }
 
           return IconButton(
-            icon: Icon(Icons.share_outlined),
+            icon: const Icon(Icons.share_outlined),
             splashRadius: 24,
             iconSize: 25,
             onPressed: () {
@@ -491,7 +502,7 @@ class _MediaPlayer extends State<MediaPlayer> {
 
   /// play button
   IconButton playButton(double iconSize) => IconButton(
-        icon: Icon(CupertinoIcons.play),
+        icon: const Icon(CupertinoIcons.play),
         splashRadius: 25,
         iconSize: iconSize,
         onPressed: _audioManager.play,
@@ -499,7 +510,7 @@ class _MediaPlayer extends State<MediaPlayer> {
 
   /// pause button
   IconButton pauseButton(double iconSize) => IconButton(
-        icon: Icon(CupertinoIcons.pause),
+        icon: const Icon(CupertinoIcons.pause),
         splashRadius: 25,
         iconSize: iconSize,
         onPressed: _audioManager.pause,
@@ -531,26 +542,26 @@ class _MediaPlayer extends State<MediaPlayer> {
     var permission = await _canSave();
     if (!permission) {
       _showSnackBar(context, 'Accept storage permission to save image',
-          Duration(seconds: 2));
+          const Duration(seconds: 2));
       return;
     }
-    await new Directory(_mediaDirectory).create(recursive: true);
-    final fileName = fileLink.replaceAll('${MediaHelper.mediaBaseUrl}', '');
+    await Directory(_mediaDirectory).create(recursive: true);
+    final fileName = fileLink.replaceAll(MediaHelper.mediaBaseUrl, '');
 
     // download only when the file is not available
     // downloading an available file will delete the file
-    DownloadTaskInfo task = new DownloadTaskInfo(
+    DownloadTaskInfo task = DownloadTaskInfo(
       name: fileName,
       link: fileLink,
     );
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {
-      _showSnackBar(context, 'no internet', Duration(seconds: 1));
+      _showSnackBar(context, 'no internet', const Duration(seconds: 1));
       return;
     }
     _downloadTasks.add(task);
-    _showSnackBar(context, 'downloading', Duration(seconds: 1));
+    _showSnackBar(context, 'downloading', const Duration(seconds: 1));
     final taskId = await FlutterDownloader.enqueue(
       url: fileLink,
       savedDir: _mediaDirectory,

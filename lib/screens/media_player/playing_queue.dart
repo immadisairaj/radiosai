@@ -1,13 +1,11 @@
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
-import 'package:radiosai/screens/media_player/media_player.dart';
 
 class PlayingQueue extends StatefulWidget {
-  PlayingQueue({
+  const PlayingQueue({
     Key key,
   }) : super(key: key);
 
@@ -63,7 +61,8 @@ class _PlayingQueue extends State<PlayingQueue> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.keyboard_arrow_down_outlined),
+                              icon: const Icon(
+                                  Icons.keyboard_arrow_down_outlined),
                               splashRadius: 24,
                               iconSize: 25,
                               onPressed: () {
@@ -83,7 +82,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                                     textAlign: TextAlign.start,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 18,
                                     ),
                                   ),
@@ -109,32 +108,33 @@ class _PlayingQueue extends State<PlayingQueue> {
                   child: ValueListenableBuilder<List<String>>(
                     valueListenable: _audioManager.queueNotifier,
                     builder: (context, queueList, child) {
-                      if (queueList == null || queueList.length == 0)
-                        return Container(
-                          child: Center(
-                            child: Text('No files in queue'),
-                          ),
+                      if (queueList == null || queueList.isEmpty) {
+                        return const Center(
+                          child: Text('No files in queue'),
                         );
+                      }
 
                       return ValueListenableBuilder<String>(
                           valueListenable:
                               _audioManager.currentSongTitleNotifier,
                           builder: (context, currentMediaTitle, child) {
                             return Scrollbar(
-                              radius: Radius.circular(8),
+                              radius: const Radius.circular(8),
                               child: SingleChildScrollView(
-                                physics: BouncingScrollPhysics(
+                                physics: const BouncingScrollPhysics(
                                     parent: AlwaysScrollableScrollPhysics()),
                                 child: ListView.builder(
                                   shrinkWrap: true,
                                   primary: false,
-                                  padding: EdgeInsets.only(top: 2, bottom: 2),
+                                  padding:
+                                      const EdgeInsets.only(top: 2, bottom: 2),
                                   itemCount: queueList.length,
                                   itemBuilder: (context, index) {
                                     final mediaTitle = queueList[index];
                                     bool isCurrentItem = false;
-                                    if (mediaTitle == currentMediaTitle)
+                                    if (mediaTitle == currentMediaTitle) {
                                       isCurrentItem = true;
+                                    }
                                     return _queueItemWidget(
                                         context,
                                         mediaTitle,
@@ -150,18 +150,18 @@ class _PlayingQueue extends State<PlayingQueue> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(bottom: 10),
+                  padding: const EdgeInsets.only(bottom: 10),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
                       child: Padding(
-                        padding: EdgeInsets.only(
+                        padding: const EdgeInsets.only(
                             left: 10, right: 10, top: 8, bottom: 8),
                         child: Text(
                           'CLEAR',
                           style: TextStyle(
                             fontSize: 20,
-                            color: Theme.of(context).accentColor,
+                            color: Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                       ),
@@ -199,7 +199,7 @@ class _PlayingQueue extends State<PlayingQueue> {
             child: Padding(
               padding: const EdgeInsets.only(top: 5, left: 5, bottom: 5),
               child: ListTile(
-                leading: SizedBox(
+                leading: const SizedBox(
                   height: 40,
                   width: 40,
                   child: Image(
@@ -211,7 +211,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                 ),
                 title: Text(mediaTitle),
                 trailing: IconButton(
-                    icon: Icon(CupertinoIcons.minus_circle),
+                    icon: const Icon(CupertinoIcons.minus_circle),
                     splashRadius: 24,
                     onPressed: () async {
                       if (length == 1) {
@@ -242,7 +242,7 @@ class _PlayingQueue extends State<PlayingQueue> {
 
   /// play button
   IconButton playButton() => IconButton(
-        icon: Icon(CupertinoIcons.play),
+        icon: const Icon(CupertinoIcons.play),
         splashRadius: 24,
         iconSize: 25,
         onPressed: _audioManager.play,
@@ -250,7 +250,7 @@ class _PlayingQueue extends State<PlayingQueue> {
 
   /// pause button
   IconButton pauseButton() => IconButton(
-        icon: Icon(CupertinoIcons.pause),
+        icon: const Icon(CupertinoIcons.pause),
         splashRadius: 24,
         iconSize: 25,
         onPressed: _audioManager.pause,

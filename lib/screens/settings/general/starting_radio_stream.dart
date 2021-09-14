@@ -4,11 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/settings/initial_radio_index_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 
-final String recentlyPlayed = 'Recently played';
+const String recentlyPlayed = 'Recently played';
 
 /// StartingRadioStream - Option to change the radio stream open on app start
 class StartingRadioStream extends StatefulWidget {
-  StartingRadioStream({
+  const StartingRadioStream({
     Key key,
     this.contentPadding,
   }) : super(key: key);
@@ -41,19 +41,19 @@ class _StartingRadioStream extends State<StartingRadioStream> {
               message: 'favourite radio stream to show on app start',
               child: ListTile(
                 contentPadding: widget.contentPadding,
-                title: Text('Starting radio stream'),
+                title: const Text('Starting radio stream'),
                 subtitle: Text(subtitle),
                 onTap: () async {
                   showDialog<void>(
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text('Starting radio stream'),
-                          contentPadding: EdgeInsets.only(top: 10),
+                          title: const Text('Starting radio stream'),
+                          contentPadding: const EdgeInsets.only(top: 10),
                           content: SizedBox(
                             width: MediaQuery.of(context).size.width * 0.6,
                             child: Scrollbar(
-                              radius: Radius.circular(8),
+                              radius: const Radius.circular(8),
                               isAlwaysShown: true,
                               child: SingleChildScrollView(
                                 child: ListView.builder(
@@ -66,8 +66,9 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                     itemBuilder: (context, index) {
                                       int value = index - 1;
                                       return RadioListTile(
-                                          activeColor:
-                                              Theme.of(context).accentColor,
+                                          activeColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
                                           value: value,
                                           selected:
                                               value == initialRadioStreamIndex,
@@ -76,7 +77,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                                   .radioStream
                                                   .keys
                                                   .toList()[value])
-                                              : Text(recentlyPlayed),
+                                              : const Text(recentlyPlayed),
                                           groupValue: initialRadioStreamIndex,
                                           onChanged: (value) {
                                             _initialRadioIndexBloc
@@ -88,10 +89,10 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                               ),
                             ),
                           ),
-                          buttonPadding: EdgeInsets.all(4),
+                          buttonPadding: const EdgeInsets.all(4),
                           actions: [
                             TextButton(
-                              child: Text('Cancel'),
+                              child: const Text('Cancel'),
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },

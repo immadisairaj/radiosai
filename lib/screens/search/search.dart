@@ -16,7 +16,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// If using [initialSearch], it is recommended to use [initialSearchTItle] also
 class Search extends StatefulWidget {
-  Search({
+  const Search({
     Key key,
     this.initialSearch,
     this.initialSearchTitle,
@@ -128,7 +128,7 @@ class _Search extends State<Search> {
   final _formKey = GlobalKey<FormState>();
 
   /// used to change the text in date field
-  TextEditingController _dateController = new TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   // below are used to hide/show the form widget
   ScrollController _scrollController;
@@ -142,7 +142,7 @@ class _Search extends State<Search> {
   bool _isSecondLoading = false;
 
   /// focus node attached to TextFormField of Search
-  FocusNode _textFocusNode = FocusNode();
+  final FocusNode _textFocusNode = FocusNode();
 
   /// text controller to add text for initial value
   TextEditingController _textController;
@@ -154,18 +154,18 @@ class _Search extends State<Search> {
 
     super.initState();
 
-    _scrollController = new ScrollController();
+    _scrollController = ScrollController();
     _scrollController.addListener(_scrollListener);
 
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
 
     if (widget.initialSearch == null) {
-      _textController = new TextEditingController();
+      _textController = TextEditingController();
       // focus the search if the search field is empty
       _textFocusNode.requestFocus();
     } else {
       // initialize the search with the initialSearch
-      _textController = new TextEditingController(text: widget.initialSearch);
+      _textController = TextEditingController(text: widget.initialSearch);
       // calls the submit method after the widget is build
       WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
     }
@@ -211,7 +211,7 @@ class _Search extends State<Search> {
             if (!isSmallerScreen)
               AnimatedContainer(
                 height: _showDropDown ? null : 0,
-                duration: Duration(milliseconds: 500),
+                duration: const Duration(milliseconds: 500),
                 child: _searchForm(isDarkTheme),
               ),
             Expanded(
@@ -225,10 +225,10 @@ class _Search extends State<Search> {
                     RefreshIndicator(
                       onRefresh: _refresh,
                       child: Scrollbar(
-                        radius: Radius.circular(8),
+                        radius: const Radius.circular(8),
                         child: SingleChildScrollView(
                           controller: _scrollController,
-                          physics: BouncingScrollPhysics(
+                          physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
                           child: ConstrainedBox(
                             // have minimum height to reload even when 1 item is present
@@ -244,7 +244,8 @@ class _Search extends State<Search> {
                               child: ListView.builder(
                                   shrinkWrap: true,
                                   primary: false,
-                                  padding: EdgeInsets.only(top: 2, bottom: 2),
+                                  padding:
+                                      const EdgeInsets.only(top: 2, bottom: 2),
                                   itemCount: _finalTableData.length,
                                   itemBuilder: (context, index) {
                                     List<String> rowData =
@@ -258,7 +259,7 @@ class _Search extends State<Search> {
                                     return Column(
                                       children: [
                                         Padding(
-                                          padding: EdgeInsets.only(
+                                          padding: const EdgeInsets.only(
                                               left: 2, right: 2),
                                           child: Card(
                                             elevation: 0,
@@ -267,7 +268,7 @@ class _Search extends State<Search> {
                                                 : Colors.grey[200],
                                             child: InkWell(
                                               child: Padding(
-                                                padding: EdgeInsets.only(
+                                                padding: const EdgeInsets.only(
                                                     top: 2, bottom: 2),
                                                 child: Center(
                                                   child: ListTile(
@@ -275,7 +276,8 @@ class _Search extends State<Search> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .accentColor,
+                                                            .colorScheme
+                                                            .secondary,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -317,18 +319,20 @@ class _Search extends State<Search> {
                                                   ? Colors.grey[700]
                                                   : Colors.grey[300],
                                               onTap: () {
-                                                if (fids != '')
+                                                if (fids != '') {
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
                                                           builder: (context) =>
                                                               Media(
                                                                   fids: fids)));
-                                                else
+                                                } else {
                                                   _showSnackBar(
                                                       context,
                                                       'No media found!',
-                                                      Duration(seconds: 1));
+                                                      const Duration(
+                                                          seconds: 1));
+                                                }
                                               },
                                             ),
                                             shape: RoundedRectangleBorder(
@@ -338,7 +342,7 @@ class _Search extends State<Search> {
                                           ),
                                         ),
                                         if (index != _finalTableData.length - 1)
-                                          Divider(
+                                          const Divider(
                                             height: 2,
                                             thickness: 1.5,
                                           ),
@@ -352,7 +356,7 @@ class _Search extends State<Search> {
                     ),
                   // show the below when wrong string is typed
                   if (_finalTableData[0][0] == 'wrong' && _isLoading == false)
-                    Center(
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.all(20),
                         child: Text('No Data Available for the search values'),
@@ -360,7 +364,7 @@ class _Search extends State<Search> {
                     ),
                   // show the below when at start
                   if (_finalTableData[0][0] == 'start' && _isLoading == false)
-                    Center(
+                    const Center(
                       child: Padding(
                         padding: EdgeInsets.all(20),
                         child: Text('Start by entering value in Search'),
@@ -429,7 +433,7 @@ class _Search extends State<Search> {
       categoryPass = '';
     }
 
-    var data = new Map<String, String>();
+    var data = <String, String>{};
     data['form'] = 'search';
     data['description_s'] = description;
     data['filesperpage_s'] = '$filesPerPage';
@@ -439,12 +443,12 @@ class _Search extends State<Search> {
     data['page'] = '$currentPage';
 
     // unique url for putting data into cache and getting it
-    String url = '$baseUrl?form=${data['form']}' +
-        '&filesperpage_s=${data['filesperpage_s']}' +
-        '&description_s=${data['description_s']}' +
-        '&category_s=${data['category_s']}' +
-        // '&language_s=${data['language_s']}' +
-        '&pdate_s=${data['pdate_s']}' +
+    String url = '$baseUrl?form=${data['form']}'
+        '&filesperpage_s=${data['filesperpage_s']}'
+        '&description_s=${data['description_s']}'
+        '&category_s=${data['category_s']}'
+        // '&language_s=${data['language_s']}'
+        '&pdate_s=${data['pdate_s']}'
         '&page=${data['page']}';
     finalUrl = url;
     _getData(data);
@@ -482,10 +486,10 @@ class _Search extends State<Search> {
 
     if (!_isChangingPage) {
       var paging = document.getElementsByTagName('p');
-      if (paging != null && paging.length > 0) {
+      if (paging != null && paging.isNotEmpty) {
         var pages = paging[0].getElementsByTagName('a');
 
-        lastPage = (pages.length == 0) ? 1 : pages.length;
+        lastPage = (pages.isEmpty) ? 1 : pages.length;
         // set changing page to true.
         // assumes that user can change page
         // after data is loaded
@@ -584,10 +588,10 @@ class _Search extends State<Search> {
           // if j is 7, parse it differently
 
           String fids = '';
-          if (rowData[j].getElementsByTagName('input').length != 0)
+          if (rowData[j].getElementsByTagName('input').isNotEmpty) {
             fids =
                 rowData[j].getElementsByTagName('input')[0].attributes['value'];
-
+          }
           tempList.add(fids);
         }
         // data of [6] will be fids
@@ -601,10 +605,11 @@ class _Search extends State<Search> {
     // [4] Language [5] Duration(min)
     // [6] Download-fids
 
-    if (tableData == null || tableData.isEmpty)
+    if (tableData == null || tableData.isEmpty) {
       tableData = [
         ['wrong']
       ];
+    }
 
     setState(() {
       // set the data
@@ -688,160 +693,156 @@ class _Search extends State<Search> {
   Widget _searchForm(bool isDarkTheme) {
     return Form(
       key: _formKey,
-      child: Container(
-        child: Material(
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 5, bottom: 8),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.9,
-                  child: TextFormField(
-                    textInputAction: TextInputAction.search,
-                    onFieldSubmitted: (value) {
-                      _submit();
-                    },
-                    focusNode: _textFocusNode,
-                    autofocus: false,
-                    maxLines: 1,
-                    expands: false,
-                    controller: _textController,
-                    decoration: InputDecoration(
-                      hintText: 'Search...',
-                      contentPadding: EdgeInsets.only(left: 20, right: 20),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      suffixIcon: (_textControllerClear)
-                          ? IconButton(
-                              onPressed: _textController.clear,
-                              icon: Icon(Icons.clear_outlined),
-                              splashRadius: 24,
-                            )
-                          : null,
+      child: Material(
+        color: Colors.transparent,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 5, bottom: 8),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.9,
+                child: TextFormField(
+                  textInputAction: TextInputAction.search,
+                  onFieldSubmitted: (value) {
+                    _submit();
+                  },
+                  focusNode: _textFocusNode,
+                  autofocus: false,
+                  maxLines: 1,
+                  expands: false,
+                  controller: _textController,
+                  decoration: InputDecoration(
+                    hintText: 'Search...',
+                    contentPadding: const EdgeInsets.only(left: 20, right: 20),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter some text to search';
-                      }
-                      description = value;
-                      return null;
-                    },
+                    suffixIcon: (_textControllerClear)
+                        ? IconButton(
+                            onPressed: _textController.clear,
+                            icon: const Icon(Icons.clear_outlined),
+                            splashRadius: 24,
+                          )
+                        : null,
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter some text to search';
+                    }
+                    description = value;
+                    return null;
+                  },
                 ),
               ),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 4,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 1),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Center(
-                                  child: Text(
-                                    'Category:',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
+            ),
+            Row(
+              children: [
+                Flexible(
+                  flex: 4,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 1),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  'Category:',
+                                  style: TextStyle(
+                                    fontSize: 18,
                                   ),
                                 ),
                               ),
-                              Center(
+                            ),
+                            Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5),
+                                child: _categoryDropDown(isDarkTheme),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 5),
+                        child: Row(
+                          children: [
+                            const Padding(
+                              padding: EdgeInsets.only(left: 10, right: 10),
+                              child: Center(
+                                child: Text(
+                                  'Played on:',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: (selectedDateString != '') ? 160 : 170,
+                              child: Center(
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 5),
-                                  child: _categoryDropDown(isDarkTheme),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 5),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Center(
-                                  child: Text(
-                                    'Played on:',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: (selectedDateString != '') ? 160 : 170,
-                                child: Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: TextField(
-                                      autofocus: false,
-                                      textAlign: TextAlign.center,
-                                      controller: _dateController,
-                                      decoration: InputDecoration(
-                                        hintText: 'Select Date',
-                                        hintStyle: TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                        suffixIcon: (selectedDateString == '')
-                                            ? Icon(
-                                                Icons.date_range_outlined,
-                                                size: 20,
-                                              )
-                                            : null,
-                                        contentPadding: EdgeInsets.all(0),
-                                        border: OutlineInputBorder(
-                                          borderSide: BorderSide.none,
-                                        ),
+                                  child: TextField(
+                                    autofocus: false,
+                                    textAlign: TextAlign.center,
+                                    controller: _dateController,
+                                    decoration: InputDecoration(
+                                      hintText: 'Select Date',
+                                      hintStyle: const TextStyle(
+                                        fontSize: 18,
                                       ),
-                                      onTap: () {
-                                        // Below lines stop keyboard from appearing
-                                        FocusScope.of(context)
-                                            .requestFocus(new FocusNode());
-
-                                        // Show Date Picker
-                                        _selectDate(context);
-                                      },
+                                      suffixIcon: (selectedDateString == '')
+                                          ? const Icon(
+                                              Icons.date_range_outlined,
+                                              size: 20,
+                                            )
+                                          : null,
+                                      contentPadding: const EdgeInsets.all(0),
+                                      border: const OutlineInputBorder(
+                                        borderSide: BorderSide.none,
+                                      ),
                                     ),
+                                    onTap: () {
+                                      // Below lines stop keyboard from appearing
+                                      FocusScope.of(context)
+                                          .requestFocus(FocusNode());
+
+                                      // Show Date Picker
+                                      _selectDate(context);
+                                    },
                                   ),
                                 ),
                               ),
-                              if (selectedDateString != '')
-                                IconButton(
-                                  icon: Icon(CupertinoIcons.clear_circled),
-                                  splashRadius: 24,
-                                  iconSize: 20,
-                                  onPressed: _clearDate,
-                                ),
-                            ],
-                          ),
+                            ),
+                            if (selectedDateString != '')
+                              IconButton(
+                                icon: const Icon(CupertinoIcons.clear_circled),
+                                splashRadius: 24,
+                                iconSize: 20,
+                                onPressed: _clearDate,
+                              ),
+                          ],
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                  Flexible(
-                    flex: 1,
-                    child: ElevatedButton(
-                      child: Icon(Icons.search_outlined),
-                      onPressed: _submit,
-                    ),
+                ),
+                Flexible(
+                  flex: 1,
+                  child: ElevatedButton(
+                    child: const Icon(Icons.search_outlined),
+                    onPressed: _submit,
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -850,7 +851,7 @@ class _Search extends State<Search> {
   /// widget - dropdown for selecting category
   Widget _categoryDropDown(bool isDarkTheme) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
         borderRadius: BorderRadius.circular(10),
@@ -863,8 +864,8 @@ class _Search extends State<Search> {
             child: Text(value),
           );
         }).toList(),
-        underline: SizedBox(),
-        icon: Icon(Icons.arrow_drop_down_circle_outlined),
+        underline: const SizedBox(),
+        icon: const Icon(Icons.arrow_drop_down_circle_outlined),
         iconSize: 20,
         isDense: true,
         onChanged: (value) {
@@ -883,7 +884,7 @@ class _Search extends State<Search> {
 
   /// select the played on date
   Future<void> _selectDate(BuildContext context) async {
-    if (selectedDate == null) selectedDate = now;
+    selectedDate ??= now;
     final DateTime picked = await showDatePicker(
       context: context,
       // Schedule started on 8th Nov 2019
@@ -918,7 +919,7 @@ class _Search extends State<Search> {
   /// shows the scroll of pages to navigate
   Widget _pagination() {
     if (lastPage <= 1) {
-      return Container(
+      return const SizedBox(
         height: 0,
         width: 0,
       );
@@ -926,18 +927,18 @@ class _Search extends State<Search> {
 
     // because we have 2 scroll bar's in the screen
     // and this scroll bar is always shown
-    ScrollController scrollController = new ScrollController();
+    ScrollController scrollController = ScrollController();
 
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.07,
       child: Material(
         color: Colors.transparent,
         child: Scrollbar(
-          radius: Radius.circular(8),
+          radius: const Radius.circular(8),
           isAlwaysShown: true,
           controller: scrollController,
           child: ListView.builder(
-            padding: EdgeInsets.all(0),
+            padding: const EdgeInsets.all(0),
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             controller: scrollController,
@@ -948,13 +949,15 @@ class _Search extends State<Search> {
                 width: 50,
                 child: Card(
                   elevation: 0,
-                  color: isSelectedPage ? Theme.of(context).accentColor : null,
+                  color: isSelectedPage
+                      ? Theme.of(context).colorScheme.secondary
+                      : null,
                   child: InkWell(
                     child: Center(
                       child: Text('${index + 1}'),
                     ),
                     onTap: () {
-                      if (!isSelectedPage)
+                      if (!isSelectedPage) {
                         setState(() {
                           currentPage = index + 1;
                           _isChangingPage = true;
@@ -962,6 +965,7 @@ class _Search extends State<Search> {
                           _isLoading = true;
                           _updateURL();
                         });
+                      }
                     },
                   ),
                 ),
@@ -976,7 +980,7 @@ class _Search extends State<Search> {
   /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
         baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
         highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
@@ -995,7 +999,7 @@ class _Search extends State<Search> {
   Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(
-      padding: EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Column(
         children: [
           Row(
@@ -1007,19 +1011,19 @@ class _Search extends State<Search> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.4,
                     height: 9,
                     color: Colors.white,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.6,
                     height: 8,
                     color: Colors.white,
                   ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 8),
+                    margin: const EdgeInsets.only(bottom: 8),
                     width: width * 0.6,
                     height: 8,
                     color: Colors.white,
@@ -1035,7 +1039,7 @@ class _Search extends State<Search> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: const EdgeInsets.only(bottom: 10),
                     width: width * 0.2,
                     height: 8,
                     color: Colors.white,

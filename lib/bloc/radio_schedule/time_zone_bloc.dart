@@ -31,7 +31,7 @@ class TimeZoneBloc {
   Stream get timeZoneStream => _timeZoneStream.stream;
   Sink get _addValue => _timeZoneStream.sink;
 
-  StreamController _actionController = StreamController();
+  final StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
   // call the function changeTimeZone.add(value) to change the value
   StreamSink get changeTimeZone => _actionController.sink;

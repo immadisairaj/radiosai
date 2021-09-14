@@ -31,7 +31,7 @@ class AppThemeBloc {
   Stream get appThemeStream => _themeStream.stream;
   Sink get _addValue => _themeStream.sink;
 
-  StreamController _actionController = StreamController();
+  final StreamController _actionController = StreamController();
   void get resetCount => _actionController.sink.add(null);
   // call the function changeAppTheme.add(value) to change the value
   StreamSink get changeAppTheme => _actionController.sink;

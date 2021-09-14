@@ -8,7 +8,7 @@ import 'package:radiosai/helper/media_helper.dart';
 Future<AudioHandler> initAudioService() async {
   return await AudioService.init(
     builder: () => MyAudioHandler(),
-    config: AudioServiceConfig(
+    config: const AudioServiceConfig(
       androidNotificationChannelId: 'com.immadisairaj.radiosai.audio',
       androidNotificationChannelName: 'Sai Voice',
       androidNotificationOngoing: true,
@@ -44,7 +44,7 @@ class MyAudioHandler extends BaseAudioHandler {
     try {
       await _player.setAudioSource(_queue, initialPosition: Duration.zero);
     } catch (e) {
-      print("Error: $e");
+      // print("Error: $e");
     }
   }
 
@@ -190,10 +190,10 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   @override
-  Future customAction(String name, [Map<String, dynamic> params]) async {
+  Future customAction(String name, [Map<String, dynamic> extras]) async {
     switch (name) {
       case 'setMediaType':
-        _setMediaType(params['mediaType']);
+        _setMediaType(extras['mediaType']);
         break;
       case 'dispose':
         _player.stop();
@@ -210,7 +210,7 @@ class MyAudioHandler extends BaseAudioHandler {
         await _player.load();
         break;
     }
-    return super.customAction(name, params);
+    return super.customAction(name, extras);
   }
 
   @override
@@ -239,7 +239,7 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> skipToPrevious() async {
     // if player played more than 3 seconds
     // then seek to beginning of the media
-    if (_player.position > Duration(seconds: 3)) {
+    if (_player.position > const Duration(seconds: 3)) {
       return _player.seek(Duration.zero, index: _player.currentIndex);
     }
     return _player.seekToPrevious();

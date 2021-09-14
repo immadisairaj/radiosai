@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class SaiImage extends StatefulWidget {
-  SaiImage({
+  const SaiImage({
     Key key,
     this.heroTag,
     this.imageUrl,
@@ -57,7 +57,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+        overlays: SystemUiOverlay.values);
     _controllerReset.dispose();
     _animationController.dispose();
     super.dispose();
@@ -92,7 +93,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                     minScale: 0.1,
                     maxScale: 3,
                     boundaryMargin: (isScaleFit)
-                        ? EdgeInsets.all(double.infinity)
+                        ? const EdgeInsets.all(double.infinity)
                         : EdgeInsets.zero,
                     child: Hero(
                         tag: widget.heroTag,
@@ -109,7 +110,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
               ),
               Transform.translate(
                 offset: Offset(0, -_animationController.value * appBarSize),
-                child: Container(
+                child: SizedBox(
                   height: appBarSize,
                   child: SafeArea(
                     child: AppBar(
@@ -117,7 +118,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                       backgroundColor: Colors.transparent,
                       actions: [
                         IconButton(
-                          icon: Icon(Icons.download_outlined),
+                          icon: const Icon(Icons.download_outlined),
                           tooltip: 'Save image',
                           splashRadius: 24,
                           onPressed: () => _saveImage(),
@@ -141,21 +142,22 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     if (!_isCopying) {
       _isCopying = true;
       final publicDirectoryPath = await _getPublicPath();
-      final albumName = 'Sai Voice';
+      const albumName = 'Sai Voice';
       final imageDirectoryPath = '$publicDirectoryPath/$albumName';
       var permission = await _canSave();
       if (!permission) {
         _showSnackBar(
             context,
             'Accept manage storage permission to save image to gallery',
-            Duration(seconds: 2));
+            const Duration(seconds: 2));
         return;
       }
-      await new Directory(imageDirectoryPath).create(recursive: true);
+      await Directory(imageDirectoryPath).create(recursive: true);
       var imageFilePath = '$imageDirectoryPath/${widget.fileName}.jpg';
-      var imageFile = new File(imageFilePath);
+      var imageFile = File(imageFilePath);
       if (imageFile.existsSync()) {
-        _showSnackBar(context, 'Image already saved', Duration(seconds: 1));
+        _showSnackBar(
+            context, 'Image already saved', const Duration(seconds: 1));
         return;
       }
       var cacheFile = await _getCachedFile();
@@ -164,7 +166,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       GallerySaver.saveImage(imageFilePath, albumName: albumName)
           .then((isSave) {
         if (isSave) {
-          _showSnackBar(context, 'Saved to gallery', Duration(seconds: 1));
+          _showSnackBar(
+              context, 'Saved to gallery', const Duration(seconds: 1));
         }
       });
     }
@@ -230,9 +233,11 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   /// toggles the status bar visibility
   void _toogleStatusBar() {
     if (_fullScreen) {
-      SystemChrome.setEnabledSystemUIOverlays([]);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
+          overlays: []);
     } else {
-      SystemChrome.setEnabledSystemUIOverlays(SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
+          overlays: SystemUiOverlay.values);
     }
   }
 

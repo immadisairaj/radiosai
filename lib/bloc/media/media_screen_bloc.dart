@@ -21,7 +21,7 @@ class MediaScreenBloc {
   Stream get mediaScreenStream => _downloadsStream.stream;
   Sink get _addValue => _downloadsStream.sink;
 
-  StreamController _actionController = StreamController();
+  final StreamController _actionController = StreamController();
   // call the function changeMediaScreenState.add(value) to change the value
   StreamSink get changeMediaScreenState => _actionController.sink;
 

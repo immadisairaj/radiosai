@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
@@ -19,8 +18,8 @@ import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 void main() async {
   // initialize flutter downloader
   WidgetsFlutterBinding.ensureInitialized();
-  // TODO: change the debug to false later
-  await FlutterDownloader.initialize(debug: true);
+  // TODO: change the debug to false later / remove
+  await FlutterDownloader.initialize(debug: false);
 
   // initialize the audio service
   await setupServiceLocator();
@@ -31,7 +30,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   final ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
-    appBarTheme: AppBarTheme(
+    appBarTheme: const AppBarTheme(
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarBrightness: Brightness.dark,
       ),
@@ -122,7 +121,7 @@ class MyApp extends StatelessWidget {
                             colorScheme: lightTheme.colorScheme
                                 .copyWith(secondary: Colors.deepOrange))),
                 darkTheme: isSystemDefault ? darkTheme : null,
-                home: Home(),
+                home: const Home(),
               );
             });
       }),

@@ -15,7 +15,7 @@ class RadioLoadingBloc {
   Stream get radioLoadingStream => _loadingStream.stream;
   Sink get _addValue => _loadingStream.sink;
 
-  StreamController _actionController = StreamController();
+  final StreamController _actionController = StreamController();
   // call the function changeLoadingState.add(value) to change the value
   StreamSink get changeLoadingState => _actionController.sink;
 

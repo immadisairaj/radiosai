@@ -8,7 +8,7 @@ import 'package:radiosai/widgets/settings/settings_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
-  Settings({
+  const Settings({
     Key key,
   }) : super(key: key);
 
@@ -25,7 +25,7 @@ class _Settings extends State<Settings> {
     buildNumber: '',
   );
 
-  final EdgeInsetsGeometry _contentPadding = EdgeInsets.only(left: 10);
+  final EdgeInsetsGeometry _contentPadding = const EdgeInsets.only(left: 10);
 
   @override
   void initState() {
@@ -48,18 +48,18 @@ class _Settings extends State<Settings> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text('Settings'),
       ),
       body: Container(
         color: isDarkTheme ? Colors.grey[700] : Colors.white,
         height: MediaQuery.of(context).size.height,
         child: Scrollbar(
-          radius: Radius.circular(8),
+          radius: const Radius.circular(8),
           child: SingleChildScrollView(
-            physics:
-                BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
+            physics: const BouncingScrollPhysics(
+                parent: AlwaysScrollableScrollPhysics()),
             child: Padding(
-              padding: EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 children: [
@@ -101,10 +101,10 @@ class _Settings extends State<Settings> {
         children: [
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Clear cache'),
+            title: const Text('Clear cache'),
             onTap: () {
               DefaultCacheManager().emptyCache();
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                 content: Text('Cleared cache'),
                 behavior: SnackBarBehavior.floating,
                 duration: Duration(seconds: 1),
@@ -124,8 +124,8 @@ class _Settings extends State<Settings> {
         children: [
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('About Sai'),
-            subtitle: Text('Who is Sri Sathya Sai Baba?'),
+            title: const Text('About Sai'),
+            subtitle: const Text('Who is Sri Sathya Sai Baba?'),
             onTap: () {
               _urlLaunch(
                   'http://media.radiosai.org/journals/Portal/bhagavan.htm');
@@ -133,15 +133,15 @@ class _Settings extends State<Settings> {
           ),
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('About Radio Sai'),
+            title: const Text('About Radio Sai'),
             onTap: () {
               _urlLaunch('https://www.radiosai.org');
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Version'),
+            title: const Text('Version'),
             subtitle: Text('v${_packageInfo.version}'),
             onTap: () {},
           ),
@@ -158,31 +158,31 @@ class _Settings extends State<Settings> {
         children: [
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Website'),
-            subtitle: Text('https://immadisairaj.me/radiosai'),
+            title: const Text('Website'),
+            subtitle: const Text('https://immadisairaj.me/radiosai'),
             onTap: () {
               _urlLaunch('https://immadisairaj.me/radiosai');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Contact'),
+            title: const Text('Contact'),
             onTap: () {
               _urlLaunch('mailto:immadirajendra.sai@gmail.com');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Privacy Policy'),
+            title: const Text('Privacy Policy'),
             onTap: () {
               _urlLaunch(
                   'https://immadisairaj.me/radiosai/privacy_policy.html');
             },
           ),
-          Divider(),
+          const Divider(),
           ListTile(
             contentPadding: _contentPadding,
-            title: Text('Open source licenses'),
+            title: const Text('Open source licenses'),
             onTap: () {
               showLicensePage(
                 context: context,

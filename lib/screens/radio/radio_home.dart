@@ -13,7 +13,7 @@ import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
 
 class RadioHome extends StatefulWidget {
-  RadioHome({
+  const RadioHome({
     Key key,
   }) : super(key: key);
 
@@ -45,7 +45,7 @@ class _RadioHome extends State<RadioHome> {
   @override
   Widget build(BuildContext context) {
     // border radius used for sliding panel
-    Radius radius = Radius.circular(24.0);
+    Radius radius = const Radius.circular(24.0);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Stack(
@@ -53,7 +53,7 @@ class _RadioHome extends State<RadioHome> {
           SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: Image(
+            child: const Image(
               fit: BoxFit.cover,
               alignment: Alignment(0, -1),
               image: AssetImage('assets/sai_listens.jpg'),
@@ -61,7 +61,7 @@ class _RadioHome extends State<RadioHome> {
           ),
           // Container to reduce the brightness of background pic
           Container(
-            color: Color(0X2F000000),
+            color: const Color(0X2F000000),
           ),
           // Consumers of all the providers to get the stream of data
           Consumer<RadioIndexBloc>(

@@ -25,7 +25,7 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Media extends StatefulWidget {
-  Media({
+  const Media({
     Key key,
     @required this.fids,
     this.title,
@@ -94,7 +94,8 @@ class _Media extends State<Media> {
 
     return Scaffold(
       appBar: AppBar(
-        title: (widget.title == null) ? Text('Media') : Text(widget.title),
+        title:
+            (widget.title == null) ? const Text('Media') : Text(widget.title),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -107,9 +108,9 @@ class _Media extends State<Media> {
               RefreshIndicator(
                 onRefresh: _refresh,
                 child: Scrollbar(
-                  radius: Radius.circular(8),
+                  radius: const Radius.circular(8),
                   child: SingleChildScrollView(
-                    physics: BouncingScrollPhysics(
+                    physics: const BouncingScrollPhysics(
                         parent: AlwaysScrollableScrollPhysics()),
                     child: ConstrainedBox(
                       // have minimum height to reload even when 1 item is present
@@ -172,7 +173,7 @@ class _Media extends State<Media> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomMediaPlayer(),
+      bottomNavigationBar: const BottomMediaPlayer(),
     );
   }
 
@@ -183,7 +184,7 @@ class _Media extends State<Media> {
     return ListView.builder(
         shrinkWrap: true,
         primary: false,
-        padding: EdgeInsets.only(top: 2, bottom: 2),
+        padding: const EdgeInsets.only(top: 2, bottom: 2),
         itemCount: _finalMediaData.length,
         itemBuilder: (context, index) {
           String mediaFileName =
@@ -192,18 +193,18 @@ class _Media extends State<Media> {
           String mediaName = _finalMediaData[index];
           mediaName = mediaName.replaceAll('_', ' ');
           var mediaFilePath = '$_mediaDirectory/$mediaFileName';
-          var mediaFile = new File(mediaFilePath);
+          var mediaFile = File(mediaFilePath);
           var isFileExists = mediaFile.existsSync();
           return Column(
             children: [
               Padding(
-                padding: EdgeInsets.only(left: 8),
+                padding: const EdgeInsets.only(left: 8),
                 child: Card(
                   elevation: 0,
                   color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
                   child: InkWell(
                     child: Padding(
-                      padding: EdgeInsets.only(top: 2, bottom: 2),
+                      padding: const EdgeInsets.only(top: 2, bottom: 2),
                       child: Center(
                         child: ListTile(
                           title: Text(mediaName),
@@ -222,12 +223,11 @@ class _Media extends State<Media> {
                               //   ),
                               // ),
                               IconButton(
-                                icon: Icon(CupertinoIcons.add_circled),
+                                icon: const Icon(CupertinoIcons.add_circled),
                                 splashRadius: 24,
                                 onPressed: () async {
                                   if (!(_audioManager
-                                              .queueNotifier.value.length !=
-                                          0 &&
+                                          .queueNotifier.value.isNotEmpty &&
                                       _audioManager.mediaTypeNotifier.value ==
                                           MediaType.media)) {
                                     startPlayer(mediaName,
@@ -235,12 +235,13 @@ class _Media extends State<Media> {
                                   } else {
                                     bool added = await addToQueue(mediaName,
                                         _finalMediaLinks[index], isFileExists);
-                                    if (added)
+                                    if (added) {
                                       _showSnackBar(context, 'Added to queue',
-                                          Duration(seconds: 1));
-                                    else
+                                          const Duration(seconds: 1));
+                                    } else {
                                       _showSnackBar(context, 'Already in queue',
-                                          Duration(seconds: 1));
+                                          const Duration(seconds: 1));
+                                    }
                                   }
                                 },
                               ),
@@ -253,10 +254,12 @@ class _Media extends State<Media> {
                     onTap: () async {
                       await startPlayer(
                           mediaName, _finalMediaLinks[index], isFileExists);
+                      // wait for the media to load
+                      await Future.delayed(const Duration(milliseconds: 200));
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MediaPlayer()));
+                              builder: (context) => const MediaPlayer()));
                     },
                   ),
                   shape: RoundedRectangleBorder(
@@ -265,7 +268,7 @@ class _Media extends State<Media> {
                 ),
               ),
               if (index != _finalMediaData.length - 1)
-                Divider(
+                const Divider(
                   height: 2,
                   thickness: 1.5,
                 ),
@@ -284,7 +287,7 @@ class _Media extends State<Media> {
   ///
   /// continues the process by retrieving the data
   _updateURL() {
-    var data = new Map<String, dynamic>();
+    var data = <String, dynamic>{};
     data['allfids'] = widget.fids;
 
     String url = '$baseUrl?allfids=${data['allfids']}';
@@ -378,26 +381,26 @@ class _Media extends State<Media> {
     var permission = await _canSave();
     if (!permission) {
       _showSnackBar(context, 'Accept storage permission to save image',
-          Duration(seconds: 2));
+          const Duration(seconds: 2));
       return;
     }
-    await new Directory(_mediaDirectory).create(recursive: true);
-    final fileName = fileLink.replaceAll('${MediaHelper.mediaBaseUrl}', '');
+    await Directory(_mediaDirectory).create(recursive: true);
+    final fileName = fileLink.replaceAll(MediaHelper.mediaBaseUrl, '');
 
     // download only when the file is not available
     // downloading an available file will delete the file
-    DownloadTaskInfo task = new DownloadTaskInfo(
+    DownloadTaskInfo task = DownloadTaskInfo(
       name: fileName,
       link: fileLink,
     );
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {
-      _showSnackBar(context, 'no internet', Duration(seconds: 1));
+      _showSnackBar(context, 'no internet', const Duration(seconds: 1));
       return;
     }
     _downloadTasks.add(task);
-    _showSnackBar(context, 'downloading', Duration(seconds: 1));
+    _showSnackBar(context, 'downloading', const Duration(seconds: 1));
     final taskId = await FlutterDownloader.enqueue(
       url: fileLink,
       savedDir: _mediaDirectory,
@@ -559,7 +562,7 @@ class _Media extends State<Media> {
   /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
-      padding: EdgeInsets.all(20),
+      padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
         baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
         highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
@@ -578,19 +581,19 @@ class _Media extends State<Media> {
   Widget _shimmerContent() {
     double width = MediaQuery.of(context).size.width;
     return Padding(
-      padding: EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 10),
             width: width * 0.9,
             height: 8,
             color: Colors.white,
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 10),
+            margin: const EdgeInsets.only(bottom: 10),
             width: width * 0.9,
             height: 8,
             color: Colors.white,

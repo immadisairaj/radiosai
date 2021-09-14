@@ -13,7 +13,7 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
-  SaiInspires({
+  const SaiInspires({
     Key key,
   }) : super(key: key);
 
@@ -75,16 +75,16 @@ class _SaiInspires extends State<SaiInspires> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Sai Inspires'),
+        title: const Text('Sai Inspires'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.copy_outlined),
+            icon: const Icon(Icons.copy_outlined),
             tooltip: 'Copy to clipboard',
             splashRadius: 24,
             onPressed: () => _copyText(context),
           ),
           IconButton(
-            icon: Icon(Icons.date_range_outlined),
+            icon: const Icon(Icons.date_range_outlined),
             tooltip: 'Select date',
             splashRadius: 24,
             onPressed: () => _selectDate(context),
@@ -105,7 +105,7 @@ class _SaiInspires extends State<SaiInspires> {
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.35,
                       child: Padding(
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         child: (imageFinalUrl == '')
                             ? Container()
                             : Material(
@@ -117,7 +117,7 @@ class _SaiInspires extends State<SaiInspires> {
                                       child: CachedNetworkImage(
                                         imageUrl: imageFinalUrl,
                                         errorWidget: (context, url, error) =>
-                                            Icon(Icons.error),
+                                            const Icon(Icons.error),
                                       ),
                                     ),
                                   ),
@@ -207,7 +207,7 @@ class _SaiInspires extends State<SaiInspires> {
     String formattedDate = DateFormat('dd/MM/yyyy').format(date);
     imageFinalUrl =
         '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
-    if (date.isAfter(new DateTime(2011, 8, 25))) {
+    if (date.isAfter(DateTime(2011, 8, 25))) {
       finalUrl = '$imageBaseUrl/${date.year}/SI_$imageFormattedDate.htm';
       _getNewData();
     } else {
@@ -222,7 +222,7 @@ class _SaiInspires extends State<SaiInspires> {
   ///
   /// parses the data too
   _getNewData() async {
-    var file;
+    File file;
     try {
       file = await DefaultCacheManager()
           .getSingleFile(finalUrl)
@@ -249,14 +249,14 @@ class _SaiInspires extends State<SaiInspires> {
 
     int k;
     if (document
-            .getElementsByTagName('tbody')[0]
-            .children[1]
-            .getElementsByTagName('font')
-            .length ==
-        0)
+        .getElementsByTagName('tbody')[0]
+        .children[1]
+        .getElementsByTagName('font')
+        .isEmpty) {
       k = 2;
-    else
+    } else {
       k = 1;
+    }
 
     String dateText = document
         .getElementsByTagName('tbody')[0]
@@ -269,12 +269,13 @@ class _SaiInspires extends State<SaiInspires> {
         .children[k]
         .getElementsByTagName('font')[1]
         .text;
-    if (top.contains('Featured'))
+    if (top.contains('Featured')) {
       top = document
           .getElementsByTagName('tbody')[0]
           .children[k]
           .getElementsByTagName('font')[2]
           .text;
+    }
 
     String contentText = document
         .getElementsByTagName('tbody')[0]
@@ -349,7 +350,7 @@ class _SaiInspires extends State<SaiInspires> {
   ///
   /// parses the data too
   _getOldData() async {
-    var file;
+    File file;
     try {
       file = await DefaultCacheManager()
           .getSingleFile(finalUrl)
@@ -424,12 +425,13 @@ class _SaiInspires extends State<SaiInspires> {
       _isCopying = true;
       if (_contentText != 'null') {
         String copyData;
-        if (_isOldData)
+        if (_isOldData) {
           copyData =
               '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba';
-        else
+        } else {
           copyData =
               '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba\n\n$_quote';
+        }
         // if data is visible, copy to clipboard
         Clipboard.setData(ClipboardData(text: copyData)).then((value) {
           _showSnackBar(context, 'Copied to clipboard');
@@ -451,7 +453,7 @@ class _SaiInspires extends State<SaiInspires> {
         .showSnackBar(SnackBar(
           content: Text(text),
           behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 1),
+          duration: const Duration(seconds: 1),
         ))
         .closed
         .then((value) {
@@ -464,10 +466,10 @@ class _SaiInspires extends State<SaiInspires> {
     return Column(
       children: [
         Align(
-          alignment: Alignment(1, 0),
+          alignment: const Alignment(1, 0),
           child: SelectableText(
             _dateText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
             ),
           ),
@@ -487,7 +489,7 @@ class _SaiInspires extends State<SaiInspires> {
         SelectableText(
           _contentText,
           textAlign: TextAlign.justify,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 17,
             height: 1.3,
           ),
@@ -495,10 +497,10 @@ class _SaiInspires extends State<SaiInspires> {
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
           child: Align(
-            alignment: Alignment(1, 0),
+            alignment: const Alignment(1, 0),
             child: SelectableText(
               _byBaba,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
               ),
             ),
@@ -525,10 +527,10 @@ class _SaiInspires extends State<SaiInspires> {
     return Column(
       children: [
         Align(
-          alignment: Alignment(1, 0),
+          alignment: const Alignment(1, 0),
           child: SelectableText(
             _dateText,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
             ),
           ),
@@ -546,7 +548,7 @@ class _SaiInspires extends State<SaiInspires> {
         SelectableText(
           _contentText,
           textAlign: TextAlign.justify,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 17,
             height: 1.3,
           ),
@@ -554,10 +556,10 @@ class _SaiInspires extends State<SaiInspires> {
         Padding(
           padding: const EdgeInsets.only(top: 8.0, bottom: 20),
           child: Align(
-            alignment: Alignment(1, 0),
+            alignment: const Alignment(1, 0),
             child: SelectableText(
               _byBaba,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 15,
               ),
             ),
@@ -570,7 +572,7 @@ class _SaiInspires extends State<SaiInspires> {
   /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
-      padding: EdgeInsets.only(top: 30, left: 20, right: 20),
+      padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
       child: Shimmer.fromColors(
         baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
         highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
@@ -578,7 +580,7 @@ class _SaiInspires extends State<SaiInspires> {
         child: Column(
           children: [
             Padding(
-              padding: EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 20),
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.5,
                 height: MediaQuery.of(context).size.height * 0.4,
@@ -596,7 +598,7 @@ class _SaiInspires extends State<SaiInspires> {
   /// individual shimmer limes for loading shimmer
   Widget _shimmerLine() {
     return Padding(
-      padding: EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Container(
         width: double.infinity,
         height: 8,

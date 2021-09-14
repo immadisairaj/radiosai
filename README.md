@@ -81,6 +81,7 @@ Most of the main features use bloc architecture using providers and streams. The
 ```bash
 lib
 ├───audio_service   # audio service related task
+│   └── notifiers
 ├───bloc            # business logic files related to screens
 │   ├───media
 │   ├───radio
@@ -121,7 +122,7 @@ __flutter_downloader:__
 used to download files/media from the internet
 
 __just_audio & audio_service:__
-the main base of the app helps play the audio seamlessly with media control
+the main base of the app helps play the audio seamlessly with media control. Thank you @ryanheise
 
 _and many other open-source libraries._
 
