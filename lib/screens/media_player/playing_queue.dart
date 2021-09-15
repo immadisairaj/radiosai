@@ -28,7 +28,7 @@ class _PlayingQueue extends State<PlayingQueue> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
@@ -213,12 +213,12 @@ class _PlayingQueue extends State<PlayingQueue> {
                 trailing: IconButton(
                     icon: const Icon(CupertinoIcons.minus_circle),
                     splashRadius: 24,
+                    tooltip: 'Remove from Playing Queue',
                     onPressed: () async {
                       if (length == 1) {
                         _audioManager.stop();
                         Navigator.maybePop(context);
                       } else {
-                        // TODO: remove functionality
                         await _audioManager
                             .removeQueueItemWithTitle(mediaTitle);
                       }

@@ -29,7 +29,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   // Colors for the app
-  final Color secondaryColor = Colors.deepOrange;
+  final Color secondaryColor = const Color(0xFFE86413);
 
   final ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
@@ -38,12 +38,14 @@ class MyApp extends StatelessWidget {
         statusBarBrightness: Brightness.dark,
       ),
     ),
+    backgroundColor: Colors.white,
   );
 
   final ThemeData darkTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
     brightness: Brightness.dark,
     cardColor: Colors.grey[700],
+    backgroundColor: Colors.grey[700],
   );
 
   MyApp({Key key}) : super(key: key);

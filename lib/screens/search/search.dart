@@ -189,7 +189,7 @@ class _Search extends State<Search> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
@@ -202,6 +202,14 @@ class _Search extends State<Search> {
             : ((widget.initialSearchTitle != null)
                 ? widget.initialSearchTitle
                 : widget.initialSearch)),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -276,8 +284,7 @@ class _Search extends State<Search> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
+                                                            .primaryColor,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),
@@ -786,7 +793,7 @@ class _Search extends State<Search> {
                               ),
                             ),
                             SizedBox(
-                              width: (selectedDateString != '') ? 160 : 170,
+                              width: (selectedDateString != '') ? 150 : 160,
                               child: Center(
                                 child: Padding(
                                   padding:

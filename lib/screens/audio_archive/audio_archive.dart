@@ -20,11 +20,19 @@ class _AudioArchive extends State<AudioArchive> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Audio Archive'),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -32,7 +40,7 @@ class _AudioArchive extends State<AudioArchive> {
         color: backgroundColor,
         child: _audioArchiveGrid(isDarkTheme),
       ),
-      bottomNavigationBar: BottomMediaPlayer(),
+      bottomNavigationBar: const BottomMediaPlayer(),
     );
   }
 

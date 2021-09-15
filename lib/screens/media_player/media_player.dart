@@ -58,7 +58,7 @@ class _MediaPlayer extends State<MediaPlayer> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;

@@ -49,9 +49,17 @@ class _Settings extends State<Settings> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
       ),
       body: Container(
-        color: isDarkTheme ? Colors.grey[700] : Colors.white,
+        color: Theme.of(context).backgroundColor,
         height: MediaQuery.of(context).size.height,
         child: Scrollbar(
           radius: const Radius.circular(8),

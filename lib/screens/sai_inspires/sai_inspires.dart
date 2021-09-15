@@ -71,11 +71,19 @@ class _SaiInspires extends State<SaiInspires> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sai Inspires'),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.copy_outlined),
@@ -132,9 +140,7 @@ class _SaiInspires extends State<SaiInspires> {
                       child: Padding(
                         padding:
                             const EdgeInsets.only(left: 20, right: 20, top: 8),
-                        child: _isOldData
-                            ? _oldContent(isDarkTheme)
-                            : _newContent(isDarkTheme),
+                        child: _isOldData ? _oldContent() : _newContent(),
                       ),
                     ),
                   ],
@@ -462,7 +468,7 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   /// widget for new data >= 26 Aug 2011
-  Widget _newContent(bool isDarkTheme) {
+  Widget _newContent() {
     return Column(
       children: [
         Align(
@@ -479,8 +485,8 @@ class _SaiInspires extends State<SaiInspires> {
           child: SelectableText(
             _thoughtOfTheDay,
             textAlign: TextAlign.justify,
-            style: TextStyle(
-              color: isDarkTheme ? Colors.amber : Colors.red,
+            style: const TextStyle(
+              color: Color(0xFFFF9014),
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -511,8 +517,8 @@ class _SaiInspires extends State<SaiInspires> {
           child: SelectableText(
             _quote,
             textAlign: TextAlign.center,
-            style: TextStyle(
-              color: isDarkTheme ? Colors.amber : Colors.red,
+            style: const TextStyle(
+              color: Color(0xFFFF9014),
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -523,7 +529,7 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   /// widget for old data < 26 Aug 2011
-  Widget _oldContent(bool isDarkTheme) {
+  Widget _oldContent() {
     return Column(
       children: [
         Align(
@@ -539,8 +545,8 @@ class _SaiInspires extends State<SaiInspires> {
           padding: const EdgeInsets.all(8.0),
           child: SelectableText(
             _thoughtOfTheDay,
-            style: TextStyle(
-              color: isDarkTheme ? Colors.amber : Colors.red,
+            style: const TextStyle(
+              color: Color(0xFFFF9014),
               fontSize: 16,
             ),
           ),

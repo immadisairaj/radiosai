@@ -124,7 +124,7 @@ class _ScheduleData extends State<ScheduleData> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
@@ -139,6 +139,14 @@ class _ScheduleData extends State<ScheduleData> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Schedule'),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.date_range_outlined),
@@ -165,8 +173,10 @@ class _ScheduleData extends State<ScheduleData> {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
                           'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 19,
+                            color: Theme.of(context).primaryColor,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
@@ -290,8 +300,7 @@ class _ScheduleData extends State<ScheduleData> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .colorScheme
-                                                            .secondary,
+                                                            .primaryColor,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),

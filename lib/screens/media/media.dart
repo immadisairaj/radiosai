@@ -90,12 +90,20 @@ class _Media extends State<Media> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[700] : Colors.white;
+    Color backgroundColor = Theme.of(context).backgroundColor;
 
     return Scaffold(
       appBar: AppBar(
         title:
             (widget.title == null) ? const Text('Media') : Text(widget.title),
+        backgroundColor:
+            MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          return states.contains(MaterialState.scrolledUnder)
+              ? ((isDarkTheme)
+                  ? Colors.grey[700]
+                  : Theme.of(context).colorScheme.secondary)
+              : Theme.of(context).primaryColor;
+        }),
       ),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -225,6 +233,7 @@ class _Media extends State<Media> {
                               IconButton(
                                 icon: const Icon(CupertinoIcons.add_circled),
                                 splashRadius: 24,
+                                tooltip: 'Add to Playing Queue',
                                 onPressed: () async {
                                   if (!(_audioManager
                                           .queueNotifier.value.isNotEmpty &&
@@ -255,7 +264,7 @@ class _Media extends State<Media> {
                       await startPlayer(
                           mediaName, _finalMediaLinks[index], isFileExists);
                       // wait for the media to load
-                      await Future.delayed(const Duration(milliseconds: 200));
+                      await Future.delayed(const Duration(milliseconds: 500));
                       Navigator.push(
                           context,
                           MaterialPageRoute(
