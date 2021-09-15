@@ -28,6 +28,9 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  // Colors for the app
+  final Color secondaryColor = Colors.deepOrange;
+
   final ThemeData lightTheme = ThemeData(
     primarySwatch: Colors.deepOrange,
     appBarTheme: const AppBarTheme(
@@ -42,6 +45,8 @@ class MyApp extends StatelessWidget {
     brightness: Brightness.dark,
     cardColor: Colors.grey[700],
   );
+
+  MyApp({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -112,15 +117,19 @@ class MyApp extends StatelessWidget {
                 theme: isSystemDefault
                     ? lightTheme.copyWith(
                         colorScheme: lightTheme.colorScheme
-                            .copyWith(secondary: Colors.deepOrange))
+                            .copyWith(secondary: secondaryColor))
                     : (isDarkTheme
                         ? darkTheme.copyWith(
                             colorScheme: darkTheme.colorScheme
-                                .copyWith(secondary: Colors.deepOrange))
+                                .copyWith(secondary: secondaryColor))
                         : lightTheme.copyWith(
                             colorScheme: lightTheme.colorScheme
-                                .copyWith(secondary: Colors.deepOrange))),
-                darkTheme: isSystemDefault ? darkTheme : null,
+                                .copyWith(secondary: secondaryColor))),
+                darkTheme: isSystemDefault
+                    ? darkTheme.copyWith(
+                        colorScheme: darkTheme.colorScheme
+                            .copyWith(secondary: secondaryColor))
+                    : null,
                 home: const Home(),
               );
             });

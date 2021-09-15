@@ -54,7 +54,7 @@ android {
             signingConfig signingConfigs.debug
             shrinkResources false // used by audio_source plugin
             ndk {
-                debugSymbolLevel 'SYMBOL_TABLE'
+                debugSymbolLevel 'FULL'
             }
         }
     }

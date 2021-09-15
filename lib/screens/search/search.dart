@@ -413,7 +413,7 @@ class _Search extends State<Search> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomMediaPlayer(),
+      bottomNavigationBar: const BottomMediaPlayer(),
     );
   }
 
@@ -726,8 +726,11 @@ class _Search extends State<Search> {
                         : null,
                   ),
                   validator: (value) {
+                    final validCharacters = RegExp(r'^[a-zA-Z0-9 ]+$');
                     if (value == null || value.isEmpty) {
                       return 'Please enter some text to search';
+                    } else if (!validCharacters.hasMatch(value)) {
+                      return 'Only Alphanumeric/Spaces allowed';
                     }
                     description = value;
                     return null;
