@@ -139,6 +139,7 @@ __Flutter version:__ 2.5.0
 __Dart version:__ 2.14.0
 __Visual Studio Code:__ 1.60.1
 __Operating System:__ macOS Big Sur version 11.6
+__Gradle version:__ 7.0.2
 __Android Emulator:__ Pixel 4a API 30
 
 ## Privacy Policy

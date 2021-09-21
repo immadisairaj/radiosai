@@ -67,5 +67,5 @@ flutter {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     // for using vector drawables
-    compile 'com.android.support:appcompat-v7:23.2.0'
+    implementation 'com.android.support:appcompat-v7:23.2.0'
 }
