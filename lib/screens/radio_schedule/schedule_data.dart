@@ -417,7 +417,7 @@ class _ScheduleData extends State<ScheduleData> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomMediaPlayer(),
+      bottomNavigationBar: const BottomMediaPlayer(),
     );
   }
 

@@ -2,8 +2,10 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
+import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 
 /// Top Media Player -
@@ -59,41 +61,48 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
                   );
                 }
 
-                return Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).padding.top + 10, left: 5),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Card(
-                        elevation: 8,
-                        shadowColor: Theme.of(context).colorScheme.secondary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const MediaPlayer()));
-                          },
-                          borderRadius: BorderRadius.circular(10),
-                          child: const Padding(
-                            padding: EdgeInsets.fromLTRB(10, 5, 10, 5),
-                            child: Text(
-                              'Playing..',
-                              style: TextStyle(
-                                fontSize: 18,
+                return ValueListenableBuilder<PlayButtonState>(
+                    valueListenable: _audioManager.playButtonNotifier,
+                    builder: (context, playState, snapshot) {
+                      final playing = (playState == PlayButtonState.playing);
+
+                      return Align(
+                        alignment: Alignment.topLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).padding.top + 10,
+                              left: 5),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: Card(
+                              elevation: 8,
+                              shadowColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: InkWell(
+                                onTap: () {
+                                  getIt<NavigationService>()
+                                      .navigateTo(MediaPlayer.route);
+                                },
+                                borderRadius: BorderRadius.circular(10),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                                  child: Text(
+                                    playing ? 'Playing..' : 'Paused..',
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                  ),
-                );
+                      );
+                    });
               });
         });
   }

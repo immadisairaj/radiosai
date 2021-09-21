@@ -11,9 +11,12 @@ import 'package:radiosai/bloc/internet_status.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/helper/download_helper.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
+import 'package:radiosai/screens/media_player/media_player.dart';
+import 'package:radiosai/screens/media_player/playing_queue.dart';
 
 void main() async {
   // initialize flutter downloader
@@ -135,6 +138,11 @@ class MyApp extends StatelessWidget {
                             .copyWith(secondary: secondaryColor))
                     : null,
                 home: const Home(),
+                navigatorKey: getIt<NavigationService>().navigatorKey,
+                routes: {
+                  MediaPlayer.route: (context) => const MediaPlayer(),
+                  PlayingQueue.route: (context) => const PlayingQueue(),
+                },
               );
             });
       }),

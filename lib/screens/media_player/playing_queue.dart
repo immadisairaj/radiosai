@@ -9,6 +9,8 @@ class PlayingQueue extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
+  static const String route = 'playingQueue';
+
   @override
   _PlayingQueue createState() => _PlayingQueue();
 }

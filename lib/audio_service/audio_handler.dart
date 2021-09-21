@@ -1,6 +1,10 @@
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/screens/media_player/media_player.dart';
+import 'package:radiosai/screens/media_player/playing_queue.dart';
 
 // copied and changed from
 // https://github.com/suragch/flutter_audio_service_demo/
@@ -25,7 +29,32 @@ class MyAudioHandler extends BaseAudioHandler {
   // playing media type
   var _mediaType = MediaType.radio;
 
-  MyAudioHandler();
+  MyAudioHandler() {
+    _listenToNotificationClickEvent();
+  }
+
+  /// listens to notification click event of audio_service
+  _listenToNotificationClickEvent() {
+    // notification click when audio playing
+    AudioService.notificationClicked.listen((clicked) {
+      if (clicked && _mediaType == MediaType.media) {
+        // if audio is media, then open media player
+        if (!getIt<NavigationService>().isCurrentRoute(MediaPlayer.route)) {
+          // if current route is media player, keep it as it is
+          if (getIt<NavigationService>().isCurrentRoute(PlayingQueue.route)) {
+            // if current route is playing queue, pop till media player
+            getIt<NavigationService>().popUntil(MediaPlayer.route);
+          } else {
+            // if media player is not in tree, push media player
+            getIt<NavigationService>().navigateTo(MediaPlayer.route);
+          }
+        }
+      } else if (clicked && _mediaType == MediaType.radio) {
+        // if audio is radio, then pop to first index
+        getIt<NavigationService>().popToBase();
+      }
+    });
+  }
 
   // initialized before playing
   _initAudioHandler() {

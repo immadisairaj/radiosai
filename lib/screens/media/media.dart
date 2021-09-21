@@ -19,6 +19,7 @@ import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -265,10 +266,10 @@ class _Media extends State<Media> {
                           mediaName, _finalMediaLinks[index], isFileExists);
                       // wait for the media to load
                       await Future.delayed(const Duration(milliseconds: 500));
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MediaPlayer()));
+                      // TODO: sometimes it navigates and pops immediately
+                      // have to wait for it to initialize then navigate?
+                      // or do something
+                      getIt<NavigationService>().navigateTo(MediaPlayer.route);
                     },
                   ),
                   shape: RoundedRectangleBorder(

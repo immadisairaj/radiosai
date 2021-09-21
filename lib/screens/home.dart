@@ -44,8 +44,8 @@ class _Home extends State<Home> {
       // calling from download helper is a must
       key: DownloadHelper.getScaffoldKey(),
       body: Stack(
-        children: [
-          const RadioHome(),
+        children: const [
+          RadioHome(),
           TopMenu(),
           TopMediaPlayer(),
         ],

@@ -19,6 +19,7 @@ import 'package:radiosai/audio_service/notifiers/repeat_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -26,6 +27,8 @@ class MediaPlayer extends StatefulWidget {
   const MediaPlayer({
     Key key,
   }) : super(key: key);
+
+  static const String route = 'mediaPlayer';
 
   @override
   _MediaPlayer createState() => _MediaPlayer();
@@ -370,11 +373,8 @@ class _MediaPlayer extends State<MediaPlayer> {
                             splashRadius: 24,
                             iconSize: 25,
                             onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const PlayingQueue()));
+                              getIt<NavigationService>()
+                                  .navigateTo(PlayingQueue.route);
                             },
                           ),
                         ],
@@ -451,10 +451,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                 onSelected: (value) {
                   switch (value) {
                     case 'View Playing Queue':
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const PlayingQueue()));
+                      getIt<NavigationService>().navigateTo(PlayingQueue.route);
                       break;
                     case 'Download':
                       _downloadMediaFile(
