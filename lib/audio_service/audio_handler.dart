@@ -201,8 +201,8 @@ class MyAudioHandler extends BaseAudioHandler {
     queue.add(newQueue);
   }
 
-  UriAudioSource _createAudioSource(MediaItem mediaItem) {
-    return AudioSource.uri(
+  LockCachingAudioSource _createAudioSource(MediaItem mediaItem) {
+    return LockCachingAudioSource(
       Uri.parse(mediaItem.extras['uri']),
       tag: mediaItem,
     );

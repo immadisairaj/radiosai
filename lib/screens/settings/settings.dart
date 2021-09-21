@@ -176,7 +176,7 @@ class _Settings extends State<Settings> {
             contentPadding: _contentPadding,
             title: const Text('Contact'),
             onTap: () {
-              _urlLaunch('mailto:immadirajendra.sai@gmail.com');
+              _urlLaunch('mailto:immadisairaj@immadisairaj.me');
             },
           ),
           ListTile(

@@ -86,7 +86,6 @@ class AudioManager {
   playRadio(int radioIndex) async {
     // radio title is media Id
     await load();
-    print(radioIndex);
     _audioHandler.skipToQueueItem(radioIndex);
     _audioHandler.play();
   }
