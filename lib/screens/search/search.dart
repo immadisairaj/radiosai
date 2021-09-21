@@ -284,7 +284,7 @@ class _Search extends State<Search> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .primaryColor,
+                                                            .secondaryHeaderColor,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),

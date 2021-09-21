@@ -175,7 +175,7 @@ class _ScheduleData extends State<ScheduleData> {
                           'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
                           style: TextStyle(
                             fontSize: 19,
-                            color: Theme.of(context).primaryColor,
+                            color: Theme.of(context).secondaryHeaderColor,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -300,7 +300,7 @@ class _ScheduleData extends State<ScheduleData> {
                                                       category,
                                                       style: TextStyle(
                                                         color: Theme.of(context)
-                                                            .primaryColor,
+                                                            .secondaryHeaderColor,
                                                         fontWeight:
                                                             FontWeight.w600,
                                                       ),

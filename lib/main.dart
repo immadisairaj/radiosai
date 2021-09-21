@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
       ),
     ),
     backgroundColor: Colors.white,
+    secondaryHeaderColor: Colors.deepOrange,
   );
 
   final ThemeData darkTheme = ThemeData(
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
     brightness: Brightness.dark,
     cardColor: Colors.grey[700],
     backgroundColor: Colors.grey[700],
+    secondaryHeaderColor: Colors.deepOrange,
   );
 
   MyApp({Key key}) : super(key: key);

@@ -30,7 +30,7 @@ class SettingsSection extends StatelessWidget {
               child: Text(
                 title,
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
                 ),
