@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -473,11 +475,23 @@ class _Search extends State<Search> {
     // checks if the file exists in cache
     var fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
-      // get the data into cache from webview_flutter
-      setState(() {
-        globalFormData = formData;
-        _isGettingData = true;
-      });
+      bool hasInternet =
+          Provider.of<InternetConnectionStatus>(context, listen: false) ==
+              InternetConnectionStatus.connected;
+      // search works only if there is an internet
+      if (hasInternet) {
+        // get the data into cache from webview_flutter
+        setState(() {
+          globalFormData = formData;
+          _isGettingData = true;
+        });
+      } else {
+        setState(() {
+          // show that no internet is there
+          _finalTableData[0][0] = 'null';
+          _isLoading = false;
+        });
+      }
     } else {
       // get data from file if present in cache
       tempResponse = fileInfo.file.readAsStringSync();

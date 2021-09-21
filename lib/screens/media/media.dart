@@ -234,24 +234,44 @@ class _Media extends State<Media> {
                               IconButton(
                                 icon: const Icon(CupertinoIcons.add_circled),
                                 splashRadius: 24,
-                                tooltip: 'Add to Playing Queue',
+                                tooltip: 'Add to playing queue',
                                 onPressed: () async {
-                                  if (!(_audioManager
-                                          .queueNotifier.value.isNotEmpty &&
-                                      _audioManager.mediaTypeNotifier.value ==
-                                          MediaType.media)) {
-                                    startPlayer(mediaName,
-                                        _finalMediaLinks[index], isFileExists);
-                                  } else {
-                                    bool added = await addToQueue(mediaName,
-                                        _finalMediaLinks[index], isFileExists);
-                                    if (added) {
-                                      _showSnackBar(context, 'Added to queue',
-                                          const Duration(seconds: 1));
+                                  bool hasInternet =
+                                      Provider.of<InternetConnectionStatus>(
+                                              context,
+                                              listen: false) ==
+                                          InternetConnectionStatus.connected;
+                                  // No download option. So,
+                                  // everything is considered to use internet
+                                  if (hasInternet) {
+                                    if (!(_audioManager
+                                            .queueNotifier.value.isNotEmpty &&
+                                        _audioManager.mediaTypeNotifier.value ==
+                                            MediaType.media)) {
+                                      startPlayer(
+                                          mediaName,
+                                          _finalMediaLinks[index],
+                                          isFileExists);
                                     } else {
-                                      _showSnackBar(context, 'Already in queue',
-                                          const Duration(seconds: 1));
+                                      bool added = await addToQueue(
+                                          mediaName,
+                                          _finalMediaLinks[index],
+                                          isFileExists);
+                                      if (added) {
+                                        _showSnackBar(context, 'Added to queue',
+                                            const Duration(seconds: 1));
+                                      } else {
+                                        _showSnackBar(
+                                            context,
+                                            'Already in queue',
+                                            const Duration(seconds: 1));
+                                      }
                                     }
+                                  } else {
+                                    _showSnackBar(
+                                        context,
+                                        'Connect to the Internet and try again',
+                                        const Duration(seconds: 2));
                                   }
                                 },
                               ),
@@ -262,14 +282,28 @@ class _Media extends State<Media> {
                     ),
                     borderRadius: BorderRadius.circular(8.0),
                     onTap: () async {
-                      await startPlayer(
-                          mediaName, _finalMediaLinks[index], isFileExists);
-                      // wait for the media to load
-                      await Future.delayed(const Duration(milliseconds: 500));
-                      // TODO: sometimes it navigates and pops immediately
-                      // have to wait for it to initialize then navigate?
-                      // or do something
-                      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+                      bool hasInternet = Provider.of<InternetConnectionStatus>(
+                              context,
+                              listen: false) ==
+                          InternetConnectionStatus.connected;
+                      // No download option. So,
+                      // everything is considered to use internet
+                      if (hasInternet) {
+                        await startPlayer(
+                            mediaName, _finalMediaLinks[index], isFileExists);
+                        // wait for the media to load
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        // TODO: sometimes it navigates and pops immediately
+                        // have to wait for it to initialize then navigate?
+                        // or do something
+                        getIt<NavigationService>()
+                            .navigateTo(MediaPlayer.route);
+                      } else {
+                        _showSnackBar(
+                            context,
+                            'Connect to the Internet and try again',
+                            const Duration(seconds: 2));
+                      }
                     },
                   ),
                   shape: RoundedRectangleBorder(

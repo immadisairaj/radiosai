@@ -156,11 +156,19 @@ class _MediaPlayer extends State<MediaPlayer> {
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 20, right: 20),
-                          child: Text(
-                            mediaTitle,
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              fontSize: textSize,
+                          child: Scrollbar(
+                            isAlwaysShown: true,
+                            radius: const Radius.circular(8),
+                            child: SingleChildScrollView(
+                              physics: const BouncingScrollPhysics(
+                                  parent: AlwaysScrollableScrollPhysics()),
+                              child: Text(
+                                mediaTitle,
+                                textAlign: TextAlign.start,
+                                style: TextStyle(
+                                  fontSize: textSize,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -372,6 +380,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                             icon: const Icon(CupertinoIcons.music_note_list),
                             splashRadius: 24,
                             iconSize: 25,
+                            tooltip: 'View playing queue',
                             onPressed: () {
                               getIt<NavigationService>()
                                   .navigateTo(PlayingQueue.route);
@@ -490,6 +499,7 @@ class _MediaPlayer extends State<MediaPlayer> {
             icon: const Icon(Icons.share_outlined),
             splashRadius: 24,
             iconSize: 25,
+            tooltip: 'Share link',
             onPressed: () {
               _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId));
             },

@@ -215,7 +215,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                 trailing: IconButton(
                     icon: const Icon(CupertinoIcons.minus_circle),
                     splashRadius: 24,
-                    tooltip: 'Remove from Playing Queue',
+                    tooltip: 'Remove from playing queue',
                     onPressed: () async {
                       if (length == 1) {
                         _audioManager.stop();

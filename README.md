@@ -33,9 +33,13 @@ __Dark Theme:__ The app also comes with dark theme. One can change the theme the
 
 __Split Screen:__ The app is suitable for split screen. Operate this app while doing work in a different app.
 
-__Schedule:__ Look at the radio schedule of different streams from within the app (Redirects to the official website).
+__Schedule:__ Look at the radio schedule of different streams from within the app. One can see and listen to the different media present in the schedule by clicking one them.
 
 __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. One can read it at any text size they want by zooming in. One can also share the content by clicking the copy icon (copies to clipboard). One can also view and save the image.
+
+__Search:__ Searching through out the Radio Sai audio is now possible from the app. Once can search by filtering through category or streamed date. Listening to the audio from the search is also possible now in the app.
+
+__Media Player:__ A new media player which is capable of playing the media seamlessly while caching the media. Sharing the link to the media, adding/removing from playing queue, shuffling the queue, repeat mode, and other functions are present in the media player. Drawback of the player is the playing queue is cleared when radio is played or when the player is stopped.
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 
@@ -80,7 +84,7 @@ Most of the main features use bloc architecture using providers and streams. The
 
 ```bash
 lib
-├───audio_service   # audio service related task
+├───audio_service   # audio service related handlers
 │   └── notifiers
 ├───bloc            # business logic files related to screens
 │   ├───media
@@ -128,6 +132,14 @@ _and many other open-source libraries._
 
 
 Thanks to the Open Source community for providing such great libraries and framework which was very helpful in building the application.
+
+## Built using
+<!-- keep updating this -->
+__Flutter version:__ 2.5.0
+__Dart version:__ 2.14.0
+__Visual Studio Code:__ 1.60.1
+__Operating System:__ macOS Big Sur version 11.6
+__Android Emulator:__ Pixel 4a API 30
 
 ## Privacy Policy
 

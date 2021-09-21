@@ -42,6 +42,7 @@ class _TopMenu extends State<TopMenu> {
                 icon: const Icon(Icons.search_outlined),
                 splashRadius: 24,
                 iconSize: 30,
+                tooltip: 'Search Radio Sai',
                 color: Colors.white,
                 onPressed: () {
                   Navigator.push(
