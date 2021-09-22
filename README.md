@@ -76,7 +76,7 @@ I like to listen to various bhajans which made me fond of radio sai. I've instal
 
 ## Screenshots
 
-<img src="/screenshots/screenshot_1.jpg" height="500"> <img src="/screenshots/screenshot_2.jpg" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500"> <img src="/screenshots/screenshot_7.jpg" height="500"> <img src="/screenshots/screenshot_8.jpg" height="500"> <img src="/screenshots/screenshot_9.jpg" height="500"> <img src="/screenshots/screenshot_10.jpg" height="500"> <img src="/screenshots/screenshot_11.jpg" height="500"> <img src="/screenshots/screenshot_12.jpg" height="500">
+<img src="/screenshots/screenshot_1.png" height="500"> <img src="/screenshots/screenshot_2.png" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500"> <img src="/screenshots/screenshot_7.png" height="500"> <img src="/screenshots/screenshot_8.png" height="500"> <img src="/screenshots/screenshot_9.png" height="500"> <img src="/screenshots/screenshot_10.png" height="500"> <img src="/screenshots/screenshot_11.png" height="500"> <img src="/screenshots/screenshot_12.png" height="500"> <img src="/screenshots/screenshot_13.png" height="500"> <img src="/screenshots/screenshot_14.png" height="500"> <img src="/screenshots/screenshot_15.jpg" height="500"> <img src="/screenshots/screenshot_16.jpg" height="500"> <img src="/screenshots/screenshot_17.jpg" height="500"> <img src="/screenshots/screenshot_18.jpg" height="500"> <img src="/screenshots/screenshot_19.png" height="500"> <img src="/screenshots/screenshot_20.png" height="500"> <img src="/screenshots/screenshot_21.png" height="500"> <img src="/screenshots/screenshot_22.png" height="500"> <img src="/screenshots/screenshot_23.png" height="500"> <img src="/screenshots/screenshot_24.png" height="500">
 
 ## Architecture
 
@@ -135,12 +135,12 @@ Thanks to the Open Source community for providing such great libraries and frame
 
 ## Built using
 <!-- keep updating this -->
-__Flutter version:__ 2.5.0
-__Dart version:__ 2.14.0
-__Visual Studio Code:__ 1.60.1
-__Operating System:__ macOS Big Sur version 11.6
-__Gradle version:__ 7.0.2
-__Android Emulator:__ Pixel 4a API 30
+- __Flutter version:__ 2.5.0
+- __Dart version:__ 2.14.0
+- __Visual Studio Code:__ 1.60.1
+- __Operating System:__ macOS Big Sur version 11.6
+- __Gradle version:__ 7.0.2
+- __Android Emulator:__ Pixel 4a API 30
 
 ## Privacy Policy
 

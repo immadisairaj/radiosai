@@ -17,6 +17,8 @@ class SaiInspires extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
+  static const String route = 'saiInspires';
+
   @override
   _SaiInspires createState() => _SaiInspires();
 }

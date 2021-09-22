@@ -12,11 +12,15 @@ import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/screens/audio_archive/audio_archive.dart';
 import 'package:radiosai/screens/home.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
+import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
+import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
+import 'package:radiosai/screens/settings/settings.dart';
 
 void main() async {
   // initialize flutter downloader
@@ -142,6 +146,10 @@ class MyApp extends StatelessWidget {
                 routes: {
                   MediaPlayer.route: (context) => const MediaPlayer(),
                   PlayingQueue.route: (context) => const PlayingQueue(),
+                  AudioArchive.route: (context) => const AudioArchive(),
+                  SaiInspires.route: (context) => const SaiInspires(),
+                  Settings.route: (context) => const Settings(),
+                  RadioSchedule.route: (context) => const RadioSchedule(),
                 },
               );
             });

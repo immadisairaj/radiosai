@@ -9,6 +9,8 @@ class RadioSchedule extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
+  static const String route = 'radioSchedule';
+
   @override
   _RadioSchedule createState() => _RadioSchedule();
 }

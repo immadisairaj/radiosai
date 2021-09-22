@@ -10,6 +10,8 @@ class AudioArchive extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
+  static const String route = 'audioArchive';
+
   @override
   _AudioArchive createState() => _AudioArchive();
 }

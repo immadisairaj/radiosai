@@ -12,6 +12,8 @@ class Settings extends StatefulWidget {
     Key key,
   }) : super(key: key);
 
+  static const String route = 'settings';
+
   @override
   _Settings createState() => _Settings();
 }

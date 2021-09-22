@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/audio_archive/audio_archive.dart';
 import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
@@ -84,28 +86,19 @@ class _TopMenu extends State<TopMenu> {
                     switch (value) {
                       // TODO: don't hardcode this and maybe add enum
                       case 'Sai Inspires':
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const SaiInspires()));
+                        getIt<NavigationService>()
+                            .navigateTo(SaiInspires.route);
                         break;
                       case 'Settings':
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Settings()));
+                        getIt<NavigationService>().navigateTo(Settings.route);
                         break;
                       case 'Schedule':
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const RadioSchedule()));
+                        getIt<NavigationService>()
+                            .navigateTo(RadioSchedule.route);
                         break;
                       case 'Audio Archive':
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AudioArchive()));
+                        getIt<NavigationService>()
+                            .navigateTo(AudioArchive.route);
                         break;
                     }
                   },
