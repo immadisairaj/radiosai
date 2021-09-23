@@ -169,16 +169,16 @@ class _Settings extends State<Settings> {
           ListTile(
             contentPadding: _contentPadding,
             title: const Text('Website'),
-            subtitle: const Text('https://immadisairaj.me/radiosai'),
+            subtitle: const Text('https://immadisairaj.github.io/radiosai'),
             onTap: () {
-              _urlLaunch('https://immadisairaj.me/radiosai');
+              _urlLaunch('https://immadisairaj.github.io/radiosai');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
             title: const Text('Contact'),
             onTap: () {
-              _urlLaunch('mailto:immadisairaj@immadisairaj.me');
+              _urlLaunch('mailto:immadirajendra.sai@gmail.com');
             },
           ),
           ListTile(
@@ -186,7 +186,7 @@ class _Settings extends State<Settings> {
             title: const Text('Privacy Policy'),
             onTap: () {
               _urlLaunch(
-                  'https://immadisairaj.me/radiosai/privacy_policy.html');
+                  'https://immadisairaj.github.io/radiosai/privacy_policy.html');
             },
           ),
           const Divider(),
