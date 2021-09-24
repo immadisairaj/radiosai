@@ -220,8 +220,10 @@ class _Search extends State<Search> {
           children: [
             if (!isSmallerScreen)
               AnimatedContainer(
-                height: _showDropDown ? null : 0,
-                duration: const Duration(milliseconds: 500),
+                height: _showDropDown ? height * 0.19 : 0,
+                duration: _showDropDown
+                    ? const Duration(milliseconds: 200)
+                    : const Duration(milliseconds: 300),
                 child: _searchForm(isDarkTheme),
               ),
             Expanded(
@@ -712,159 +714,179 @@ class _Search extends State<Search> {
 
   /// widget to show and select the new search value
   Widget _searchForm(bool isDarkTheme) {
+    double height = MediaQuery.of(context).size.height;
     return Form(
       key: _formKey,
       child: Material(
         color: Colors.transparent,
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 5, bottom: 8),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.9,
-                child: TextFormField(
-                  textInputAction: TextInputAction.search,
-                  onFieldSubmitted: (value) {
-                    _submit();
-                  },
-                  focusNode: _textFocusNode,
-                  autofocus: false,
-                  maxLines: 1,
-                  expands: false,
-                  controller: _textController,
-                  decoration: InputDecoration(
-                    hintText: 'Search...',
-                    contentPadding: const EdgeInsets.only(left: 20, right: 20),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
+            AnimatedContainer(
+              height: _showDropDown ? height * 0.08 : 0,
+              duration: const Duration(milliseconds: 200),
+              child: Padding(
+                padding: const EdgeInsets.only(top: 5, bottom: 8),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.9,
+                  child: TextFormField(
+                    textInputAction: TextInputAction.search,
+                    onFieldSubmitted: (value) {
+                      _submit();
+                    },
+                    focusNode: _textFocusNode,
+                    autofocus: false,
+                    maxLines: 1,
+                    expands: false,
+                    controller: _textController,
+                    decoration: InputDecoration(
+                      hintText: 'Search...',
+                      contentPadding:
+                          const EdgeInsets.only(left: 20, right: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      suffixIcon: (_textControllerClear)
+                          ? IconButton(
+                              onPressed: _textController.clear,
+                              icon: const Icon(Icons.clear_outlined),
+                              splashRadius: 24,
+                            )
+                          : null,
                     ),
-                    suffixIcon: (_textControllerClear)
-                        ? IconButton(
-                            onPressed: _textController.clear,
-                            icon: const Icon(Icons.clear_outlined),
-                            splashRadius: 24,
-                          )
-                        : null,
+                    validator: (value) {
+                      final validCharacters = RegExp(r'^[a-zA-Z0-9 ]+$');
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter some text to search';
+                      } else if (!validCharacters.hasMatch(value)) {
+                        return 'Only Alphanumeric/Spaces allowed';
+                      }
+                      description = value;
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    final validCharacters = RegExp(r'^[a-zA-Z0-9 ]+$');
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter some text to search';
-                    } else if (!validCharacters.hasMatch(value)) {
-                      return 'Only Alphanumeric/Spaces allowed';
-                    }
-                    description = value;
-                    return null;
-                  },
                 ),
               ),
             ),
-            Row(
-              children: [
-                Flexible(
-                  flex: 4,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 1),
-                        child: Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                              child: Center(
-                                child: Text(
-                                  'Category:',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: _categoryDropDown(isDarkTheme),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        child: Row(
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                              child: Center(
-                                child: Text(
-                                  'Played on:',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              width: (selectedDateString != '') ? 150 : 160,
-                              child: Center(
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 5),
-                                  child: TextField(
-                                    autofocus: false,
-                                    textAlign: TextAlign.center,
-                                    controller: _dateController,
-                                    decoration: InputDecoration(
-                                      hintText: 'Select Date',
-                                      hintStyle: const TextStyle(
+            AnimatedContainer(
+              height: _showDropDown ? height * 0.11 : 0,
+              duration: const Duration(milliseconds: 200),
+              child: Row(
+                children: [
+                  Flexible(
+                    flex: 4,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AnimatedContainer(
+                          height: _showDropDown ? height * 0.05 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 1),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  child: Center(
+                                    child: Text(
+                                      'Category:',
+                                      style: TextStyle(
                                         fontSize: 18,
                                       ),
-                                      suffixIcon: (selectedDateString == '')
-                                          ? const Icon(
-                                              Icons.date_range_outlined,
-                                              size: 20,
-                                            )
-                                          : null,
-                                      contentPadding: const EdgeInsets.all(0),
-                                      border: const OutlineInputBorder(
-                                        borderSide: BorderSide.none,
-                                      ),
                                     ),
-                                    onTap: () {
-                                      // Below lines stop keyboard from appearing
-                                      FocusScope.of(context)
-                                          .requestFocus(FocusNode());
-
-                                      // Show Date Picker
-                                      _selectDate(context);
-                                    },
                                   ),
                                 ),
-                              ),
+                                Center(
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: _categoryDropDown(isDarkTheme),
+                                  ),
+                                ),
+                              ],
                             ),
-                            if (selectedDateString != '')
-                              IconButton(
-                                icon: const Icon(CupertinoIcons.clear_circled),
-                                splashRadius: 24,
-                                iconSize: 20,
-                                onPressed: _clearDate,
-                              ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ],
+                        AnimatedContainer(
+                          height: _showDropDown ? height * 0.05 : 0,
+                          duration: const Duration(milliseconds: 200),
+                          child: Padding(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            child: Row(
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(left: 10, right: 10),
+                                  child: Center(
+                                    child: Text(
+                                      'Played on:',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: (selectedDateString != '') ? 150 : 160,
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      child: TextField(
+                                        autofocus: false,
+                                        textAlign: TextAlign.center,
+                                        controller: _dateController,
+                                        decoration: InputDecoration(
+                                          hintText: 'Select Date',
+                                          hintStyle: const TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                          suffixIcon: (selectedDateString == '')
+                                              ? const Icon(
+                                                  Icons.date_range_outlined,
+                                                  size: 20,
+                                                )
+                                              : null,
+                                          contentPadding:
+                                              const EdgeInsets.all(0),
+                                          border: const OutlineInputBorder(
+                                            borderSide: BorderSide.none,
+                                          ),
+                                        ),
+                                        onTap: () {
+                                          // Below lines stop keyboard from appearing
+                                          FocusScope.of(context)
+                                              .requestFocus(FocusNode());
+
+                                          // Show Date Picker
+                                          _selectDate(context);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (selectedDateString != '')
+                                  IconButton(
+                                    icon: const Icon(
+                                        CupertinoIcons.clear_circled),
+                                    splashRadius: 24,
+                                    iconSize: 20,
+                                    onPressed: _clearDate,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Flexible(
-                  flex: 1,
-                  child: ElevatedButton(
-                    child: const Icon(Icons.search_outlined),
-                    onPressed: _submit,
+                  Flexible(
+                    flex: 1,
+                    child: ElevatedButton(
+                      child: const Icon(Icons.search_outlined),
+                      onPressed: _submit,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),

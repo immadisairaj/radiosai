@@ -163,73 +163,87 @@ class _ScheduleData extends State<ScheduleData> {
           children: [
             if (!isSmallerScreen)
               AnimatedContainer(
-                height: _showDropDown ? null : 0,
-                duration: const Duration(milliseconds: 500),
+                height: _showDropDown ? height * 0.19 : 0,
+                duration: _showDropDown
+                    ? const Duration(microseconds: 200)
+                    : const Duration(milliseconds: 300),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
-                          style: TextStyle(
-                            fontSize: 19,
-                            color: Theme.of(context).secondaryHeaderColor,
-                            fontWeight: FontWeight.w600,
+                      AnimatedContainer(
+                        height: _showDropDown ? height * 0.045 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
+                            style: TextStyle(
+                              fontSize: 19,
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          children: const [
-                            Flexible(
-                              flex: 1,
-                              child: Center(
-                                child: Text(
-                                  'Select Zone',
-                                  style: TextStyle(
-                                    fontSize: 18,
+                      AnimatedContainer(
+                        height: _showDropDown ? height * 0.035 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            children: const [
+                              Flexible(
+                                flex: 1,
+                                child: Center(
+                                  child: Text(
+                                    'Select Zone',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
                                   ),
+                                ),
+                              ),
+                              Flexible(
+                                flex: 1,
+                                child: Center(
+                                  child: Text(
+                                    'Select Stream',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      AnimatedContainer(
+                        height: _showDropDown ? height * 0.08 : 0,
+                        duration: const Duration(milliseconds: 200),
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Center(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: _timeZoneDropDown(isDarkTheme),
                                 ),
                               ),
                             ),
                             Flexible(
-                              flex: 1,
                               child: Center(
-                                child: Text(
-                                  'Select Stream',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                  ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: _streamDropDown(isDarkTheme),
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                      Row(
-                        children: [
-                          Flexible(
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: _timeZoneDropDown(isDarkTheme),
-                              ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 5),
-                                child: _streamDropDown(isDarkTheme),
-                              ),
-                            ),
-                          ),
-                        ],
                       ),
                     ],
                   ),
