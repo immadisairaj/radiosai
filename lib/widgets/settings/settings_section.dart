@@ -18,9 +18,12 @@ class SettingsSection extends StatelessWidget {
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 8, left: 10, right: 10),
       child: Card(
-        elevation: 0.2,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(18)),
+        ),
+        elevation: 1,
         color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

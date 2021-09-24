@@ -27,7 +27,7 @@ class _Settings extends State<Settings> {
     buildNumber: '',
   );
 
-  final EdgeInsetsGeometry _contentPadding = const EdgeInsets.only(left: 10);
+  final EdgeInsetsGeometry _contentPadding = const EdgeInsets.only(left: 20);
 
   @override
   void initState() {

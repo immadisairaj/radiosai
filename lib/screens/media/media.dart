@@ -114,19 +114,24 @@ class _Media extends State<Media> {
             if (_isLoading == false &&
                 _finalMediaData[0][0] != 'null' &&
                 _finalMediaData[0][0] != 'timeout')
-              RefreshIndicator(
-                onRefresh: _refresh,
-                child: Scrollbar(
-                  radius: const Radius.circular(8),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
-                    child: ConstrainedBox(
-                      // have minimum height to reload even when 1 item is present
-                      constraints: BoxConstraints(
-                          minHeight: MediaQuery.of(context).size.height * 0.9),
+              Scrollbar(
+                radius: const Radius.circular(8),
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(
+                      parent: AlwaysScrollableScrollPhysics()),
+                  // TODO: remove constraints and have scrollable physics
+                  child: ConstrainedBox(
+                    // have minimum height to reload even when 1 item is present
+                    constraints: BoxConstraints(
+                        minHeight: MediaQuery.of(context).size.height * 0.9),
+                    child: Padding(
+                      padding:
+                          const EdgeInsets.only(top: 10, left: 10, right: 10),
                       child: Card(
-                        elevation: 0,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(18)),
+                        ),
+                        elevation: 1,
                         color:
                             isDarkTheme ? Colors.grey[800] : Colors.grey[200],
 
@@ -207,13 +212,13 @@ class _Media extends State<Media> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 8),
+                padding: const EdgeInsets.only(left: 8, right: 4),
                 child: Card(
                   elevation: 0,
                   color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
                   child: InkWell(
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 2, bottom: 2),
+                      padding: const EdgeInsets.only(top: 4, bottom: 4),
                       child: Center(
                         child: ListTile(
                           title: Text(mediaName),

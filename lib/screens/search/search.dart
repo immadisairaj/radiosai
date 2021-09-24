@@ -219,15 +219,19 @@ class _Search extends State<Search> {
         child: Column(
           children: [
             if (!isSmallerScreen)
-              AnimatedContainer(
-                height: _showDropDown ? height * 0.19 : 0,
-                duration: _showDropDown
-                    ? const Duration(milliseconds: 200)
-                    : const Duration(milliseconds: 300),
-                child: _searchForm(isDarkTheme),
+              Padding(
+                padding: const EdgeInsets.only(top: 5),
+                child: AnimatedContainer(
+                  height: _showDropDown ? height * 0.2 : 0,
+                  duration: _showDropDown
+                      ? const Duration(milliseconds: 200)
+                      : const Duration(milliseconds: 300),
+                  child: _searchForm(isDarkTheme),
+                ),
               ),
             Expanded(
               child: Stack(
+                alignment: Alignment.center,
                 children: [
                   if (_isLoading == false &&
                       _finalTableData[0][0] != 'null' &&
@@ -248,118 +252,130 @@ class _Search extends State<Search> {
                                 minHeight: (isSmallerScreen || !_showDropDown)
                                     ? MediaQuery.of(context).size.height * 0.9
                                     : MediaQuery.of(context).size.height * 0.7),
-                            child: Card(
-                              elevation: 0,
-                              color: isDarkTheme
-                                  ? Colors.grey[800]
-                                  : Colors.grey[200],
-                              child: ListView.builder(
-                                  shrinkWrap: true,
-                                  primary: false,
-                                  padding:
-                                      const EdgeInsets.only(top: 2, bottom: 2),
-                                  itemCount: _finalTableData.length,
-                                  itemBuilder: (context, index) {
-                                    List<String> rowData =
-                                        _finalTableData[index];
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 10, right: 10),
+                              child: Card(
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(18)),
+                                ),
+                                elevation: 1,
+                                color: isDarkTheme
+                                    ? Colors.grey[800]
+                                    : Colors.grey[200],
+                                child: ListView.builder(
+                                    shrinkWrap: true,
+                                    primary: false,
+                                    padding: const EdgeInsets.only(
+                                        top: 4, bottom: 4),
+                                    itemCount: _finalTableData.length,
+                                    itemBuilder: (context, index) {
+                                      List<String> rowData =
+                                          _finalTableData[index];
 
-                                    String category = rowData[1];
-                                    String programe = rowData[3];
-                                    String language = rowData[4];
-                                    String duration = '${rowData[5]} min';
-                                    String fids = rowData[6];
-                                    return Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(
-                                              left: 2, right: 2),
-                                          child: Card(
-                                            elevation: 0,
-                                            color: isDarkTheme
-                                                ? Colors.grey[800]
-                                                : Colors.grey[200],
-                                            child: InkWell(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 2, bottom: 2),
-                                                child: Center(
-                                                  child: ListTile(
-                                                    title: Text(
-                                                      category,
-                                                      style: TextStyle(
-                                                        color: Theme.of(context)
-                                                            .secondaryHeaderColor,
-                                                        fontWeight:
-                                                            FontWeight.w600,
+                                      String category = rowData[1];
+                                      String programe = rowData[3];
+                                      String language = rowData[4];
+                                      String duration = '${rowData[5]} min';
+                                      String fids = rowData[6];
+                                      return Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 4, right: 4),
+                                            child: Card(
+                                              elevation: 0,
+                                              color: isDarkTheme
+                                                  ? Colors.grey[800]
+                                                  : Colors.grey[200],
+                                              child: InkWell(
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 2, bottom: 2),
+                                                  child: Center(
+                                                    child: ListTile(
+                                                      title: Text(
+                                                        category,
+                                                        style: TextStyle(
+                                                          color: Theme.of(
+                                                                  context)
+                                                              .secondaryHeaderColor,
+                                                          fontWeight:
+                                                              FontWeight.w600,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    subtitle: Text(programe),
-                                                    trailing: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceEvenly,
-                                                      children: [
-                                                        Text(
-                                                          language,
-                                                          style: TextStyle(
-                                                            color: isDarkTheme
-                                                                ? Colors
-                                                                    .grey[300]
-                                                                : Colors
-                                                                    .grey[700],
+                                                      subtitle: Text(programe),
+                                                      trailing: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceEvenly,
+                                                        children: [
+                                                          Text(
+                                                            language,
+                                                            style: TextStyle(
+                                                              color: isDarkTheme
+                                                                  ? Colors
+                                                                      .grey[300]
+                                                                  : Colors.grey[
+                                                                      700],
+                                                            ),
                                                           ),
-                                                        ),
-                                                        Text(
-                                                          duration,
-                                                          style: TextStyle(
-                                                            color: isDarkTheme
-                                                                ? Colors
-                                                                    .grey[300]
-                                                                : Colors
-                                                                    .grey[700],
+                                                          Text(
+                                                            duration,
+                                                            style: TextStyle(
+                                                              color: isDarkTheme
+                                                                  ? Colors
+                                                                      .grey[300]
+                                                                  : Colors.grey[
+                                                                      700],
+                                                            ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ),
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                                focusColor: isDarkTheme
+                                                    ? Colors.grey[700]
+                                                    : Colors.grey[300],
+                                                onTap: () {
+                                                  if (fids != '') {
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                Media(
+                                                                    fids:
+                                                                        fids)));
+                                                  } else {
+                                                    _showSnackBar(
+                                                        context,
+                                                        'No media found!',
+                                                        const Duration(
+                                                            seconds: 1));
+                                                  }
+                                                },
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
-                                              focusColor: isDarkTheme
-                                                  ? Colors.grey[700]
-                                                  : Colors.grey[300],
-                                              onTap: () {
-                                                if (fids != '') {
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              Media(
-                                                                  fids: fids)));
-                                                } else {
-                                                  _showSnackBar(
-                                                      context,
-                                                      'No media found!',
-                                                      const Duration(
-                                                          seconds: 1));
-                                                }
-                                              },
-                                            ),
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8.0),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(8.0),
+                                              ),
                                             ),
                                           ),
-                                        ),
-                                        if (index != _finalTableData.length - 1)
-                                          const Divider(
-                                            height: 2,
-                                            thickness: 1.5,
-                                          ),
-                                      ],
-                                    );
-                                  }),
+                                          if (index !=
+                                              _finalTableData.length - 1)
+                                            const Divider(
+                                              height: 2,
+                                              thickness: 1.5,
+                                            ),
+                                        ],
+                                      );
+                                    }),
+                              ),
                             ),
                           ),
                         ),
@@ -417,10 +433,11 @@ class _Search extends State<Search> {
                         child: _showLoading(isDarkTheme),
                       ),
                     ),
+                  // Pagination when there are more than one page
+                  _pagination(),
                 ],
               ),
             ),
-            _pagination(),
           ],
         ),
       ),
@@ -722,7 +739,7 @@ class _Search extends State<Search> {
         child: Column(
           children: [
             AnimatedContainer(
-              height: _showDropDown ? height * 0.08 : 0,
+              height: _showDropDown ? height * 0.09 : 0,
               duration: const Duration(milliseconds: 200),
               child: Padding(
                 padding: const EdgeInsets.only(top: 5, bottom: 8),
@@ -739,7 +756,7 @@ class _Search extends State<Search> {
                     expands: false,
                     controller: _textController,
                     decoration: InputDecoration(
-                      hintText: 'Search...',
+                      hintText: 'Search \'Manasa Bhajare\'',
                       contentPadding:
                           const EdgeInsets.only(left: 20, right: 20),
                       border: OutlineInputBorder(
@@ -774,108 +791,115 @@ class _Search extends State<Search> {
                 children: [
                   Flexible(
                     flex: 4,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        AnimatedContainer(
-                          height: _showDropDown ? height * 0.05 : 0,
-                          duration: const Duration(milliseconds: 200),
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 1),
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  child: Center(
-                                    child: Text(
-                                      'Category:',
-                                      style: TextStyle(
-                                        fontSize: 18,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          AnimatedContainer(
+                            height: _showDropDown ? height * 0.05 : 0,
+                            duration: const Duration(milliseconds: 200),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 1),
+                              child: Row(
+                                children: [
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.only(left: 10, right: 10),
+                                    child: Center(
+                                      child: Text(
+                                        'Category:',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                                Center(
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 5),
-                                    child: _categoryDropDown(isDarkTheme),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        AnimatedContainer(
-                          height: _showDropDown ? height * 0.05 : 0,
-                          duration: const Duration(milliseconds: 200),
-                          child: Padding(
-                            padding: const EdgeInsets.only(bottom: 5),
-                            child: Row(
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(left: 10, right: 10),
-                                  child: Center(
-                                    child: Text(
-                                      'Played on:',
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: (selectedDateString != '') ? 150 : 160,
-                                  child: Center(
+                                  Center(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
-                                      child: TextField(
-                                        autofocus: false,
-                                        textAlign: TextAlign.center,
-                                        controller: _dateController,
-                                        decoration: InputDecoration(
-                                          hintText: 'Select Date',
-                                          hintStyle: const TextStyle(
-                                            fontSize: 18,
-                                          ),
-                                          suffixIcon: (selectedDateString == '')
-                                              ? const Icon(
-                                                  Icons.date_range_outlined,
-                                                  size: 20,
-                                                )
-                                              : null,
-                                          contentPadding:
-                                              const EdgeInsets.all(0),
-                                          border: const OutlineInputBorder(
-                                            borderSide: BorderSide.none,
-                                          ),
+                                      child: _categoryDropDown(isDarkTheme),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          AnimatedContainer(
+                            height: _showDropDown ? height * 0.05 : 0,
+                            duration: const Duration(milliseconds: 200),
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 5),
+                              child: Row(
+                                children: [
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.only(left: 10, right: 10),
+                                    child: Center(
+                                      child: Text(
+                                        'Played on:',
+                                        style: TextStyle(
+                                          fontSize: 18,
                                         ),
-                                        onTap: () {
-                                          // Below lines stop keyboard from appearing
-                                          FocusScope.of(context)
-                                              .requestFocus(FocusNode());
-
-                                          // Show Date Picker
-                                          _selectDate(context);
-                                        },
                                       ),
                                     ),
                                   ),
-                                ),
-                                if (selectedDateString != '')
-                                  IconButton(
-                                    icon: const Icon(
-                                        CupertinoIcons.clear_circled),
-                                    splashRadius: 24,
-                                    iconSize: 20,
-                                    onPressed: _clearDate,
+                                  SizedBox(
+                                    width:
+                                        (selectedDateString != '') ? 150 : 160,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5),
+                                        child: TextField(
+                                          autofocus: false,
+                                          textAlign: TextAlign.center,
+                                          controller: _dateController,
+                                          decoration: InputDecoration(
+                                            hintText: 'Select Date',
+                                            hintStyle: const TextStyle(
+                                              fontSize: 18,
+                                            ),
+                                            suffixIcon: (selectedDateString ==
+                                                    '')
+                                                ? const Icon(
+                                                    Icons.date_range_outlined,
+                                                    size: 20,
+                                                  )
+                                                : null,
+                                            contentPadding:
+                                                const EdgeInsets.all(0),
+                                            border: const OutlineInputBorder(
+                                              borderSide: BorderSide.none,
+                                            ),
+                                          ),
+                                          onTap: () {
+                                            // Below lines stop keyboard from appearing
+                                            FocusScope.of(context)
+                                                .requestFocus(FocusNode());
+
+                                            // Show Date Picker
+                                            _selectDate(context);
+                                          },
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                              ],
+                                  if (selectedDateString != '')
+                                    IconButton(
+                                      icon: const Icon(
+                                          CupertinoIcons.clear_circled),
+                                      splashRadius: 24,
+                                      iconSize: 20,
+                                      onPressed: _clearDate,
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   Flexible(
@@ -975,48 +999,65 @@ class _Search extends State<Search> {
     // and this scroll bar is always shown
     ScrollController scrollController = ScrollController();
 
-    return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.07,
-      child: Material(
-        color: Colors.transparent,
-        child: Scrollbar(
-          radius: const Radius.circular(8),
-          isAlwaysShown: true,
-          controller: scrollController,
-          child: ListView.builder(
-            padding: const EdgeInsets.all(0),
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
+    return Positioned(
+      bottom: 10,
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.07,
+          maxWidth: MediaQuery.of(context).size.width * 0.9,
+          minWidth: 50,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          color: Theme.of(context).backgroundColor,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 8, right: 8),
+          child: Scrollbar(
+            radius: const Radius.circular(8),
+            isAlwaysShown: true,
             controller: scrollController,
-            itemCount: lastPage,
-            itemBuilder: (context, index) {
-              bool isSelectedPage = (currentPage == index + 1);
-              return SizedBox(
-                width: 50,
-                child: Card(
-                  elevation: 0,
-                  color: isSelectedPage
-                      ? Theme.of(context).colorScheme.secondary
-                      : null,
-                  child: InkWell(
-                    child: Center(
-                      child: Text('${index + 1}'),
+            child: ListView.builder(
+              padding:
+                  const EdgeInsets.only(left: 4, right: 4, top: 2, bottom: 2),
+              shrinkWrap: true,
+              physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics()),
+              scrollDirection: Axis.horizontal,
+              controller: scrollController,
+              itemCount: lastPage,
+              itemBuilder: (context, index) {
+                bool isSelectedPage = (currentPage == index + 1);
+                return Material(
+                  color: Colors.transparent,
+                  child: SizedBox(
+                    width: 50,
+                    child: Card(
+                      elevation: 0,
+                      color: isSelectedPage
+                          ? Theme.of(context).colorScheme.secondary
+                          : null,
+                      child: InkWell(
+                        child: Center(
+                          child: Text('${index + 1}'),
+                        ),
+                        onTap: () {
+                          if (!isSelectedPage) {
+                            setState(() {
+                              currentPage = index + 1;
+                              _isChangingPage = true;
+                              _isSecondLoading = true;
+                              _isLoading = true;
+                              _updateURL();
+                            });
+                          }
+                        },
+                      ),
                     ),
-                    onTap: () {
-                      if (!isSelectedPage) {
-                        setState(() {
-                          currentPage = index + 1;
-                          _isChangingPage = true;
-                          _isSecondLoading = true;
-                          _isLoading = true;
-                          _updateURL();
-                        });
-                      }
-                    },
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
         ),
       ),
