@@ -296,13 +296,6 @@ class _Media extends State<Media> {
                       if (hasInternet) {
                         await startPlayer(
                             mediaName, _finalMediaLinks[index], isFileExists);
-                        // wait for the media to load
-                        await Future.delayed(const Duration(milliseconds: 500));
-                        // TODO: sometimes it navigates and pops immediately
-                        // have to wait for it to initialize then navigate?
-                        // or do something
-                        getIt<NavigationService>()
-                            .navigateTo(MediaPlayer.route);
                       } else {
                         _showSnackBar(
                             context,
@@ -534,20 +527,25 @@ class _Media extends State<Media> {
         int index = _audioManager.queueNotifier.value.indexOf(name);
         await _audioManager.load();
         await _audioManager.skipToQueueItem(index);
+        // navigate to media player
+        getIt<NavigationService>().navigateTo(MediaPlayer.route);
         _audioManager.play();
       } else {
         // if radio player is running, stop and play media
         _audioManager.stop();
-        initMediaService(name, link, isFileExists);
+        await initMediaService(name, link, isFileExists).then((value) =>
+            getIt<NavigationService>().navigateTo(MediaPlayer.route));
       }
     } else {
       // initialize the media service
-      initMediaService(name, link, isFileExists);
+      initMediaService(name, link, isFileExists).then(
+          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route));
     }
   }
 
   /// initialize the media player when no player is playing
-  void initMediaService(String name, String link, bool isFileExists) async {
+  Future<void> initMediaService(
+      String name, String link, bool isFileExists) async {
     final tempMediaItem =
         await MediaHelper.generateMediaItem(name, link, isFileExists);
 
