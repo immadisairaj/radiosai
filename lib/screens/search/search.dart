@@ -614,8 +614,10 @@ class _Search extends State<Search> {
           int clickHere = tempText.indexOf('- Click here');
           if (clickHere > 0) {
             int clickHereEnd = tempText.indexOf('-', clickHere + 2);
-            tempText = tempText.substring(0, clickHere) +
-                tempText.substring(clickHereEnd);
+            if (clickHereEnd > 0) {
+              tempText = tempText.substring(0, clickHere) +
+                  tempText.substring(clickHereEnd);
+            }
           }
           // TODO: get pdf scripts for discourse stream (click here tags)
 

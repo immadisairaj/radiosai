@@ -72,6 +72,7 @@ class _AudioArchive extends State<AudioArchive> {
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage(imageAsset),
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),

@@ -27,6 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 30
+    ndkVersion "23.0.7599858"
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -54,7 +55,7 @@ android {
             signingConfig signingConfigs.debug
             shrinkResources false // used by audio_source plugin
             ndk {
-                debugSymbolLevel 'FULL'
+                debugSymbolLevel 'SYMBOL_TABLE'
             }
         }
     }
