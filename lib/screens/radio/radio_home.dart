@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -32,13 +32,13 @@ class _RadioHome extends State<RadioHome> {
     super.initState();
 
     // Flutter Downloader
-    DownloadHelper.bindBackgroundIsolate();
-    FlutterDownloader.registerCallback(DownloadHelper.downloadCallback);
+    // DownloadHelper.bindBackgroundIsolate();
+    // FlutterDownloader.registerCallback(DownloadHelper.downloadCallback);
   }
 
   @override
   void dispose() {
-    DownloadHelper.unbindBackgroundIsolate();
+    // DownloadHelper.unbindBackgroundIsolate();
     super.dispose();
   }
 

@@ -8,7 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -569,16 +569,16 @@ class _MediaPlayer extends State<MediaPlayer> {
     }
     _downloadTasks.add(task);
     _showSnackBar(context, 'downloading', const Duration(seconds: 1));
-    final taskId = await FlutterDownloader.enqueue(
-      url: fileLink,
-      savedDir: _mediaDirectory,
-      fileName: fileName,
-      // showNotification: false,
-      showNotification: true,
-      openFileFromNotification: false,
-    );
+    // final taskId = await FlutterDownloader.enqueue(
+    //   url: fileLink,
+    //   savedDir: _mediaDirectory,
+    //   fileName: fileName,
+    //   // showNotification: false,
+    //   showNotification: true,
+    //   openFileFromNotification: false,
+    // );
     int i = _downloadTasks.indexOf(task);
-    _downloadTasks[i].taskId = taskId;
+    // _downloadTasks[i].taskId = taskId;
   }
 
   /// call to share the media link.

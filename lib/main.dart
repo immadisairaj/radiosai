@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
@@ -26,7 +26,7 @@ void main() async {
   // initialize flutter downloader
   WidgetsFlutterBinding.ensureInitialized();
   // TODO: change the debug to false later / remove
-  await FlutterDownloader.initialize(debug: false);
+  // await FlutterDownloader.initialize(debug: false);
 
   // initialize the audio service
   await setupServiceLocator();

@@ -4,7 +4,7 @@ import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/helper/media_helper.dart';
 
@@ -42,45 +42,45 @@ class DownloadHelper {
     bool isSuccess = IsolateNameServer.registerPortWithName(
         port.sendPort, 'downloader_send_port');
     if (!isSuccess) {
-      unbindBackgroundIsolate();
+      // unbindBackgroundIsolate();
       bindBackgroundIsolate();
       return;
     }
     // _downloadTasks = [];
     port.listen((data) {
       String id = data[0];
-      DownloadTaskStatus status = data[1];
+      // DownloadTaskStatus status = data[1];
       int progress = data[2];
 
       if (downloadTasks != null && downloadTasks.isNotEmpty) {
         final task =
             downloadTasks.firstWhere((element) => element.taskId == id);
 
-        task.status = status;
+        // task.status = status;
         task.progress = progress;
 
-        if (status == DownloadTaskStatus.failed) {
-          // remove the file if the task failed
-          FlutterDownloader.remove(taskId: id);
-          _showSnackBar(scaffoldKey.currentContext, 'failed downloading',
-              const Duration(seconds: 1));
-          return;
-        }
-
-        if (status == DownloadTaskStatus.complete) {
-          // print('downloaded ${task.name}');
-          // show that it is downloaded
-          _showSnackBar(
-              scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
-
-          _replaceMedia(task);
-
-          // update the media screen state
-          bool currentValue = mediaScreenBloc.getCurrentValue() ?? false;
-          mediaScreenBloc.changeMediaScreenState.add(!currentValue);
-          return;
-        }
+        // if (status == DownloadTaskStatus.failed) {
+        // remove the file if the task failed
+        // FlutterDownloader.remove(taskId: id);
+        _showSnackBar(scaffoldKey.currentContext, 'failed downloading',
+            const Duration(seconds: 1));
+        return;
       }
+
+      // if (status == DownloadTaskStatus.complete) {
+      // print('downloaded ${task.name}');
+      // show that it is downloaded
+      _showSnackBar(
+          scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
+
+      // _replaceMedia(task);
+
+      // update the media screen state
+      bool currentValue = mediaScreenBloc.getCurrentValue() ?? false;
+      mediaScreenBloc.changeMediaScreenState.add(!currentValue);
+      return;
+      // }
+      // }
     });
   }
 
@@ -115,17 +115,17 @@ class DownloadHelper {
   }
 
   /// callback for the download regarding the status
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
-  }
+  // static void downloadCallback(
+  //     String id, DownloadTaskStatus status, int progress) {
+  //   final SendPort send =
+  //       IsolateNameServer.lookupPortByName('downloader_send_port');
+  //   send.send([id, status, progress]);
+  // }
 
-  /// Unbind the background task for the whole app to download
-  static void unbindBackgroundIsolate() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
-  }
+  // /// Unbind the background task for the whole app to download
+  // static void unbindBackgroundIsolate() {
+  //   IsolateNameServer.removePortNameMapping('downloader_send_port');
+  // }
 }
 
 class DownloadTaskInfo {
@@ -134,7 +134,7 @@ class DownloadTaskInfo {
 
   String taskId = '';
   int progress = 0;
-  DownloadTaskStatus status = DownloadTaskStatus.undefined;
+  // DownloadTaskStatus status = DownloadTaskStatus.undefined;
 
   DownloadTaskInfo({this.name, this.link});
 }
