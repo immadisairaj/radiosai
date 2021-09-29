@@ -89,7 +89,9 @@ class _MediaPlayer extends State<MediaPlayer> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.arrow_back_outlined),
+                          icon: Icon((Platform.isAndroid)
+                              ? Icons.arrow_back_outlined
+                              : CupertinoIcons.back),
                           splashRadius: 24,
                           iconSize: 25,
                           onPressed: () {
@@ -433,8 +435,8 @@ class _MediaPlayer extends State<MediaPlayer> {
             child: Material(
               color: Colors.transparent,
               child: PopupMenuButton<String>(
-                icon: const Icon(
-                  Icons.more_vert,
+                icon: Icon(
+                  (Platform.isAndroid) ? Icons.more_vert : Icons.more_horiz,
                 ),
                 color: isDarkTheme ? Colors.grey[800] : Colors.grey[300],
                 iconSize: 25,

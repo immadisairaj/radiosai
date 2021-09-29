@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -304,8 +306,12 @@ class _RadioPlayer extends State<RadioPlayer>
   /// initial the radio service to start playing
   Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
-    await _audioManager.init(MediaType.radio,
-        {'radioStream': MyConstants.of(context).radioStream, 'index': index});
+    await _audioManager.init(MediaType.radio, {
+      'radioStream': (Platform.isAndroid)
+          ? MyConstants.of(context).radioStream
+          : MyConstants.of(context).radioStreamHttps,
+      'index': index
+    });
     _audioManager.playRadio(index);
     // setting the temporary radio stream index to track the
     // previous data after the index is updated

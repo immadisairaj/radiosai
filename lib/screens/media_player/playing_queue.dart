@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -63,8 +65,9 @@ class _PlayingQueue extends State<PlayingQueue> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             IconButton(
-                              icon: const Icon(
-                                  Icons.keyboard_arrow_down_outlined),
+                              icon: Icon((Platform.isAndroid)
+                                  ? Icons.keyboard_arrow_down_outlined
+                                  : CupertinoIcons.back),
                               splashRadius: 24,
                               iconSize: 25,
                               onPressed: () {

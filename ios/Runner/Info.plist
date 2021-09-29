@@ -48,6 +48,15 @@
 		<string>audio</string>
 	</array>
 
+	<!-- Below is for just audio -->
+	<!-- <key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+		<key>NSAllowsArbitraryLoadsForMedia</key>
+		<true/>
+	</dict> -->
+
 	<!-- Below is for url_launcher -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>

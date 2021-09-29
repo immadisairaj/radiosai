@@ -67,7 +67,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     double appBarSize =
-        AppBar().preferredSize.height + MediaQuery.of(context).padding.top;
+        kToolbarHeight + MediaQuery.of(context).padding.top + 25;
     Size screenSize = MediaQuery.of(context).size;
     bool isScaleFit = _scale <= 1;
     return Scaffold(
@@ -118,7 +118,9 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                       backgroundColor: Colors.transparent,
                       actions: [
                         IconButton(
-                          icon: const Icon(Icons.download_outlined),
+                          icon: Icon((Platform.isAndroid)
+                              ? Icons.download_outlined
+                              : CupertinoIcons.cloud_download),
                           tooltip: 'Save image',
                           splashRadius: 24,
                           onPressed: () => _saveImage(),

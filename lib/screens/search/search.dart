@@ -854,6 +854,7 @@ class _Search extends State<Search> {
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
+                                        // TODO: fix size in iOS
                                         child: TextField(
                                           autofocus: false,
                                           textAlign: TextAlign.center,
@@ -863,13 +864,17 @@ class _Search extends State<Search> {
                                             hintStyle: const TextStyle(
                                               fontSize: 18,
                                             ),
-                                            suffixIcon: (selectedDateString ==
-                                                    '')
-                                                ? const Icon(
-                                                    Icons.date_range_outlined,
-                                                    size: 20,
-                                                  )
-                                                : null,
+                                            suffixIcon:
+                                                (selectedDateString == '')
+                                                    ? Icon(
+                                                        (Platform.isAndroid)
+                                                            ? Icons
+                                                                .date_range_outlined
+                                                            : CupertinoIcons
+                                                                .calendar,
+                                                        size: 20,
+                                                      )
+                                                    : null,
                                             contentPadding:
                                                 const EdgeInsets.all(0),
                                             border: const OutlineInputBorder(
@@ -882,7 +887,9 @@ class _Search extends State<Search> {
                                                 .requestFocus(FocusNode());
 
                                             // Show Date Picker
-                                            _selectDate(context);
+                                            (Platform.isAndroid)
+                                                ? _selectDate(context)
+                                                : _selectDateIOS(context);
                                           },
                                         ),
                                       ),
@@ -907,7 +914,9 @@ class _Search extends State<Search> {
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
-                      child: const Icon(Icons.search_outlined),
+                      child: Icon((Platform.isAndroid)
+                          ? Icons.search_outlined
+                          : CupertinoIcons.search),
                       onPressed: _submit,
                     ),
                   ),
@@ -975,6 +984,59 @@ class _Search extends State<Search> {
         if (_textControllerClear) _submit();
       });
     }
+  }
+
+  /// select the played on date for iOS
+  void _selectDateIOS(BuildContext context) {
+    DateTime _picked;
+    if (selectedDate == null) {
+      _picked = now;
+    }
+    showCupertinoModalPopup(
+        context: context,
+        builder: (_) => Container(
+              color: Theme.of(context).backgroundColor,
+              height: 170,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.date,
+                      initialDateTime:
+                          (selectedDate == null) ? now : selectedDate,
+                      // Schedule started on 8th Nov 2019
+                      minimumDate: DateTime(2019, 11, 8),
+                      // Schedule is available for 1 day after current date
+                      maximumDate: now,
+                      onDateTimeChanged: (picked) {
+                        _picked = picked;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 70,
+                    child: CupertinoButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        if (_picked != null) {
+                          selectedDate = _picked;
+                          selectedDateString =
+                              DateFormat('MMMM dd, yyyy').format(selectedDate);
+                          _dateController.text = selectedDateString;
+
+                          setState(() {
+                            // if the category is changed and text is present, then search
+                            if (_textControllerClear) _submit();
+                          });
+                        }
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ));
   }
 
   /// clear the selected date

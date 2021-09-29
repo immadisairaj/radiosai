@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
@@ -41,7 +43,9 @@ class _TopMenu extends State<TopMenu> {
             Material(
               color: Colors.transparent,
               child: IconButton(
-                icon: const Icon(Icons.search_outlined),
+                icon: Icon((Platform.isAndroid)
+                    ? Icons.search_outlined
+                    : CupertinoIcons.search),
                 splashRadius: 24,
                 iconSize: 30,
                 tooltip: 'Search Radio Sai',
@@ -65,8 +69,8 @@ class _TopMenu extends State<TopMenu> {
               child: Material(
                 color: Colors.transparent,
                 child: PopupMenuButton<String>(
-                  icon: const Icon(
-                    Icons.more_vert,
+                  icon: Icon(
+                    (Platform.isAndroid) ? Icons.more_vert : Icons.more_horiz,
                     color: Colors.white,
                   ),
                   iconSize: 30,

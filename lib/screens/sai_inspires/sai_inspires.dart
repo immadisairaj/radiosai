@@ -94,10 +94,14 @@ class _SaiInspires extends State<SaiInspires> {
             onPressed: () => _copyText(context),
           ),
           IconButton(
-            icon: const Icon(Icons.date_range_outlined),
+            icon: Icon((Platform.isAndroid)
+                ? Icons.date_range_outlined
+                : CupertinoIcons.calendar),
             tooltip: 'Select date',
             splashRadius: 24,
-            onPressed: () => _selectDate(context),
+            onPressed: () => (Platform.isAndroid)
+                ? _selectDate(context)
+                : _selectDateIOS(context),
           ),
         ],
       ),
@@ -425,6 +429,50 @@ class _SaiInspires extends State<SaiInspires> {
         _updateURL(selectedDate);
       });
     }
+  }
+
+  /// select the date and update the url for iOS
+  void _selectDateIOS(BuildContext context) {
+    DateTime _picked;
+    showCupertinoModalPopup(
+        context: context,
+        builder: (_) => Container(
+              color: Theme.of(context).backgroundColor,
+              height: 170,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.date,
+                      initialDateTime: selectedDate,
+                      // Sai Inspires started on 19th Feb 2011
+                      minimumDate: DateTime(2011, 2, 19),
+                      maximumDate: now,
+                      onDateTimeChanged: (picked) {
+                        _picked = picked;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 70,
+                    child: CupertinoButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        if (_picked != null && _picked != selectedDate) {
+                          setState(() {
+                            _isLoading = true;
+                            selectedDate = _picked;
+                            _updateURL(selectedDate);
+                          });
+                        }
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ));
   }
 
   /// copy text content if data is visible

@@ -149,11 +149,15 @@ class _ScheduleData extends State<ScheduleData> {
         }),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.date_range_outlined),
+            icon: Icon((Platform.isAndroid)
+                ? Icons.date_range_outlined
+                : CupertinoIcons.calendar),
             tooltip: 'Select date',
             splashRadius: 24,
-            onPressed: () => _selectDate(context),
-          ),
+            onPressed: () => (Platform.isAndroid)
+                ? _selectDate(context)
+                : _selectDateIOS(context),
+          )
         ],
       ),
       body: Container(
@@ -646,6 +650,51 @@ class _ScheduleData extends State<ScheduleData> {
         _updateURL(selectedDate);
       });
     }
+  }
+
+  /// select the date and update the url for iOS
+  void _selectDateIOS(BuildContext context) {
+    DateTime _picked;
+    showCupertinoModalPopup(
+        context: context,
+        builder: (_) => Container(
+              color: Theme.of(context).backgroundColor,
+              height: 170,
+              child: Column(
+                children: [
+                  SizedBox(
+                    height: 100,
+                    child: CupertinoDatePicker(
+                      mode: CupertinoDatePickerMode.date,
+                      initialDateTime: selectedDate,
+                      // Schedule started on 8th Nov 2019
+                      minimumDate: DateTime(2019, 11, 8),
+                      // Schedule is available for 1 day after current date
+                      maximumDate: now.add(const Duration(days: 1)),
+                      onDateTimeChanged: (picked) {
+                        _picked = picked;
+                      },
+                    ),
+                  ),
+                  SizedBox(
+                    height: 70,
+                    child: CupertinoButton(
+                      child: const Text('OK'),
+                      onPressed: () {
+                        if (_picked != null && _picked != selectedDate) {
+                          setState(() {
+                            _isLoading = true;
+                            selectedDate = _picked;
+                            _updateURL(selectedDate);
+                          });
+                        }
+                        Navigator.of(context).maybePop();
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ));
   }
 
   /// refresh the data

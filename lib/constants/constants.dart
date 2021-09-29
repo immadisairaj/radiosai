@@ -6,7 +6,7 @@ class MyConstants extends InheritedWidget {
 
   const MyConstants({Widget child, Key key}) : super(key: key, child: child);
 
-  /// The list of radio sai stream source names and links
+  /// The list of radio sai stream http source names and links
   final Map<String, String> radioStream = const {
     'Asia Stream': 'http://stream.radiosai.net:8002',
     'Africa Stream': 'http://stream.radiosai.net:8004',
@@ -14,6 +14,18 @@ class MyConstants extends InheritedWidget {
     'Bhajan Stream': 'http://stream.radiosai.net:8000',
     'Discourse Stream': 'http://stream.radiosai.net:8008',
     'Telugu Stream': 'http://stream.radiosai.net:8020'
+  };
+
+  /// The list of radio sai stream https source names and links
+  ///
+  /// HTTPS is used by iOS
+  final Map<String, String> radioStreamHttps = const {
+    'Asia Stream': 'https://stream.sssmediacentre.org:8443/asia',
+    'Africa Stream': 'https://stream.sssmediacentre.org:8443/afri',
+    'America Stream': 'https://stream.sssmediacentre.org:8443/ameri',
+    'Bhajan Stream': 'https://stream.sssmediacentre.org:8443/bhajan',
+    'Discourse Stream': 'https://stream.sssmediacentre.org:8443/discourse',
+    'Telugu Stream': 'https://stream.sssmediacentre.org:8443/telugu'
   };
 
   /// The list of items in the top menu bar
