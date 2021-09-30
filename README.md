@@ -21,7 +21,10 @@ __Radio Streams include:__
 - America Stream
 - Bhajan Stream
 - Discourse Stream
-- Telugu Stream.
+- Telugu Stream
+
+| :memo: Radio Player in iOS takes some time to load due to a constraint with the http audio source |
+|-|
 
 __Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
 
@@ -39,7 +42,7 @@ __Sai Inspires:__ Thought of the day by Sai Inspires is present inside the app. 
 
 __Search:__ Searching through out the Radio Sai audio is now possible from the app. Once can search by filtering through category or streamed date. Listening to the audio from the search is also possible now in the app.
 
-__Media Player:__ A new media player which is capable of playing the media seamlessly while caching the media. Sharing the link to the media, adding/removing from playing queue, shuffling the queue, repeat mode, and other functions are present in the media player. Drawback of the player is the playing queue is cleared when radio is played or when the player is stopped.
+__Media Player:__ A new media player which is capable of playing the media seamlessly. Sharing the link to the media, adding/removing from playing queue, shuffling the queue, repeat mode, and other functions are present in the media player. Drawback of the player is the playing queue is cleared when radio is played or when the player is stopped.
 
 __Free without ads:__ The app is free for all and will remain the same further. No ads are shown in the app. This is thanks to Radio Sai Global Harmony for providing the content without any charge. Like the Sai Organization, we believe in selfless service and do not expect anything in return.
 

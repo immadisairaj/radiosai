@@ -399,7 +399,7 @@ class _RadioPlayer extends State<RadioPlayer>
       // stop and play the stream
       if (isPlaying) {
         loadingStreamBloc.changeLoadingState.add(true);
-        _audioManager.stop();
+        await _audioManager.stop();
         initRadioService(radioStreamIndex);
       } else {
         // if the index is changed when user is not playing

@@ -35,6 +35,7 @@ class AudioManager {
     _setMediaType(mediaType);
     // calling stop is necessary because it has initializer too in it
     await stop();
+    await initAudioPlayer();
     (mediaType == MediaType.radio)
         ? await _initRadio(params)
         : await _initMedia(params);
@@ -238,11 +239,15 @@ class AudioManager {
   void next() => _audioHandler.skipToNext();
 
   /// Stops the audio.
+  Future<void> stop() async {
+    await _audioHandler.stop();
+    return _audioHandler.customAction('clear');
+  }
+
   /// Clears and initializes the player for the next set
   /// to play.
-  Future<void> stop() async {
-    _audioHandler.stop();
-    await _audioHandler.customAction('clear');
+  Future<void> initAudioPlayer() {
+    return _audioHandler.customAction('init');
   }
 
   void dispose() {

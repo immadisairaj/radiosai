@@ -166,7 +166,12 @@ class MyAudioHandler extends BaseAudioHandler {
       if (_player.shuffleModeEnabled) {
         index = _player.shuffleIndices[index];
       }
-      mediaItem.add(playlist[index]);
+      try {
+        mediaItem.add(playlist[index]);
+      } catch (_) {
+        // Do nothing when cached
+        // Error occurs when changing stream, but it works fine
+      }
     });
   }
 
@@ -233,6 +238,9 @@ class MyAudioHandler extends BaseAudioHandler {
         _player.pause();
         await _queue.clear();
         queue.add(queue.value..clear());
+        break;
+      // init method is called when starting a new player
+      case 'init':
         _initAudioHandler();
         break;
       case 'load':

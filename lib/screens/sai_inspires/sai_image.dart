@@ -140,6 +140,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   // Below are image saving to gallery methods
 
   /// save image to gallery
+  // TODO: fix issue after delete image in iOS and download again
   void _saveImage() async {
     if (!_isCopying) {
       _isCopying = true;

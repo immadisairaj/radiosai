@@ -66,6 +66,6 @@
 
 	<!-- Below is for gallery saver -->
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>save sai inspires</string>
+	<string>Save Sai Inspires Image</string>
 </dict>
 </plist>
