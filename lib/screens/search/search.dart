@@ -734,6 +734,7 @@ class _Search extends State<Search> {
   /// widget to show and select the new search value
   Widget _searchForm(bool isDarkTheme) {
     double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Form(
       key: _formKey,
       child: Material(
@@ -848,13 +849,13 @@ class _Search extends State<Search> {
                                     ),
                                   ),
                                   SizedBox(
-                                    width:
-                                        (selectedDateString != '') ? 150 : 160,
+                                    width: (selectedDateString != '')
+                                        ? width * 0.3
+                                        : width * 0.4,
                                     child: Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 5),
-                                        // TODO: fix size in iOS
                                         child: TextField(
                                           autofocus: false,
                                           textAlign: TextAlign.center,
@@ -976,7 +977,7 @@ class _Search extends State<Search> {
     );
     if (picked != null) {
       selectedDate = picked;
-      selectedDateString = DateFormat('MMMM dd, yyyy').format(selectedDate);
+      selectedDateString = DateFormat('MMM dd, yyyy').format(selectedDate);
       _dateController.text = selectedDateString;
 
       setState(() {
@@ -1022,7 +1023,7 @@ class _Search extends State<Search> {
                         if (_picked != null) {
                           selectedDate = _picked;
                           selectedDateString =
-                              DateFormat('MMMM dd, yyyy').format(selectedDate);
+                              DateFormat('MMM dd, yyyy').format(selectedDate);
                           _dateController.text = selectedDateString;
 
                           setState(() {
