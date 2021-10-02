@@ -23,7 +23,7 @@ __Radio Streams include:__
 - Discourse Stream
 - Telugu Stream
 
-| :memo: Radio Player in iOS takes some time to load due to a constraint with the http audio source |
+| :memo: Radio Streams in iOS takes some time to load due to a constraint with the http audio source |
 |-|
 
 __Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
@@ -144,6 +144,7 @@ Thanks to the Open Source community for providing such great libraries and frame
 - __Operating System:__ macOS Big Sur version 11.6
 - __Gradle version:__ 7.0.2
 - __Android Emulator:__ Pixel 4a API 30
+- __iOS Simulator:__ Apple iPhone 13 iOS 15
 
 ## Privacy Policy
 

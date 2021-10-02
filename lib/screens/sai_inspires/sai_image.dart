@@ -140,7 +140,6 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   // Below are image saving to gallery methods
 
   /// save image to gallery
-  // TODO: fix issue after delete image in iOS and download again
   void _saveImage() async {
     if (!_isCopying) {
       _isCopying = true;
@@ -158,11 +157,13 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       await Directory(imageDirectoryPath).create(recursive: true);
       var imageFilePath = '$imageDirectoryPath/${widget.fileName}.jpg';
       var imageFile = File(imageFilePath);
-      if (imageFile.existsSync()) {
-        _showSnackBar(
-            context, 'Image already saved', const Duration(seconds: 1));
-        return;
-      }
+      // below code is removed because the downloaded image after deleting
+      // is being stored in the same location in order to restore deleted file
+      // if (imageFile.existsSync()) {
+      //   _showSnackBar(
+      //       context, 'Image already saved', const Duration(seconds: 1));
+      //   return;
+      // }
       var cacheFile = await _getCachedFile();
       imageFile.writeAsBytesSync(cacheFile.readAsBytesSync());
       // save to gallery after saved to external file
