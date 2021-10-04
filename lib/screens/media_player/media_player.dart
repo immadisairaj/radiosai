@@ -99,6 +99,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                           },
                         ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             _shareButton(),
                             _options(isDarkTheme),
@@ -419,7 +420,11 @@ class _MediaPlayer extends State<MediaPlayer> {
               : 'loading media...';
           if (mediaId == 'loading media...') {
             return IconButton(
-              icon: const Icon(Icons.more_vert),
+              icon: Icon(
+                (Platform.isAndroid)
+                    ? Icons.more_vert
+                    : CupertinoIcons.ellipsis,
+              ),
               iconSize: 25,
               splashRadius: 24,
               onPressed: () {},
@@ -436,7 +441,9 @@ class _MediaPlayer extends State<MediaPlayer> {
               color: Colors.transparent,
               child: PopupMenuButton<String>(
                 icon: Icon(
-                  (Platform.isAndroid) ? Icons.more_vert : Icons.more_horiz,
+                  (Platform.isAndroid)
+                      ? Icons.more_vert
+                      : CupertinoIcons.ellipsis,
                 ),
                 color: isDarkTheme ? Colors.grey[800] : Colors.grey[300],
                 iconSize: 25,
@@ -490,7 +497,9 @@ class _MediaPlayer extends State<MediaPlayer> {
               : 'loading media...';
           if (mediaId == 'loading media...') {
             return IconButton(
-              icon: const Icon(Icons.share_outlined),
+              icon: Icon((Platform.isAndroid)
+                  ? Icons.share_outlined
+                  : CupertinoIcons.share),
               iconSize: 25,
               splashRadius: 24,
               onPressed: () {},
@@ -498,7 +507,9 @@ class _MediaPlayer extends State<MediaPlayer> {
           }
 
           return IconButton(
-            icon: const Icon(Icons.share_outlined),
+            icon: Icon((Platform.isAndroid)
+                ? Icons.share_outlined
+                : CupertinoIcons.share),
             splashRadius: 24,
             iconSize: 25,
             tooltip: 'Share link',

@@ -511,8 +511,18 @@ class _Media extends State<Media> {
         _audioManager.mediaTypeNotifier.value == MediaType.media) {
       // check if radio is running / media is running
       if (_audioManager.mediaTypeNotifier.value == MediaType.media) {
-        // if trying to add the current playing media, do nothing
-        if (_audioManager.currentSongTitleNotifier.value == name) return;
+        // if trying to add the current playing media
+        if (_audioManager.currentSongTitleNotifier.value == name) {
+          // if the current playing media is paused, play else navigate
+          if (_audioManager.playButtonNotifier.value !=
+              PlayButtonState.playing) {
+            _audioManager.play();
+          }
+          _showSnackBar(context, 'This is same as currently playing',
+              const Duration(seconds: 2));
+          getIt<NavigationService>().navigateTo(MediaPlayer.route);
+          return;
+        }
 
         _audioManager.pause();
 

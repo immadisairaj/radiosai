@@ -220,7 +220,7 @@ class _Search extends State<Search> {
           children: [
             if (!isSmallerScreen)
               Padding(
-                padding: const EdgeInsets.only(top: 5),
+                padding: EdgeInsets.only(top: _showDropDown ? 5 : 0),
                 child: AnimatedContainer(
                   height: _showDropDown ? height * 0.2 : 0,
                   duration: _showDropDown
@@ -241,6 +241,7 @@ class _Search extends State<Search> {
                     RefreshIndicator(
                       onRefresh: _refresh,
                       child: Scrollbar(
+                        controller: _scrollController,
                         radius: const Radius.circular(8),
                         child: SingleChildScrollView(
                           controller: _scrollController,
@@ -997,11 +998,11 @@ class _Search extends State<Search> {
         context: context,
         builder: (_) => Container(
               color: Theme.of(context).backgroundColor,
-              height: 170,
+              height: 200,
               child: Column(
                 children: [
                   SizedBox(
-                    height: 100,
+                    height: 120,
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime:
@@ -1086,8 +1087,7 @@ class _Search extends State<Search> {
               padding:
                   const EdgeInsets.only(left: 4, right: 4, top: 2, bottom: 2),
               shrinkWrap: true,
-              physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
+              physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               controller: scrollController,
               itemCount: lastPage,

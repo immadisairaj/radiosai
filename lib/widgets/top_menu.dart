@@ -70,7 +70,9 @@ class _TopMenu extends State<TopMenu> {
                 color: Colors.transparent,
                 child: PopupMenuButton<String>(
                   icon: Icon(
-                    (Platform.isAndroid) ? Icons.more_vert : Icons.more_horiz,
+                    (Platform.isAndroid)
+                        ? Icons.more_vert
+                        : CupertinoIcons.ellipsis,
                     color: Colors.white,
                   ),
                   iconSize: 30,

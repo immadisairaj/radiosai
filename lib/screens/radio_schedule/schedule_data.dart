@@ -263,6 +263,7 @@ class _ScheduleData extends State<ScheduleData> {
                       onRefresh: _refresh,
                       child: Scrollbar(
                         radius: const Radius.circular(8),
+                        controller: _scrollController,
                         child: SingleChildScrollView(
                           controller: _scrollController,
                           physics: const BouncingScrollPhysics(
@@ -659,11 +660,11 @@ class _ScheduleData extends State<ScheduleData> {
         context: context,
         builder: (_) => Container(
               color: Theme.of(context).backgroundColor,
-              height: 170,
+              height: 200,
               child: Column(
                 children: [
                   SizedBox(
-                    height: 100,
+                    height: 120,
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime: selectedDate,

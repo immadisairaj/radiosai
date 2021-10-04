@@ -438,11 +438,11 @@ class _SaiInspires extends State<SaiInspires> {
         context: context,
         builder: (_) => Container(
               color: Theme.of(context).backgroundColor,
-              height: 170,
+              height: 200,
               child: Column(
                 children: [
                   SizedBox(
-                    height: 100,
+                    height: 120,
                     child: CupertinoDatePicker(
                       mode: CupertinoDatePickerMode.date,
                       initialDateTime: selectedDate,
