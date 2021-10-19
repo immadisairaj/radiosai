@@ -33,8 +33,8 @@ class AudioManager {
   /// in [params].
   Future<void> init(MediaType mediaType, Map<String, dynamic> params) async {
     _setMediaType(mediaType);
-    // calling stop is necessary because it has initializer too in it
-    await stop();
+    // calling clear is necessary
+    await clear();
     await initAudioPlayer();
     (mediaType == MediaType.radio)
         ? await _initRadio(params)
@@ -240,6 +240,13 @@ class AudioManager {
 
   /// Stops the audio.
   Future<void> stop() async {
+    await _audioHandler.pause();
+    return _audioHandler.stop();
+  }
+
+  /// Clears the audio queue
+  Future<void> clear() async {
+    await _audioHandler.pause();
     await _audioHandler.stop();
     return _audioHandler.customAction('clear');
   }
@@ -282,13 +289,5 @@ class AudioManager {
 
   Future<void> load() {
     return _audioHandler.customAction('load');
-  }
-
-  void add() {
-    // TODO: implement add
-  }
-
-  void remove() {
-    // TODO: implement remove
   }
 }

@@ -67,6 +67,7 @@ class _RadioPlayer extends State<RadioPlayer>
     // true when the widgets are building
     initialBuild = true;
     super.initState();
+
     // false the value after the build is completed
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       initialBuild = false;
@@ -335,7 +336,7 @@ class _RadioPlayer extends State<RadioPlayer>
     if (!isPlaying) {
       if (_audioManager.mediaTypeNotifier.value == MediaType.media) {
         // stop if media player is loaded
-        _audioManager.stop();
+        _audioManager.clear();
         _startRadioPlayer(index, isPlaying, hasInternet);
       } else {
         _startRadioPlayer(index, isPlaying, hasInternet);
@@ -399,7 +400,7 @@ class _RadioPlayer extends State<RadioPlayer>
       // stop and play the stream
       if (isPlaying) {
         loadingStreamBloc.changeLoadingState.add(true);
-        await _audioManager.stop();
+        await _audioManager.clear();
         initRadioService(radioStreamIndex);
       } else {
         // if the index is changed when user is not playing
