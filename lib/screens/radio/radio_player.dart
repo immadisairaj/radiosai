@@ -109,7 +109,7 @@ class _RadioPlayer extends State<RadioPlayer>
         if (_panelController.isPanelOpen) return _panelController.close();
         // sends the app to background when backpress on home screen
         // achieved by adding a method in MainActivity.kt to support send app to background
-        return const MethodChannel('android_app_retain')
+        return const MethodChannel('com.immadisairaj/android_app_retain')
             .invokeMethod('sendToBackground');
       },
       child: Scaffold(
