@@ -71,6 +71,15 @@ class MediaHelper {
     return '$mediaBaseUrl$id';
   }
 
+  /// returns the name of file from the given link
+  /// Example returns "TEST A" when given "https:dl.radiosai.org/TEST_A.mp3"
+  static String getNameFromLink(String link) {
+    link = link.replaceAll(mediaBaseUrl, '');
+    link = link.replaceAll(mediaFileType, '');
+    link = link.replaceAll('_', ' ');
+    return link;
+  }
+
   /// changes http link to file - removes base url and appends directory
   ///
   /// returns file URI

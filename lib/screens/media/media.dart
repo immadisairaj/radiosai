@@ -116,39 +116,37 @@ class _Media extends State<Media> {
                 _finalMediaData[0][0] != 'timeout')
               Scrollbar(
                 radius: const Radius.circular(8),
-                child: SingleChildScrollView(
+                child: CustomScrollView(
                   physics: const BouncingScrollPhysics(
                       parent: AlwaysScrollableScrollPhysics()),
-                  // TODO: remove constraints and have scrollable physics
-                  child: ConstrainedBox(
-                    // have minimum height to reload even when 1 item is present
-                    constraints: BoxConstraints(
-                        minHeight: MediaQuery.of(context).size.height * 0.9),
-                    child: Padding(
-                      padding:
-                          const EdgeInsets.only(top: 10, left: 10, right: 10),
-                      child: Card(
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(18)),
-                        ),
-                        elevation: 1,
-                        color:
-                            isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding:
+                            const EdgeInsets.only(top: 10, left: 10, right: 10),
+                        child: Card(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(18)),
+                          ),
+                          elevation: 1,
+                          color:
+                              isDarkTheme ? Colors.grey[800] : Colors.grey[200],
 
-                        // updates the media screen based on download state
-                        child: Consumer<MediaScreenBloc>(
-                            builder: (context, _mediaScreenStateBloc, child) {
-                          return StreamBuilder<bool>(
-                              stream: _mediaScreenStateBloc.mediaScreenStream,
-                              builder: (context, snapshot) {
-                                // can use the below commented line to know if updated
-                                // bool screenUpdate = snapshot.data ?? false;
-                                return _mediaItems(isDarkTheme);
-                              });
-                        }),
+                          // updates the media screen based on download state
+                          child: Consumer<MediaScreenBloc>(
+                              builder: (context, _mediaScreenStateBloc, child) {
+                            return StreamBuilder<bool>(
+                                stream: _mediaScreenStateBloc.mediaScreenStream,
+                                builder: (context, snapshot) {
+                                  // can use the below commented line to know if updated
+                                  // bool screenUpdate = snapshot.data ?? false;
+                                  return _mediaItems(isDarkTheme);
+                                });
+                          }),
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             // show when no data is retrieved
@@ -241,6 +239,7 @@ class _Media extends State<Media> {
                                 splashRadius: 24,
                                 tooltip: 'Add to playing queue',
                                 onPressed: () async {
+                                  // Change in radio_home.dart if changed here
                                   bool hasInternet =
                                       Provider.of<InternetConnectionStatus>(
                                               context,
@@ -492,6 +491,7 @@ class _Media extends State<Media> {
   // ****************** //
   //   Audio Service    //
   // ****************** //
+  // Change in radio_home.dart if changed here
 
   /// start the media player
   ///

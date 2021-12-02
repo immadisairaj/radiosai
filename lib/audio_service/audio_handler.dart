@@ -38,6 +38,7 @@ class MyAudioHandler extends BaseAudioHandler {
     // notification click when audio playing
     AudioService.notificationClicked.listen((clicked) {
       if (clicked && _mediaType == MediaType.media) {
+        // replicating same in radio_home.dart for incoming url's
         // if audio is media, then open media player
         if (!getIt<NavigationService>().isCurrentRoute(MediaPlayer.route)) {
           // if current route is media player, keep it as it is

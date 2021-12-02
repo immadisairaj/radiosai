@@ -243,142 +243,142 @@ class _Search extends State<Search> {
                       child: Scrollbar(
                         controller: _scrollController,
                         radius: const Radius.circular(8),
-                        child: SingleChildScrollView(
+                        child: CustomScrollView(
                           controller: _scrollController,
                           physics: const BouncingScrollPhysics(
                               parent: AlwaysScrollableScrollPhysics()),
-                          child: ConstrainedBox(
-                            // have minimum height to reload even when 1 item is present
-                            constraints: BoxConstraints(
-                                minHeight: (isSmallerScreen || !_showDropDown)
-                                    ? MediaQuery.of(context).size.height * 0.9
-                                    : MediaQuery.of(context).size.height * 0.7),
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(left: 10, right: 10),
-                              child: Card(
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(18)),
-                                ),
-                                elevation: 1,
-                                color: isDarkTheme
-                                    ? Colors.grey[800]
-                                    : Colors.grey[200],
-                                child: ListView.builder(
-                                    shrinkWrap: true,
-                                    primary: false,
-                                    padding: const EdgeInsets.only(
-                                        top: 4, bottom: 4),
-                                    itemCount: _finalTableData.length,
-                                    itemBuilder: (context, index) {
-                                      List<String> rowData =
-                                          _finalTableData[index];
+                          slivers: [
+                            SliverToBoxAdapter(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 10, right: 10),
+                                child: Card(
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                  elevation: 1,
+                                  color: isDarkTheme
+                                      ? Colors.grey[800]
+                                      : Colors.grey[200],
+                                  child: ListView.builder(
+                                      shrinkWrap: true,
+                                      primary: false,
+                                      padding: const EdgeInsets.only(
+                                          top: 4, bottom: 4),
+                                      itemCount: _finalTableData.length,
+                                      itemBuilder: (context, index) {
+                                        List<String> rowData =
+                                            _finalTableData[index];
 
-                                      String category = rowData[1];
-                                      String programe = rowData[3];
-                                      String language = rowData[4];
-                                      String duration = '${rowData[5]} min';
-                                      String fids = rowData[6];
-                                      return Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                left: 4, right: 4),
-                                            child: Card(
-                                              elevation: 0,
-                                              color: isDarkTheme
-                                                  ? Colors.grey[800]
-                                                  : Colors.grey[200],
-                                              child: InkWell(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2, bottom: 2),
-                                                  child: Center(
-                                                    child: ListTile(
-                                                      title: Text(
-                                                        category,
-                                                        style: TextStyle(
-                                                          color: Theme.of(
-                                                                  context)
-                                                              .secondaryHeaderColor,
-                                                          fontWeight:
-                                                              FontWeight.w600,
+                                        String category = rowData[1];
+                                        String programe = rowData[3];
+                                        String language = rowData[4];
+                                        String duration = '${rowData[5]} min';
+                                        String fids = rowData[6];
+                                        return Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 4, right: 4),
+                                              child: Card(
+                                                elevation: 0,
+                                                color: isDarkTheme
+                                                    ? Colors.grey[800]
+                                                    : Colors.grey[200],
+                                                child: InkWell(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2, bottom: 2),
+                                                    child: Center(
+                                                      child: ListTile(
+                                                        title: Text(
+                                                          category,
+                                                          style: TextStyle(
+                                                            color: Theme.of(
+                                                                    context)
+                                                                .secondaryHeaderColor,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                         ),
-                                                      ),
-                                                      subtitle: Text(programe),
-                                                      trailing: Column(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .spaceEvenly,
-                                                        children: [
-                                                          Text(
-                                                            language,
-                                                            style: TextStyle(
-                                                              color: isDarkTheme
-                                                                  ? Colors
-                                                                      .grey[300]
-                                                                  : Colors.grey[
-                                                                      700],
+                                                        subtitle:
+                                                            Text(programe),
+                                                        trailing: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceEvenly,
+                                                          children: [
+                                                            Text(
+                                                              language,
+                                                              style: TextStyle(
+                                                                color: isDarkTheme
+                                                                    ? Colors.grey[
+                                                                        300]
+                                                                    : Colors.grey[
+                                                                        700],
+                                                              ),
                                                             ),
-                                                          ),
-                                                          Text(
-                                                            duration,
-                                                            style: TextStyle(
-                                                              color: isDarkTheme
-                                                                  ? Colors
-                                                                      .grey[300]
-                                                                  : Colors.grey[
-                                                                      700],
+                                                            Text(
+                                                              duration,
+                                                              style: TextStyle(
+                                                                color: isDarkTheme
+                                                                    ? Colors.grey[
+                                                                        300]
+                                                                    : Colors.grey[
+                                                                        700],
+                                                              ),
                                                             ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                  focusColor: isDarkTheme
+                                                      ? Colors.grey[700]
+                                                      : Colors.grey[300],
+                                                  onTap: () {
+                                                    if (fids != '') {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder: (context) =>
+                                                                  Media(
+                                                                      fids:
+                                                                          fids)));
+                                                    } else {
+                                                      _showSnackBar(
+                                                          context,
+                                                          'No media found!',
+                                                          const Duration(
+                                                              seconds: 1));
+                                                    }
+                                                  },
                                                 ),
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
-                                                focusColor: isDarkTheme
-                                                    ? Colors.grey[700]
-                                                    : Colors.grey[300],
-                                                onTap: () {
-                                                  if (fids != '') {
-                                                    Navigator.push(
-                                                        context,
-                                                        MaterialPageRoute(
-                                                            builder: (context) =>
-                                                                Media(
-                                                                    fids:
-                                                                        fids)));
-                                                  } else {
-                                                    _showSnackBar(
-                                                        context,
-                                                        'No media found!',
-                                                        const Duration(
-                                                            seconds: 1));
-                                                  }
-                                                },
-                                              ),
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8.0),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          8.0),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          if (index !=
-                                              _finalTableData.length - 1)
-                                            const Divider(
-                                              height: 2,
-                                              thickness: 1.5,
-                                            ),
-                                        ],
-                                      );
-                                    }),
+                                            if (index !=
+                                                _finalTableData.length - 1)
+                                              const Divider(
+                                                height: 2,
+                                                thickness: 1.5,
+                                              ),
+                                          ],
+                                        );
+                                      }),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                     ),
@@ -1234,27 +1234,28 @@ class _Search extends State<Search> {
         javascriptMode: JavascriptMode.unrestricted,
         onPageFinished: (url) async {
           if (_isFirstLoading) {
-            await _webViewController.evaluateJavascript(
+            await _webViewController.runJavascript(
                 "document.forms[1].description_s.value=\"${globalFormData['description_s']}\";");
-            await _webViewController.evaluateJavascript(
+            await _webViewController.runJavascript(
                 "document.forms[1].filesperpage_s.value=${globalFormData['filesperpage_s']};");
-            await _webViewController.evaluateJavascript(
+            await _webViewController.runJavascript(
                 "document.forms[1].category_s.value=\"${globalFormData['category_s']}\";");
-            // await _webViewController.evaluateJavascript(
+            // await _webViewController.runJavascript(
             //     "document.forms[1].language_s.value=\"${globalFormData['language_s']}\";");
-            await _webViewController.evaluateJavascript(
+            await _webViewController.runJavascript(
                 "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
-            await _webViewController.evaluateJavascript(
+            await _webViewController.runJavascript(
                 "document.forms[1].page.value=${globalFormData['page']};");
-            await _webViewController.evaluateJavascript("javascript:check()");
+            await _webViewController.runJavascript("javascript:check()");
             _isFirstLoading = false;
           } else if (_isSecondLoading) {
-            await _webViewController.evaluateJavascript(
-                'javascript:pager(${globalFormData['page']})');
+            await _webViewController
+                .runJavascript('javascript:pager(${globalFormData['page']})');
             _isSecondLoading = false;
           } else {
-            String tempResponse = await _webViewController.evaluateJavascript(
-                "encodeURIComponent(document.documentElement.outerHTML)");
+            String tempResponse =
+                await _webViewController.runJavascriptReturningResult(
+                    "encodeURIComponent(document.documentElement.outerHTML)");
             tempResponse = Uri.decodeComponent(tempResponse);
 
             // put data into cache after getting from internet

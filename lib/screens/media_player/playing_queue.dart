@@ -172,8 +172,8 @@ class _PlayingQueue extends State<PlayingQueue> {
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                       onTap: () async {
-                        // stop the player (which clears the queue)
-                        _audioManager.stop();
+                        // stop the player and clear the queue
+                        _audioManager.clear();
                         Navigator.maybePop(context);
                       },
                     ),
