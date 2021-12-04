@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:radiosai/audio_service/audio_handler.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 
 GetIt getIt = GetIt.instance;
 
@@ -15,4 +16,7 @@ Future<void> setupServiceLocator() async {
 
   // global navigator
   getIt.registerLazySingleton(() => NavigationService());
+
+  // scaffold helper
+  getIt.registerLazySingleton(() => ScaffoldHelper());
 }

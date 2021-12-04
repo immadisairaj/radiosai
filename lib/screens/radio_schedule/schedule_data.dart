@@ -9,8 +9,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -376,11 +378,11 @@ class _ScheduleData extends State<ScheduleData> {
                                                                       fids:
                                                                           fids)));
                                                     } else {
-                                                      _showSnackBar(
-                                                          context,
-                                                          'No media found!',
-                                                          const Duration(
-                                                              seconds: 1));
+                                                      getIt<ScaffoldHelper>()
+                                                          .showSnackBar(
+                                                              'No media found!',
+                                                              const Duration(
+                                                                  seconds: 1));
                                                     }
                                                   },
                                                 ),
@@ -818,19 +820,6 @@ class _ScheduleData extends State<ScheduleData> {
         },
       ),
     );
-  }
-
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
   }
 
   /// Shimmer effect while loading the content

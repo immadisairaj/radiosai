@@ -124,7 +124,7 @@ class MediaHelper {
   /// doesn't care if the directory is created or not
   static Future<String> getDirectoryPath() async {
     final publicDirectoryPath = await _getPublicPath();
-    final albumName = 'Sai Voice';
+    const albumName = 'Sai Voice';
     final mediaDirectoryPath = '$publicDirectoryPath/$albumName';
     return mediaDirectoryPath;
   }

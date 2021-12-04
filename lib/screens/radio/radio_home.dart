@@ -15,6 +15,7 @@ import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
 // import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
@@ -151,14 +152,15 @@ class _RadioHome extends State<RadioHome> {
     if (hasInternet) {
       final response = await http.head(uri);
       if (response.statusCode != 200) {
-        _showSnackBar(context, 'Link is not valid', const Duration(seconds: 1));
+        getIt<ScaffoldHelper>()
+            .showSnackBar('Link is not valid', const Duration(seconds: 1));
         return;
       }
       // treated as file is absent
       startPlayer(name, receivedLink, false);
     } else {
-      _showSnackBar(context, 'Connect to the Internet and try again',
-          const Duration(seconds: 2));
+      getIt<ScaffoldHelper>().showSnackBar(
+          'Connect to the Internet and try again', const Duration(seconds: 2));
     }
   }
 
@@ -192,8 +194,8 @@ class _RadioHome extends State<RadioHome> {
               PlayButtonState.playing) {
             _audioManager.play();
           }
-          _showSnackBar(context, 'This is same as currently playing',
-              const Duration(seconds: 2));
+          getIt<ScaffoldHelper>().showSnackBar(
+              'This is same as currently playing', const Duration(seconds: 2));
           getIt<NavigationService>().navigateTo(MediaPlayer.route);
           return;
         }
@@ -291,19 +293,6 @@ class _RadioHome extends State<RadioHome> {
         getIt<NavigationService>().navigateTo(MediaPlayer.route);
       }
     }
-  }
-
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
   }
 
   /// Handle incoming links - the ones that the app will recieve from the OS

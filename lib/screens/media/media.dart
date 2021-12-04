@@ -20,6 +20,7 @@ import 'package:radiosai/bloc/media/media_screen_bloc.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -262,18 +263,17 @@ class _Media extends State<Media> {
                                           _finalMediaLinks[index],
                                           isFileExists);
                                       if (added) {
-                                        _showSnackBar(context, 'Added to queue',
+                                        getIt<ScaffoldHelper>().showSnackBar(
+                                            'Added to queue',
                                             const Duration(seconds: 1));
                                       } else {
-                                        _showSnackBar(
-                                            context,
+                                        getIt<ScaffoldHelper>().showSnackBar(
                                             'Already in queue',
                                             const Duration(seconds: 1));
                                       }
                                     }
                                   } else {
-                                    _showSnackBar(
-                                        context,
+                                    getIt<ScaffoldHelper>().showSnackBar(
                                         'Connect to the Internet and try again',
                                         const Duration(seconds: 2));
                                   }
@@ -296,8 +296,7 @@ class _Media extends State<Media> {
                         await startPlayer(
                             mediaName, _finalMediaLinks[index], isFileExists);
                       } else {
-                        _showSnackBar(
-                            context,
+                        getIt<ScaffoldHelper>().showSnackBar(
                             'Connect to the Internet and try again',
                             const Duration(seconds: 2));
                       }
@@ -421,7 +420,8 @@ class _Media extends State<Media> {
   _downloadMediaFile(String fileLink) async {
     var permission = await _canSave();
     if (!permission) {
-      _showSnackBar(context, 'Accept storage permission to save image',
+      getIt<ScaffoldHelper>().showSnackBar(
+          'Accept storage permission to save image',
           const Duration(seconds: 2));
       return;
     }
@@ -437,11 +437,13 @@ class _Media extends State<Media> {
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {
-      _showSnackBar(context, 'no internet', const Duration(seconds: 1));
+      getIt<ScaffoldHelper>()
+          .showSnackBar('no internet', const Duration(seconds: 1));
       return;
     }
     _downloadTasks.add(task);
-    _showSnackBar(context, 'downloading', const Duration(seconds: 1));
+    getIt<ScaffoldHelper>()
+        .showSnackBar('downloading', const Duration(seconds: 1));
     // final taskId = await FlutterDownloader.enqueue(
     //   url: fileLink,
     //   savedDir: _mediaDirectory,
@@ -475,19 +477,6 @@ class _Media extends State<Media> {
     }
   }
 
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
-  }
-
   // ****************** //
   //   Audio Service    //
   // ****************** //
@@ -518,8 +507,8 @@ class _Media extends State<Media> {
               PlayButtonState.playing) {
             _audioManager.play();
           }
-          _showSnackBar(context, 'This is same as currently playing',
-              const Duration(seconds: 2));
+          getIt<ScaffoldHelper>().showSnackBar(
+              'This is same as currently playing', const Duration(seconds: 2));
           getIt<NavigationService>().navigateTo(MediaPlayer.route);
           return;
         }

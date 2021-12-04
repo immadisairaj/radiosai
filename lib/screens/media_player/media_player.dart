@@ -20,6 +20,7 @@ import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -536,14 +537,6 @@ class _MediaPlayer extends State<MediaPlayer> {
         onPressed: _audioManager.pause,
       );
 
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
-  }
-
   /// sets the path for directory
   ///
   /// doesn't care if the directory is created or not
@@ -561,7 +554,8 @@ class _MediaPlayer extends State<MediaPlayer> {
   _downloadMediaFile(String fileLink) async {
     var permission = await _canSave();
     if (!permission) {
-      _showSnackBar(context, 'Accept storage permission to save image',
+      getIt<ScaffoldHelper>().showSnackBar(
+          'Accept storage permission to save image',
           const Duration(seconds: 2));
       return;
     }
@@ -577,11 +571,13 @@ class _MediaPlayer extends State<MediaPlayer> {
     if (_downloadTasks.contains(task)) return;
     var connectionStatus = await InternetConnectionChecker().connectionStatus;
     if (connectionStatus == InternetConnectionStatus.disconnected) {
-      _showSnackBar(context, 'no internet', const Duration(seconds: 1));
+      getIt<ScaffoldHelper>()
+          .showSnackBar('no internet', const Duration(seconds: 1));
       return;
     }
     _downloadTasks.add(task);
-    _showSnackBar(context, 'downloading', const Duration(seconds: 1));
+    getIt<ScaffoldHelper>()
+        .showSnackBar('downloading', const Duration(seconds: 1));
     // final taskId = await FlutterDownloader.enqueue(
     //   url: fileLink,
     //   savedDir: _mediaDirectory,

@@ -10,6 +10,8 @@ import 'package:html/parser.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -351,11 +353,11 @@ class _Search extends State<Search> {
                                                                       fids:
                                                                           fids)));
                                                     } else {
-                                                      _showSnackBar(
-                                                          context,
-                                                          'No media found!',
-                                                          const Duration(
-                                                              seconds: 1));
+                                                      getIt<ScaffoldHelper>()
+                                                          .showSnackBar(
+                                                              'No media found!',
+                                                              const Duration(
+                                                                  seconds: 1));
                                                     }
                                                   },
                                                 ),
@@ -679,19 +681,6 @@ class _Search extends State<Search> {
     setState(() {
       _textControllerClear = _textController.text != '';
     });
-  }
-
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
   }
 
   /// submits the form if it is valid.

@@ -8,6 +8,8 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 
 class SaiImage extends StatefulWidget {
   const SaiImage({
@@ -148,8 +150,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       final imageDirectoryPath = '$publicDirectoryPath/$albumName';
       var permission = await _canSave();
       if (!permission) {
-        _showSnackBar(
-            context,
+        getIt<ScaffoldHelper>().showSnackBar(
             'Accept manage storage permission to save image to gallery',
             const Duration(seconds: 2));
         return;
@@ -170,8 +171,8 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       GallerySaver.saveImage(imageFilePath, albumName: albumName)
           .then((isSave) {
         if (isSave) {
-          _showSnackBar(
-              context, 'Saved to gallery', const Duration(seconds: 1));
+          getIt<ScaffoldHelper>()
+              .showSnackBar('Saved to gallery', const Duration(seconds: 1));
         }
       });
     }
@@ -196,24 +197,6 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     } else {
       return false;
     }
-  }
-
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
-          content: Text(text),
-          behavior: SnackBarBehavior.floating,
-          duration: duration,
-        ))
-        .closed
-        .then((value) {
-      _isCopying = false;
-    });
   }
 
   // Below are toggling full screen methods

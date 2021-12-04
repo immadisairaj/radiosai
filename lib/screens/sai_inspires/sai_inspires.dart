@@ -8,8 +8,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/sai_inspires/sai_image.dart';
 import 'package:radiosai/widgets/no_data.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
@@ -46,9 +49,6 @@ class _SaiInspires extends State<SaiInspires> {
 
   /// variable to show the loading screen
   bool _isLoading = true;
-
-  // used by snackbar
-  bool _isCopying = false;
 
   String _dateText = ''; // date text id is 'Head'
   String _thoughtOfTheDay = 'THOUGHT OF THE DAY';
@@ -88,10 +88,12 @@ class _SaiInspires extends State<SaiInspires> {
         }),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.copy_outlined),
-            tooltip: 'Copy to clipboard',
+            icon: Icon((Platform.isAndroid)
+                ? Icons.share_outlined
+                : CupertinoIcons.share),
+            tooltip: 'Share Sai Inspires',
             splashRadius: 24,
-            onPressed: () => _copyText(context),
+            onPressed: () => _share(context),
           ),
           IconButton(
             icon: Icon((Platform.isAndroid)
@@ -475,46 +477,26 @@ class _SaiInspires extends State<SaiInspires> {
             ));
   }
 
-  /// copy text content if data is visible
-  void _copyText(BuildContext context) {
-    if (!_isCopying) {
-      _isCopying = true;
-      if (_contentText != 'null') {
-        String copyData;
-        if (_isOldData) {
-          copyData =
-              '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba';
-        } else {
-          copyData =
-              '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba\n\n$_quote';
-        }
-        // if data is visible, copy to clipboard
-        Clipboard.setData(ClipboardData(text: copyData)).then((value) {
-          _showSnackBar(context, 'Copied to clipboard');
-        });
+  /// share Sai Inspires content if data is visible
+  void _share(BuildContext context) async {
+    if (_contentText != 'null') {
+      String textData;
+      if (_isOldData) {
+        textData =
+            '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba';
       } else {
-        // if there is no data, show snackbar that no data is available
-        _showSnackBar(context, 'No data available to copy');
+        textData =
+            '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba\n\n$_quote';
       }
+      textData = 'Sai Inspires - ' + textData;
+      // if data is visible, share the data
+      File imageFile = await DefaultCacheManager().getSingleFile(imageFinalUrl);
+      Share.shareFiles([imageFile.path], text: textData);
+    } else {
+      // if there is no data, show snackbar that no data is available
+      getIt<ScaffoldHelper>().showSnackBar(
+          'No data available to share', const Duration(seconds: 1));
     }
-  }
-
-  /// show snack bar for the current context
-  ///
-  /// pass current [context],
-  /// [text] to display and
-  /// [duration] for how much time to display
-  void _showSnackBar(BuildContext context, String text) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(
-          content: Text(text),
-          behavior: SnackBarBehavior.floating,
-          duration: const Duration(seconds: 1),
-        ))
-        .closed
-        .then((value) {
-      _isCopying = false;
-    });
   }
 
   /// widget for new data >= 26 Aug 2011

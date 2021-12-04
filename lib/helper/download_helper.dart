@@ -12,19 +12,10 @@ class DownloadHelper {
   static List<DownloadTaskInfo> downloadTasks = [];
   static ReceivePort port = ReceivePort();
 
-  static GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
   static MediaScreenBloc mediaScreenBloc = MediaScreenBloc();
 
   static List<DownloadTaskInfo> getDownloadTasks() {
     return downloadTasks;
-  }
-
-  /// returns the scaffold key which is used by the whole app
-  ///
-  /// attaches to the base page of the app
-  static GlobalKey<ScaffoldState> getScaffoldKey() {
-    return scaffoldKey;
   }
 
   /// returns the bloc for media screen
@@ -62,16 +53,16 @@ class DownloadHelper {
         // if (status == DownloadTaskStatus.failed) {
         // remove the file if the task failed
         // FlutterDownloader.remove(taskId: id);
-        _showSnackBar(scaffoldKey.currentContext, 'failed downloading',
-            const Duration(seconds: 1));
+        // _showSnackBar(scaffoldKey.currentContext, 'failed downloading',
+        //     const Duration(seconds: 1));
         return;
       }
 
       // if (status == DownloadTaskStatus.complete) {
       // print('downloaded ${task.name}');
       // show that it is downloaded
-      _showSnackBar(
-          scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
+      // _showSnackBar(
+      //     scaffoldKey.currentContext, 'downloaded', Duration(seconds: 1));
 
       // _replaceMedia(task);
 
