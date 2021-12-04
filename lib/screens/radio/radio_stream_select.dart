@@ -105,13 +105,17 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   }
                 }
               },
-              child: Container(
-                child: Center(
-                  child: Text(
-                    radioName,
-                    style: TextStyle(
-                      fontSize: 16.5,
-                      color: isMatch ? Colors.white : null,
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.fitWidth,
+                  child: Padding(
+                    padding: const EdgeInsets.all(3.0),
+                    child: Text(
+                      radioName,
+                      style: TextStyle(
+                        fontSize: 16.5,
+                        color: isMatch ? Colors.white : null,
+                      ),
                     ),
                   ),
                 ),

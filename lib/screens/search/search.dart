@@ -263,120 +263,7 @@ class _Search extends State<Search> {
                                   color: isDarkTheme
                                       ? Colors.grey[800]
                                       : Colors.grey[200],
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      primary: false,
-                                      padding: const EdgeInsets.only(
-                                          top: 4, bottom: 4),
-                                      itemCount: _finalTableData.length,
-                                      itemBuilder: (context, index) {
-                                        List<String> rowData =
-                                            _finalTableData[index];
-
-                                        String category = rowData[1];
-                                        String programe = rowData[3];
-                                        String language = rowData[4];
-                                        String duration = '${rowData[5]} min';
-                                        String fids = rowData[6];
-                                        return Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4, right: 4),
-                                              child: Card(
-                                                elevation: 0,
-                                                color: isDarkTheme
-                                                    ? Colors.grey[800]
-                                                    : Colors.grey[200],
-                                                child: InkWell(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 2, bottom: 2),
-                                                    child: Center(
-                                                      child: ListTile(
-                                                        title: Text(
-                                                          category,
-                                                          style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .secondaryHeaderColor,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                        subtitle:
-                                                            Text(programe),
-                                                        trailing: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            Text(
-                                                              language,
-                                                              style: TextStyle(
-                                                                color: isDarkTheme
-                                                                    ? Colors.grey[
-                                                                        300]
-                                                                    : Colors.grey[
-                                                                        700],
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              duration,
-                                                              style: TextStyle(
-                                                                color: isDarkTheme
-                                                                    ? Colors.grey[
-                                                                        300]
-                                                                    : Colors.grey[
-                                                                        700],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  focusColor: isDarkTheme
-                                                      ? Colors.grey[700]
-                                                      : Colors.grey[300],
-                                                  onTap: () {
-                                                    if (fids != '') {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  Media(
-                                                                      fids:
-                                                                          fids)));
-                                                    } else {
-                                                      getIt<ScaffoldHelper>()
-                                                          .showSnackBar(
-                                                              'No media found!',
-                                                              const Duration(
-                                                                  seconds: 1));
-                                                    }
-                                                  },
-                                                ),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                ),
-                                              ),
-                                            ),
-                                            if (index !=
-                                                _finalTableData.length - 1)
-                                              const Divider(
-                                                height: 2,
-                                                thickness: 1.5,
-                                              ),
-                                          ],
-                                        );
-                                      }),
+                                  child: _searchItems(isDarkTheme),
                                 ),
                               ),
                             ),
@@ -446,6 +333,97 @@ class _Search extends State<Search> {
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
     );
+  }
+
+  /// widget for search items (contains the list)
+  ///
+  /// showed after getting data
+  Widget _searchItems(bool isDarkTheme) {
+    return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        padding: const EdgeInsets.only(top: 4, bottom: 4),
+        itemCount: _finalTableData.length,
+        itemBuilder: (context, index) {
+          List<String> rowData = _finalTableData[index];
+
+          String category = rowData[1];
+          String programe = rowData[3];
+          String language = rowData[4];
+          String duration = '${rowData[5]} min';
+          String fids = rowData[6];
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                child: Card(
+                  elevation: 0,
+                  color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                  child: InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 2, bottom: 2),
+                      child: Center(
+                        child: ListTile(
+                          title: Text(
+                            category,
+                            style: TextStyle(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(programe),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                language,
+                                style: TextStyle(
+                                  color: isDarkTheme
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
+                              ),
+                              Text(
+                                duration,
+                                style: TextStyle(
+                                  color: isDarkTheme
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                    focusColor:
+                        isDarkTheme ? Colors.grey[700] : Colors.grey[300],
+                    onTap: () {
+                      if (fids != '') {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Media(fids: fids)));
+                      } else {
+                        getIt<ScaffoldHelper>().showSnackBar(
+                            'No media found!', const Duration(seconds: 1));
+                      }
+                    },
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+              if (index != _finalTableData.length - 1)
+                const Divider(
+                  height: 2,
+                  thickness: 1.5,
+                ),
+            ],
+          );
+        });
   }
 
   /// sets the [finalUrl]
@@ -685,6 +663,8 @@ class _Search extends State<Search> {
 
   /// submits the form if it is valid.
   /// else, shows the error
+  ///
+  /// if valid, loads and shows the data
   void _submit() {
     if (_formKey.currentState.validate()) {
       FocusScope.of(context).unfocus();
@@ -1037,6 +1017,8 @@ class _Search extends State<Search> {
       selectedDateString = '';
       _dateController.text = selectedDateString;
     });
+    // show the data after clearing the filter
+    _submit();
   }
 
   /// widget - pagination

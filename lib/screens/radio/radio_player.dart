@@ -199,11 +199,14 @@ class _RadioPlayer extends State<RadioPlayer>
             SizedBox(height: 12),
             SliderHandle(),
             SizedBox(height: 12),
-            Text(
-              'Select Stream',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            FittedBox(
+              fit: BoxFit.fitHeight,
+              child: Text(
+                'Select Stream',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],

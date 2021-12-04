@@ -182,12 +182,18 @@ class _ScheduleData extends State<ScheduleData> {
                         duration: const Duration(milliseconds: 200),
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 8),
-                          child: Text(
-                            'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
-                            style: TextStyle(
-                              fontSize: 19,
-                              color: Theme.of(context).secondaryHeaderColor,
-                              fontWeight: FontWeight.w600,
+                          child: FittedBox(
+                            fit: BoxFit.fitHeight,
+                            child: Padding(
+                              padding: const EdgeInsets.all(2.0),
+                              child: Text(
+                                'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
+                                style: TextStyle(
+                                  fontSize: 19,
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ),
                         ),
@@ -202,10 +208,13 @@ class _ScheduleData extends State<ScheduleData> {
                               Flexible(
                                 flex: 1,
                                 child: Center(
-                                  child: Text(
-                                    'Select Zone',
-                                    style: TextStyle(
-                                      fontSize: 18,
+                                  child: FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Select Zone',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -213,10 +222,13 @@ class _ScheduleData extends State<ScheduleData> {
                               Flexible(
                                 flex: 1,
                                 child: Center(
-                                  child: Text(
-                                    'Select Stream',
-                                    style: TextStyle(
-                                      fontSize: 18,
+                                  child: FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Select Stream',
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -284,124 +296,7 @@ class _ScheduleData extends State<ScheduleData> {
                                   color: isDarkTheme
                                       ? Colors.grey[800]
                                       : Colors.grey[200],
-                                  child: ListView.builder(
-                                      shrinkWrap: true,
-                                      primary: false,
-                                      padding: const EdgeInsets.only(
-                                          top: 2, bottom: 2),
-                                      itemCount: _finalTableData.length,
-                                      itemBuilder: (context, index) {
-                                        List<String> rowData =
-                                            _finalTableData[index];
-                                        String localTime =
-                                            '${rowData[1]} $_finalLocalTime';
-                                        String gmtTime = '${rowData[2]} GMT';
-                                        String duration = '${rowData[4]} min';
-                                        List<String> mainRowData =
-                                            rowData[3].split('<split>');
-                                        String category = mainRowData[0];
-                                        String programe = mainRowData[1];
-                                        String fids = mainRowData[2].substring(
-                                            1, mainRowData[2].length - 1);
-                                        return Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 4, right: 4),
-                                              child: Card(
-                                                elevation: 0,
-                                                color: isDarkTheme
-                                                    ? Colors.grey[800]
-                                                    : Colors.grey[200],
-                                                child: InkWell(
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            top: 4, bottom: 4),
-                                                    child: Center(
-                                                      child: ListTile(
-                                                        title: Text(
-                                                          category,
-                                                          style: TextStyle(
-                                                            color: Theme.of(
-                                                                    context)
-                                                                .secondaryHeaderColor,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                        subtitle:
-                                                            Text(programe),
-                                                        trailing: Column(
-                                                          mainAxisAlignment:
-                                                              MainAxisAlignment
-                                                                  .spaceEvenly,
-                                                          children: [
-                                                            Text(
-                                                              localTime,
-                                                              style: TextStyle(
-                                                                color: isDarkTheme
-                                                                    ? Colors.grey[
-                                                                        300]
-                                                                    : Colors.grey[
-                                                                        700],
-                                                              ),
-                                                            ),
-                                                            Text(
-                                                              duration,
-                                                              style: TextStyle(
-                                                                color: isDarkTheme
-                                                                    ? Colors.grey[
-                                                                        300]
-                                                                    : Colors.grey[
-                                                                        700],
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                  focusColor: isDarkTheme
-                                                      ? Colors.grey[700]
-                                                      : Colors.grey[300],
-                                                  onTap: () {
-                                                    if (fids != '') {
-                                                      Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  Media(
-                                                                      fids:
-                                                                          fids)));
-                                                    } else {
-                                                      getIt<ScaffoldHelper>()
-                                                          .showSnackBar(
-                                                              'No media found!',
-                                                              const Duration(
-                                                                  seconds: 1));
-                                                    }
-                                                  },
-                                                ),
-                                                shape: RoundedRectangleBorder(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          8.0),
-                                                ),
-                                              ),
-                                            ),
-                                            if (index !=
-                                                _finalTableData.length - 1)
-                                              const Divider(
-                                                height: 2,
-                                                thickness: 1.5,
-                                              ),
-                                          ],
-                                        );
-                                      }),
+                                  child: _scheduleItems(isDarkTheme),
                                 ),
                               ),
                             ),
@@ -451,6 +346,98 @@ class _ScheduleData extends State<ScheduleData> {
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
     );
+  }
+
+  /// widget for schedule items (contains the list)
+  ///
+  /// showed after getting data
+  Widget _scheduleItems(bool isDarkTheme) {
+    return ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        padding: const EdgeInsets.only(top: 2, bottom: 2),
+        itemCount: _finalTableData.length,
+        itemBuilder: (context, index) {
+          List<String> rowData = _finalTableData[index];
+          String localTime = '${rowData[1]} $_finalLocalTime';
+          // String gmtTime = '${rowData[2]} GMT';
+          String duration = '${rowData[4]} min';
+          List<String> mainRowData = rowData[3].split('<split>');
+          String category = mainRowData[0];
+          String programe = mainRowData[1];
+          String fids = mainRowData[2].substring(1, mainRowData[2].length - 1);
+          return Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(left: 4, right: 4),
+                child: Card(
+                  elevation: 0,
+                  color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                  child: InkWell(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 4, bottom: 4),
+                      child: Center(
+                        child: ListTile(
+                          title: Text(
+                            category,
+                            style: TextStyle(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(programe),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              Text(
+                                localTime,
+                                style: TextStyle(
+                                  color: isDarkTheme
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
+                              ),
+                              Text(
+                                duration,
+                                style: TextStyle(
+                                  color: isDarkTheme
+                                      ? Colors.grey[300]
+                                      : Colors.grey[700],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    borderRadius: BorderRadius.circular(8.0),
+                    focusColor:
+                        isDarkTheme ? Colors.grey[700] : Colors.grey[300],
+                    onTap: () {
+                      if (fids != '') {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Media(fids: fids)));
+                      } else {
+                        getIt<ScaffoldHelper>().showSnackBar(
+                            'No media found!', const Duration(seconds: 1));
+                      }
+                    },
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+              ),
+              if (index != _finalTableData.length - 1)
+                const Divider(
+                  height: 2,
+                  thickness: 1.5,
+                ),
+            ],
+          );
+        });
   }
 
   /// sets the [finalUrl]
