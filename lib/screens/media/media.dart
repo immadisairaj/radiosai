@@ -1,23 +1,21 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
-import 'package:radiosai/helper/download_helper.dart';
+// import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/helper/scaffold_helper.dart';
@@ -28,13 +26,13 @@ import 'package:shimmer/shimmer.dart';
 
 class Media extends StatefulWidget {
   const Media({
-    Key key,
-    @required this.fids,
+    Key? key,
+    required this.fids,
     this.title,
   }) : super(key: key);
 
-  final String fids;
-  final String title;
+  final String? fids;
+  final String? title;
 
   @override
   _Media createState() => _Media();
@@ -69,10 +67,10 @@ class _Media extends State<Media> {
   /// Sets when initState is called
   String _mediaDirectory = '';
 
-  /// set of download tasks
-  List<DownloadTaskInfo> _downloadTasks;
+  // /// set of download tasks
+  // late List<DownloadTaskInfo> _downloadTasks;
 
-  AudioManager _audioManager;
+  AudioManager? _audioManager;
 
   @override
   void initState() {
@@ -84,7 +82,7 @@ class _Media extends State<Media> {
     _getDirectoryPath();
     _updateURL();
 
-    _downloadTasks = DownloadHelper.getDownloadTasks();
+    // _downloadTasks = DownloadHelper.getDownloadTasks();
   }
 
   @override
@@ -97,12 +95,12 @@ class _Media extends State<Media> {
     return Scaffold(
       appBar: AppBar(
         title:
-            (widget.title == null) ? const Text('Media') : Text(widget.title),
+            (widget.title == null) ? const Text('Media') : Text(widget.title!),
         backgroundColor:
             MaterialStateColor.resolveWith((Set<MaterialState> states) {
           return states.contains(MaterialState.scrolledUnder)
               ? ((isDarkTheme)
-                  ? Colors.grey[700]
+                  ? Colors.grey[700]!
                   : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).primaryColor;
         }),
@@ -136,8 +134,9 @@ class _Media extends State<Media> {
                           // updates the media screen based on download state
                           child: Consumer<MediaScreenBloc>(
                               builder: (context, _mediaScreenStateBloc, child) {
-                            return StreamBuilder<bool>(
-                                stream: _mediaScreenStateBloc.mediaScreenStream,
+                            return StreamBuilder<bool?>(
+                                stream: _mediaScreenStateBloc.mediaScreenStream
+                                    as Stream<bool?>?,
                                 builder: (context, snapshot) {
                                   // can use the below commented line to know if updated
                                   // bool screenUpdate = snapshot.data ?? false;
@@ -249,9 +248,10 @@ class _Media extends State<Media> {
                                   // No download option. So,
                                   // everything is considered to use internet
                                   if (hasInternet) {
-                                    if (!(_audioManager
+                                    if (!(_audioManager!
                                             .queueNotifier.value.isNotEmpty &&
-                                        _audioManager.mediaTypeNotifier.value ==
+                                        _audioManager!
+                                                .mediaTypeNotifier.value ==
                                             MediaType.media)) {
                                       startPlayer(
                                           mediaName,
@@ -342,7 +342,7 @@ class _Media extends State<Media> {
   _getData(Map<String, dynamic> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
-    var fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
+    FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
       // get data from online if not present in cache
       http.Response response;
@@ -410,51 +410,51 @@ class _Media extends State<Media> {
     });
   }
 
-  // ****************** //
-  //   Download Media   //
-  // ****************** //
+  // // ****************** //
+  // //   Download Media   //
+  // // ****************** //
 
-  /// call to download the media file.
-  ///
-  /// pass the url [fileLink] to where it is in the internet
-  _downloadMediaFile(String fileLink) async {
-    var permission = await _canSave();
-    if (!permission) {
-      getIt<ScaffoldHelper>().showSnackBar(
-          'Accept storage permission to save image',
-          const Duration(seconds: 2));
-      return;
-    }
-    await Directory(_mediaDirectory).create(recursive: true);
-    final fileName = fileLink.replaceAll(MediaHelper.mediaBaseUrl, '');
+  // /// call to download the media file.
+  // ///
+  // /// pass the url [fileLink] to where it is in the internet
+  // _downloadMediaFile(String fileLink) async {
+  //   var permission = await _canSave();
+  //   if (!permission) {
+  //     getIt<ScaffoldHelper>().showSnackBar(
+  //         'Accept storage permission to save image',
+  //         const Duration(seconds: 2));
+  //     return;
+  //   }
+  //   await Directory(_mediaDirectory).create(recursive: true);
+  //   final fileName = fileLink.replaceAll(MediaHelper.mediaBaseUrl, '');
 
-    // download only when the file is not available
-    // downloading an available file will delete the file
-    DownloadTaskInfo task = DownloadTaskInfo(
-      name: fileName,
-      link: fileLink,
-    );
-    if (_downloadTasks.contains(task)) return;
-    var connectionStatus = await InternetConnectionChecker().connectionStatus;
-    if (connectionStatus == InternetConnectionStatus.disconnected) {
-      getIt<ScaffoldHelper>()
-          .showSnackBar('no internet', const Duration(seconds: 1));
-      return;
-    }
-    _downloadTasks.add(task);
-    getIt<ScaffoldHelper>()
-        .showSnackBar('downloading', const Duration(seconds: 1));
-    // final taskId = await FlutterDownloader.enqueue(
-    //   url: fileLink,
-    //   savedDir: _mediaDirectory,
-    //   fileName: fileName,
-    //   // showNotification: false,
-    //   showNotification: true,
-    //   openFileFromNotification: false,
-    // );
-    int i = _downloadTasks.indexOf(task);
-    // _downloadTasks[i].taskId = taskId;
-  }
+  //   // download only when the file is not available
+  //   // downloading an available file will delete the file
+  //   DownloadTaskInfo task = DownloadTaskInfo(
+  //     name: fileName,
+  //     link: fileLink,
+  //   );
+  //   if (_downloadTasks.contains(task)) return;
+  //   var connectionStatus = await InternetConnectionChecker().connectionStatus;
+  //   if (connectionStatus == InternetConnectionStatus.disconnected) {
+  //     getIt<ScaffoldHelper>()
+  //         .showSnackBar('no internet', const Duration(seconds: 1));
+  //     return;
+  //   }
+  //   _downloadTasks.add(task);
+  //   getIt<ScaffoldHelper>()
+  //       .showSnackBar('downloading', const Duration(seconds: 1));
+  //   // final taskId = await FlutterDownloader.enqueue(
+  //   //   url: fileLink,
+  //   //   savedDir: _mediaDirectory,
+  //   //   fileName: fileName,
+  //   //   // showNotification: false,
+  //   //   showNotification: true,
+  //   //   openFileFromNotification: false,
+  //   // );
+  //   int i = _downloadTasks.indexOf(task);
+  //   // _downloadTasks[i].taskId = taskId;
+  // }
 
   /// sets the path for directory
   ///
@@ -467,15 +467,15 @@ class _Media extends State<Media> {
     });
   }
 
-  /// returns if the app has permission to save in external path
-  Future<bool> _canSave() async {
-    var status = await Permission.storage.request();
-    if (status.isGranted || status.isLimited) {
-      return true;
-    } else {
-      return false;
-    }
-  }
+  // /// returns if the app has permission to save in external path
+  // Future<bool> _canSave() async {
+  //   var status = await Permission.storage.request();
+  //   if (status.isGranted || status.isLimited) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
 
   // ****************** //
   //   Audio Service    //
@@ -496,16 +496,16 @@ class _Media extends State<Media> {
   /// [isFileExists] - if whether file exists in external storage
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
     // checks if the audio service is running
-    if (_audioManager.playButtonNotifier.value == PlayButtonState.playing ||
-        _audioManager.mediaTypeNotifier.value == MediaType.media) {
+    if (_audioManager!.playButtonNotifier.value == PlayButtonState.playing ||
+        _audioManager!.mediaTypeNotifier.value == MediaType.media) {
       // check if radio is running / media is running
-      if (_audioManager.mediaTypeNotifier.value == MediaType.media) {
+      if (_audioManager!.mediaTypeNotifier.value == MediaType.media) {
         // if trying to add the current playing media
-        if (_audioManager.currentSongTitleNotifier.value == name) {
+        if (_audioManager!.currentSongTitleNotifier.value == name) {
           // if the current playing media is paused, play else navigate
-          if (_audioManager.playButtonNotifier.value !=
+          if (_audioManager!.playButtonNotifier.value !=
               PlayButtonState.playing) {
-            _audioManager.play();
+            _audioManager!.play();
           }
           getIt<ScaffoldHelper>().showSnackBar(
               'This is same as currently playing', const Duration(seconds: 2));
@@ -513,7 +513,7 @@ class _Media extends State<Media> {
           return;
         }
 
-        _audioManager.pause();
+        _audioManager!.pause();
 
         // doesn't add to queue if already exists
         bool isAdded = await addToQueue(name, link, isFileExists);
@@ -523,15 +523,15 @@ class _Media extends State<Media> {
         }
 
         // play the media
-        int index = _audioManager.queueNotifier.value.indexOf(name);
-        await _audioManager.load();
-        await _audioManager.skipToQueueItem(index);
+        int index = _audioManager!.queueNotifier.value.indexOf(name);
+        await _audioManager!.load();
+        await _audioManager!.skipToQueueItem(index);
         // navigate to media player
         getIt<NavigationService>().navigateTo(MediaPlayer.route);
-        _audioManager.play();
+        _audioManager!.play();
       } else {
         // if radio player is running, stop and play media
-        _audioManager.stop();
+        _audioManager!.stop();
         await initMediaService(name, link, isFileExists).then((value) =>
             getIt<NavigationService>().navigateTo(MediaPlayer.route));
       }
@@ -555,11 +555,11 @@ class _Media extends State<Media> {
       'title': tempMediaItem.title,
       'artist': tempMediaItem.artist,
       'artUri': tempMediaItem.artUri.toString(),
-      'extrasUri': tempMediaItem.extras['uri'],
+      'extrasUri': tempMediaItem.extras!['uri'],
     };
 
-    _audioManager.stop();
-    await _audioManager.init(MediaType.media, _params);
+    _audioManager!.stop();
+    await _audioManager!.init(MediaType.media, _params);
   }
 
   /// add a new media item to the end of the queue
@@ -570,10 +570,10 @@ class _Media extends State<Media> {
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
     final tempMediaItem =
         await MediaHelper.generateMediaItem(name, link, isFileExists);
-    if (_audioManager.queueNotifier.value.contains(tempMediaItem.title)) {
+    if (_audioManager!.queueNotifier.value.contains(tempMediaItem.title)) {
       return false;
     } else {
-      await _audioManager.addQueueItem(tempMediaItem);
+      await _audioManager!.addQueueItem(tempMediaItem);
       return true;
     }
   }
@@ -582,12 +582,11 @@ class _Media extends State<Media> {
   ///
   /// Note: check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
-    if (_audioManager.queueNotifier.value != null &&
-        _audioManager.queueNotifier.value.length > 1) {
+    if (_audioManager!.queueNotifier.value.length > 1) {
       final tempMediaItem =
           await MediaHelper.generateMediaItem(name, link, isFileExists);
-      await _audioManager.removeQueueItemWithTitle(tempMediaItem.title);
-      return _audioManager.addQueueItem(tempMediaItem);
+      await _audioManager!.removeQueueItemWithTitle(tempMediaItem.title);
+      return _audioManager!.addQueueItem(tempMediaItem);
     }
     return;
   }
@@ -596,22 +595,13 @@ class _Media extends State<Media> {
   //   Methods/widgets  //
   // ****************** //
 
-  /// refresh the data
-  Future<void> _refresh() async {
-    await DefaultCacheManager().removeFile(finalUrl);
-    setState(() {
-      _isLoading = true;
-      _updateURL();
-    });
-  }
-
   /// Shimmer effect while loading the content
   Widget _showLoading(bool isDarkTheme) {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
-        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
+        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
+        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
         enabled: true,
         child: Column(
           children: [

@@ -7,13 +7,13 @@ import 'package:radiosai/constants/constants.dart';
 
 class RadioStreamSelect extends StatefulWidget {
   const RadioStreamSelect({
-    Key key,
+    Key? key,
     this.panelController,
     this.radius,
   }) : super(key: key);
 
-  final PanelController panelController;
-  final Radius radius;
+  final PanelController? panelController;
+  final Radius? radius;
 
   @override
   _RadioStreamSelect createState() => _RadioStreamSelect();
@@ -27,17 +27,17 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
 
     return Consumer<RadioIndexBloc>(
       builder: (context, _radioIndexBloc, child) {
-        return StreamBuilder<int>(
-          stream: _radioIndexBloc.radioIndexStream,
+        return StreamBuilder<int?>(
+          stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int index = snapshot.data ?? 0;
             return GestureDetector(
               // handle open panel on tap, when small screen
-              onTap: () => widget.panelController.open(),
+              onTap: () => widget.panelController!.open(),
               child: Container(
                 decoration: BoxDecoration(
                   color: isDarkTheme ? Colors.grey[700] : Colors.white,
-                  borderRadius: BorderRadius.all(widget.radius),
+                  borderRadius: BorderRadius.all(widget.radius!),
                 ),
                 margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
                 child: Column(
@@ -68,7 +68,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
         crossAxisCount: 2,
         childAspectRatio: width * 0.4 / (height * 0.27 / 2),
       ),
-      itemCount: MyConstants.of(context).radioStream.length,
+      itemCount: MyConstants.of(context)!.radioStream.length,
       // override the default top padding
       padding: const EdgeInsets.only(top: 10),
       primary: false,
@@ -77,7 +77,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
         // check if the radio selected index matches the widget
         bool isMatch = (widgetIndex == radioIndex);
         String radioName =
-            MyConstants.of(context).radioStream.keys.toList()[widgetIndex];
+            MyConstants.of(context)!.radioStream.keys.toList()[widgetIndex];
         return Padding(
           padding:
               isBigScreen ? const EdgeInsets.all(4) : const EdgeInsets.all(2),
@@ -95,13 +95,13 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
               borderRadius: BorderRadius.circular(8.0),
               onTap: () async {
                 // change only if panel is open
-                if (widget.panelController.isPanelOpen) {
+                if (widget.panelController!.isPanelOpen) {
                   // update only if the index differes from actual index
                   // to avoid unnecessary update of streams
                   if (!isMatch) {
                     _radioIndexBloc.changeRadioIndex.add(widgetIndex);
                     // close the panel if different stream is selected
-                    widget.panelController.close();
+                    widget.panelController!.close();
                   }
                 }
               },

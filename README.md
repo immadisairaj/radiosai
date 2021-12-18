@@ -138,8 +138,8 @@ Thanks to the Open Source community for providing such great libraries and frame
 
 ## Built using
 <!-- keep updating this -->
-- __Flutter version:__ 2.5.3
-- __Dart version:__ 2.14.4
+- __Flutter version:__ 2.8.0
+- __Dart version:__ 2.15.0
 - __Visual Studio Code:__ 1.62.3
 - __Operating System:__ macOS Big Monterey version 12.0.1
 - __Gradle version:__ 7.0.2

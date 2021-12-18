@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AppThemeBloc {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-  String _theme;
+  String? _theme;
   // key for app theme shared preferences
   final _appThemeKey = 'appTheme';
   // initial theme
@@ -26,7 +26,7 @@ class AppThemeBloc {
   }
 
   // sets initial theme (system default) as default value
-  final _themeStream = BehaviorSubject<String>.seeded('System default');
+  final _themeStream = BehaviorSubject<String?>.seeded('System default');
   // returns the stream to update anything based on values changed
   Stream get appThemeStream => _themeStream.stream;
   Sink get _addValue => _themeStream.sink;
@@ -44,7 +44,7 @@ class AppThemeBloc {
     }
     _addValue.add(_theme);
     prefs.then((value) {
-      value.setString(_appThemeKey, _theme);
+      value.setString(_appThemeKey, _theme!);
     });
   }
 

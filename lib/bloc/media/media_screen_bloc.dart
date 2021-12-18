@@ -4,19 +4,19 @@ import 'package:rxdart/rxdart.dart';
 // updates the media screen based on download state
 // have to use only by calling from download helper
 class MediaScreenBloc {
-  bool _changed;
+  bool? _changed;
 
   // Initialize the stream for media screen state
   MediaScreenBloc() {
     _actionController.stream.listen(_changeStream);
   }
 
-  bool getCurrentValue() {
+  bool? getCurrentValue() {
     return _changed;
   }
 
   // sets false as default value
-  final _downloadsStream = BehaviorSubject<bool>.seeded(false);
+  final _downloadsStream = BehaviorSubject<bool?>.seeded(false);
   // returns the stream to update anything based on values changed
   Stream get mediaScreenStream => _downloadsStream.stream;
   Sink get _addValue => _downloadsStream.sink;

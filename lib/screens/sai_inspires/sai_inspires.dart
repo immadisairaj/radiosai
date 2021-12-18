@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:intl/intl.dart';
@@ -17,7 +16,7 @@ import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
   const SaiInspires({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static const String route = 'saiInspires';
@@ -36,13 +35,13 @@ class _SaiInspires extends State<SaiInspires> {
   final DateTime now = DateTime.now();
 
   /// date for the sai inspires
-  DateTime selectedDate;
+  DateTime? selectedDate;
 
   /// image url for the selected date
-  String imageFinalUrl;
+  String? imageFinalUrl;
 
   /// sai inspires source url for the selected date
-  String finalUrl;
+  late String finalUrl;
 
   /// hero tag for the hero widgets (2 screen widget animation)
   final String heroTag = 'SaiInspiresImage';
@@ -63,7 +62,7 @@ class _SaiInspires extends State<SaiInspires> {
   @override
   void initState() {
     selectedDate = now;
-    _updateURL(selectedDate);
+    _updateURL(selectedDate!);
 
     super.initState();
   }
@@ -82,7 +81,7 @@ class _SaiInspires extends State<SaiInspires> {
             MaterialStateColor.resolveWith((Set<MaterialState> states) {
           return states.contains(MaterialState.scrolledUnder)
               ? ((isDarkTheme)
-                  ? Colors.grey[700]
+                  ? Colors.grey[700]!
                   : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).primaryColor;
         }),
@@ -131,7 +130,7 @@ class _SaiInspires extends State<SaiInspires> {
                                     child: Hero(
                                       tag: heroTag,
                                       child: CachedNetworkImage(
-                                        imageUrl: imageFinalUrl,
+                                        imageUrl: imageFinalUrl!,
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
                                       ),
@@ -163,7 +162,7 @@ class _SaiInspires extends State<SaiInspires> {
                 onPressed: () {
                   setState(() {
                     _isLoading = true;
-                    _updateURL(selectedDate);
+                    _updateURL(selectedDate!);
                   });
                 },
               ),
@@ -176,7 +175,7 @@ class _SaiInspires extends State<SaiInspires> {
                 onPressed: () {
                   setState(() {
                     _isLoading = true;
-                    _updateURL(selectedDate);
+                    _updateURL(selectedDate!);
                   });
                 },
               ),
@@ -196,9 +195,9 @@ class _SaiInspires extends State<SaiInspires> {
 
   /// navigate to new page to view full image
   _viewImage() {
-    int urlLength = imageFinalUrl.length;
+    int urlLength = imageFinalUrl!.length;
     String fileName =
-        'SI_${imageFinalUrl.substring(urlLength - 12, urlLength - 4)}';
+        'SI_${imageFinalUrl!.substring(urlLength - 12, urlLength - 4)}';
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -388,8 +387,8 @@ class _SaiInspires extends State<SaiInspires> {
     }
     var response = file.readAsStringSync();
     var document = parse(response);
-    String dateText = document.getElementById('Head').text;
-    String contentText = document.getElementById('Content').text;
+    String dateText = document.getElementById('Head')!.text;
+    String contentText = document.getElementById('Content')!.text;
 
     // Trim the data to remove unnecessary content
     dateText = dateText.replaceAll('"', '');
@@ -417,25 +416,25 @@ class _SaiInspires extends State<SaiInspires> {
 
   /// select the date and update the url
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       // Sai Inspires started on 19th Feb 2011
       firstDate: DateTime(2011, 2, 19),
-      initialDate: selectedDate,
+      initialDate: selectedDate!,
       lastDate: now,
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
         _isLoading = true;
         selectedDate = picked;
-        _updateURL(selectedDate);
+        _updateURL(selectedDate!);
       });
     }
   }
 
   /// select the date and update the url for iOS
   void _selectDateIOS(BuildContext context) {
-    DateTime _picked;
+    DateTime? _picked;
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
@@ -465,7 +464,7 @@ class _SaiInspires extends State<SaiInspires> {
                           setState(() {
                             _isLoading = true;
                             selectedDate = _picked;
-                            _updateURL(selectedDate);
+                            _updateURL(selectedDate!);
                           });
                         }
                         Navigator.of(context).maybePop();
@@ -490,7 +489,8 @@ class _SaiInspires extends State<SaiInspires> {
       }
       textData = 'Sai Inspires - ' + textData;
       // if data is visible, share the data
-      File imageFile = await DefaultCacheManager().getSingleFile(imageFinalUrl);
+      File imageFile =
+          await DefaultCacheManager().getSingleFile(imageFinalUrl!);
       Share.shareFiles([imageFile.path], text: textData);
     } else {
       // if there is no data, show snackbar that no data is available
@@ -612,8 +612,8 @@ class _SaiInspires extends State<SaiInspires> {
     return Padding(
       padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
-        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
+        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
+        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
         enabled: true,
         child: Column(
           children: [

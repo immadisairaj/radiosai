@@ -32,16 +32,16 @@ class MediaHelper {
   ///
   /// isFileExists - mention if the file exists to set uri for audio
   static Future<MediaItem> generateMediaItem(
-      String name, String link, bool isFileExists) async {
+      String name, String? link, bool isFileExists) async {
     // Get the path of image for artUri in notification
     String path = await getDefaultNotificationImage();
 
     // if file exists, then add file uri
     if (isFileExists) {
-      link = await changeLinkToFileUri(link);
+      link = await changeLinkToFileUri(link!);
     }
 
-    String fileId = await getFileIdFromUri(link);
+    String fileId = await getFileIdFromUri(link!);
 
     Map<String, dynamic> _extras = {
       'uri': link,

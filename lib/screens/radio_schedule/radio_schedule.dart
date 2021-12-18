@@ -6,7 +6,7 @@ import 'package:radiosai/screens/radio_schedule/schedule_data.dart';
 
 class RadioSchedule extends StatefulWidget {
   const RadioSchedule({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static const String route = 'radioSchedule';
@@ -22,8 +22,8 @@ class _RadioSchedule extends State<RadioSchedule> {
     return Consumer<RadioIndexBloc>(
         // listen to change of radio stream index
         builder: (context, _radioIndexBloc, child) {
-      return StreamBuilder<int>(
-          stream: _radioIndexBloc.radioIndexStream,
+      return StreamBuilder<int?>(
+          stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int radioStreamIndex = snapshot.data ?? -1;
 
@@ -33,8 +33,8 @@ class _RadioSchedule extends State<RadioSchedule> {
             return Consumer<TimeZoneBloc>(
               // listen to change of time zone
               builder: (context, _timeZoneBloc, child) {
-                return StreamBuilder<String>(
-                  stream: _timeZoneBloc.timeZoneStream,
+                return StreamBuilder<String?>(
+                  stream: _timeZoneBloc.timeZoneStream as Stream<String?>?,
                   builder: (context, snapshot) {
                     String timeZone = snapshot.data ?? 'INDIA';
 

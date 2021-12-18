@@ -13,15 +13,15 @@ import 'package:radiosai/helper/scaffold_helper.dart';
 
 class SaiImage extends StatefulWidget {
   const SaiImage({
-    Key key,
+    Key? key,
     this.heroTag,
     this.imageUrl,
     this.fileName,
   }) : super(key: key);
 
-  final String heroTag;
-  final String imageUrl;
-  final String fileName;
+  final String? heroTag;
+  final String? imageUrl;
+  final String? fileName;
 
   @override
   _SaiImage createState() => _SaiImage();
@@ -33,13 +33,13 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   // onInteractionEnd return to scale of 1.0"
   final TransformationController _transformationController =
       TransformationController();
-  Animation<Matrix4> _animationReset;
-  AnimationController _controllerReset;
-  Matrix4 _initialMatrix4Value;
+  Animation<Matrix4>? _animationReset;
+  late AnimationController _controllerReset;
+  Matrix4? _initialMatrix4Value;
   double _scale = 1;
 
   bool _fullScreen = false;
-  AnimationController _animationController;
+  late AnimationController _animationController;
 
   bool _isCopying = false;
 
@@ -98,12 +98,12 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                         ? const EdgeInsets.all(double.infinity)
                         : EdgeInsets.zero,
                     child: Hero(
-                        tag: widget.heroTag,
+                        tag: widget.heroTag!,
                         child: SizedBox(
                           height: screenSize.height,
                           width: screenSize.width,
                           child: Image(
-                            image: CachedNetworkImageProvider(widget.imageUrl),
+                            image: CachedNetworkImageProvider(widget.imageUrl!),
                             fit: BoxFit.contain,
                           ),
                         )),
@@ -116,7 +116,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                   height: appBarSize,
                   child: SafeArea(
                     child: AppBar(
-                      title: Text(widget.fileName),
+                      title: Text(widget.fileName!),
                       backgroundColor: Colors.transparent,
                       actions: [
                         IconButton(
@@ -170,7 +170,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       // save to gallery after saved to external file
       GallerySaver.saveImage(imageFilePath, albumName: albumName)
           .then((isSave) {
-        if (isSave) {
+        if (isSave!) {
           getIt<ScaffoldHelper>()
               .showSnackBar('Saved to gallery', const Duration(seconds: 1));
         }
@@ -186,7 +186,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   /// get the cached file where image is saved
   Future<File> _getCachedFile() async {
-    return await DefaultCacheManager().getSingleFile(widget.imageUrl);
+    return await DefaultCacheManager().getSingleFile(widget.imageUrl!);
   }
 
   /// returns if the app has permission to save in external storage
@@ -231,7 +231,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   // Below are image animation methods
 
   void _onAnimateReset() {
-    _transformationController.value = _animationReset.value;
+    _transformationController.value = _animationReset!.value;
     if (!_controllerReset.isAnimating) {
       _animationReset?.removeListener(_onAnimateReset);
       _animationReset = null;
@@ -245,7 +245,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       begin: _transformationController.value,
       end: _initialMatrix4Value,
     ).animate(_controllerReset);
-    _animationReset.addListener(_onAnimateReset);
+    _animationReset!.addListener(_onAnimateReset);
     _controllerReset.forward();
   }
 

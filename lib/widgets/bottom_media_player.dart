@@ -14,7 +14,7 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// else, returns a empty (zero container) widget
 class BottomMediaPlayer extends StatefulWidget {
   const BottomMediaPlayer({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -22,7 +22,7 @@ class BottomMediaPlayer extends StatefulWidget {
 }
 
 class _BottomMediaPlayer extends State<BottomMediaPlayer> {
-  AudioManager _audioManager;
+  AudioManager? _audioManager;
 
   @override
   void initState() {
@@ -36,12 +36,12 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
+    Color? backgroundColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
 
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
-    bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
+    // bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
     bool isBiggerScreen = (height * 0.1 >= 70); // full screen
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
 
@@ -53,10 +53,10 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
     }
 
     return ValueListenableBuilder<List<String>>(
-        valueListenable: _audioManager.queueNotifier,
+        valueListenable: _audioManager!.queueNotifier,
         builder: (context, queueList, snapshot) {
           final running = queueList.isNotEmpty &&
-              _audioManager.mediaTypeNotifier.value != MediaType.radio;
+              _audioManager!.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
           if (!running) {
             return const SizedBox(
@@ -66,10 +66,10 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
           }
 
           return ValueListenableBuilder<List<String>>(
-              valueListenable: _audioManager.queueNotifier,
+              valueListenable: _audioManager!.queueNotifier,
               builder: (context, queueList, snapshot) {
                 // empty widget if radio player is running
-                if (queueList == null || queueList.isEmpty) {
+                if (queueList.isEmpty) {
                   return const SizedBox(
                     height: 0,
                     width: 0,
@@ -87,7 +87,7 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                       color: backgroundColor,
                       border: Border(
                         top: BorderSide(
-                          color: isDarkTheme ? Colors.grey[700] : Colors.white,
+                          color: isDarkTheme ? Colors.grey[700]! : Colors.white,
                         ),
                       ),
                     ),
@@ -109,7 +109,7 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                           ),
                           ValueListenableBuilder<String>(
                             valueListenable:
-                                _audioManager.currentSongTitleNotifier,
+                                _audioManager!.currentSongTitleNotifier,
                             builder: (context, mediaTitle, child) {
                               if (mediaTitle == '') {
                                 mediaTitle = 'loading media...';
@@ -131,7 +131,8 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                           ),
                           // Pause/Play button
                           ValueListenableBuilder<PlayButtonState>(
-                              valueListenable: _audioManager.playButtonNotifier,
+                              valueListenable:
+                                  _audioManager!.playButtonNotifier,
                               builder: (context, playState, snapshot) {
                                 final playing =
                                     (playState == PlayButtonState.playing);
@@ -151,13 +152,13 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
         icon: const Icon(CupertinoIcons.play),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: _audioManager.play,
+        onPressed: _audioManager!.play,
       );
 
   IconButton pauseButton() => IconButton(
         icon: const Icon(CupertinoIcons.pause),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: _audioManager.pause,
+        onPressed: _audioManager!.pause,
       );
 }

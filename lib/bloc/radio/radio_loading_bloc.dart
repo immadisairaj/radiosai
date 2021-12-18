@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:rxdart/rxdart.dart';
 
 class RadioLoadingBloc {
-  bool _loading;
+  bool? _loading;
 
   // Initialize the stream for radio player loading state
   RadioLoadingBloc() {
@@ -10,7 +10,7 @@ class RadioLoadingBloc {
   }
 
   // sets false as default value
-  final _loadingStream = BehaviorSubject<bool>.seeded(false);
+  final _loadingStream = BehaviorSubject<bool?>.seeded(false);
   // returns the stream to update anything based on values changed
   Stream get radioLoadingStream => _loadingStream.stream;
   Sink get _addValue => _loadingStream.sink;

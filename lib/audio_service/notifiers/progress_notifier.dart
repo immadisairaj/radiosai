@@ -11,9 +11,9 @@ class ProgressNotifier extends ValueNotifier<ProgressBarState> {
 
 class ProgressBarState {
   const ProgressBarState({
-    @required this.current,
-    @required this.buffered,
-    @required this.total,
+    required this.current,
+    required this.buffered,
+    required this.total,
   });
   final Duration current;
   final Duration buffered;

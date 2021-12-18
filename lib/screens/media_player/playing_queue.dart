@@ -8,7 +8,7 @@ import 'package:radiosai/audio_service/service_locator.dart';
 
 class PlayingQueue extends StatefulWidget {
   const PlayingQueue({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static const String route = 'playingQueue';
@@ -18,7 +18,7 @@ class PlayingQueue extends StatefulWidget {
 }
 
 class _PlayingQueue extends State<PlayingQueue> {
-  AudioManager _audioManager;
+  AudioManager? _audioManager;
 
   @override
   void initState() {
@@ -77,7 +77,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                             ),
                             ValueListenableBuilder<String>(
                               valueListenable:
-                                  _audioManager.currentSongTitleNotifier,
+                                  _audioManager!.currentSongTitleNotifier,
                               builder: (context, mediaTitle, child) {
                                 return SizedBox(
                                   width: width * 0.65,
@@ -97,7 +97,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                             // Pause/Play button
                             ValueListenableBuilder<PlayButtonState>(
                                 valueListenable:
-                                    _audioManager.playButtonNotifier,
+                                    _audioManager!.playButtonNotifier,
                                 builder: (context, playState, child) {
                                   final playing =
                                       (playState == PlayButtonState.playing);
@@ -111,9 +111,9 @@ class _PlayingQueue extends State<PlayingQueue> {
                   ),
                 Expanded(
                   child: ValueListenableBuilder<List<String>>(
-                    valueListenable: _audioManager.queueNotifier,
+                    valueListenable: _audioManager!.queueNotifier,
                     builder: (context, queueList, child) {
-                      if (queueList == null || queueList.isEmpty) {
+                      if (queueList.isEmpty) {
                         return const Center(
                           child: Text('No files in queue'),
                         );
@@ -121,7 +121,7 @@ class _PlayingQueue extends State<PlayingQueue> {
 
                       return ValueListenableBuilder<String>(
                           valueListenable:
-                              _audioManager.currentSongTitleNotifier,
+                              _audioManager!.currentSongTitleNotifier,
                           builder: (context, currentMediaTitle, child) {
                             return Scrollbar(
                               radius: const Radius.circular(8),
@@ -173,7 +173,7 @@ class _PlayingQueue extends State<PlayingQueue> {
                       borderRadius: BorderRadius.circular(8.0),
                       onTap: () async {
                         // stop the player and clear the queue
-                        _audioManager.clear();
+                        _audioManager!.clear();
                         Navigator.maybePop(context);
                       },
                     ),
@@ -192,7 +192,7 @@ class _PlayingQueue extends State<PlayingQueue> {
   /// also shows if the widget is playing (with different color)
   Widget _queueItemWidget(BuildContext context, String mediaTitle,
       bool isCurrentItem, int length, bool isDarkTheme) {
-    Color selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
+    Color? selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -221,10 +221,10 @@ class _PlayingQueue extends State<PlayingQueue> {
                     tooltip: 'Remove from playing queue',
                     onPressed: () async {
                       if (length == 1) {
-                        _audioManager.stop();
+                        _audioManager!.stop();
                         Navigator.maybePop(context);
                       } else {
-                        await _audioManager
+                        await _audioManager!
                             .removeQueueItemWithTitle(mediaTitle);
                       }
                     }),
@@ -232,8 +232,9 @@ class _PlayingQueue extends State<PlayingQueue> {
             ),
             onTap: () {
               if (isCurrentItem) return;
-              int index = _audioManager.queueNotifier.value.indexOf(mediaTitle);
-              _audioManager.skipToQueueItem(index);
+              int index =
+                  _audioManager!.queueNotifier.value.indexOf(mediaTitle);
+              _audioManager!.skipToQueueItem(index);
             },
             borderRadius: BorderRadius.circular(8.0),
           ),
@@ -250,7 +251,7 @@ class _PlayingQueue extends State<PlayingQueue> {
         icon: const Icon(CupertinoIcons.play),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: _audioManager.play,
+        onPressed: _audioManager!.play,
       );
 
   /// pause button
@@ -258,6 +259,6 @@ class _PlayingQueue extends State<PlayingQueue> {
         icon: const Icon(CupertinoIcons.pause),
         splashRadius: 24,
         iconSize: 25,
-        onPressed: _audioManager.pause,
+        onPressed: _audioManager!.pause,
       );
 }

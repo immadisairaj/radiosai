@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// Settings Section - used in settings page
@@ -7,10 +6,10 @@ import 'package:flutter/material.dart';
 ///
 /// [child] - the content of the section
 class SettingsSection extends StatelessWidget {
-  const SettingsSection({Key key, this.title, this.child}) : super(key: key);
+  const SettingsSection({Key? key, this.title, this.child}) : super(key: key);
 
-  final String title;
-  final Widget child;
+  final String? title;
+  final Widget? child;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class SettingsSection extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(left: 20, top: 10, bottom: 10),
               child: Text(
-                title,
+                title!,
                 style: TextStyle(
                   color: Theme.of(context).secondaryHeaderColor,
                   fontWeight: FontWeight.bold,

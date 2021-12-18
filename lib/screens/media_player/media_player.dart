@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -26,7 +23,7 @@ import 'package:share_plus/share_plus.dart';
 
 class MediaPlayer extends StatefulWidget {
   const MediaPlayer({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static const String route = 'mediaPlayer';
@@ -43,9 +40,9 @@ class _MediaPlayer extends State<MediaPlayer> {
   String _mediaDirectory = '';
 
   /// set of download tasks
-  List<DownloadTaskInfo> _downloadTasks;
+  late List<DownloadTaskInfo> _downloadTasks;
 
-  AudioManager _audioManager;
+  AudioManager? _audioManager;
 
   @override
   void initState() {
@@ -131,7 +128,7 @@ class _MediaPlayer extends State<MediaPlayer> {
 
                     // A seek bar.
                     ValueListenableBuilder<ProgressBarState>(
-                      valueListenable: _audioManager.progressNotifier,
+                      valueListenable: _audioManager!.progressNotifier,
                       builder: (context, value, child) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 16, right: 16),
@@ -142,7 +139,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                             timeLabelType: TimeLabelType.remainingTime,
                             timeLabelTextStyle:
                                 Theme.of(context).textTheme.caption,
-                            onSeek: _audioManager.seek,
+                            onSeek: _audioManager!.seek,
                           ),
                         );
                       },
@@ -152,7 +149,7 @@ class _MediaPlayer extends State<MediaPlayer> {
 
                 // Text Display.
                 ValueListenableBuilder<String>(
-                  valueListenable: _audioManager.currentSongTitleNotifier,
+                  valueListenable: _audioManager!.currentSongTitleNotifier,
                   builder: (context, mediaTitle, child) {
                     double textSize = (isSmallerScreen) ? 15 : 20;
                     return SizedBox(
@@ -183,16 +180,16 @@ class _MediaPlayer extends State<MediaPlayer> {
 
                 // Queue/player controls.
                 ValueListenableBuilder<List<String>>(
-                  valueListenable: _audioManager.queueNotifier,
+                  valueListenable: _audioManager!.queueNotifier,
                   builder: (context, queueList, child) {
                     final queue = queueList;
-                    if (queue == null || queue.isEmpty) {
+                    if (queue.isEmpty) {
                       Navigator.maybePop(context);
                     }
                     double iconSize = width / 9;
 
                     return ValueListenableBuilder<String>(
-                      valueListenable: _audioManager.currentSongTitleNotifier,
+                      valueListenable: _audioManager!.currentSongTitleNotifier,
                       builder: (context, mediaTitle, child) {
                         return Padding(
                           padding: const EdgeInsets.only(left: 8, right: 8),
@@ -205,7 +202,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                 // repeat mode button
                                 ValueListenableBuilder<RepeatState>(
                                   valueListenable:
-                                      _audioManager.repeatButtonNotifier,
+                                      _audioManager!.repeatButtonNotifier,
                                   builder: (context, value, child) {
                                     int repeatModeInt = 0;
                                     switch (value) {
@@ -234,7 +231,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                               .colorScheme
                                               .secondary
                                           : null,
-                                      onPressed: _audioManager.repeat,
+                                      onPressed: _audioManager!.repeat,
                                     );
                                   },
                                 ),
@@ -242,12 +239,12 @@ class _MediaPlayer extends State<MediaPlayer> {
                                   icon: const Icon(CupertinoIcons.backward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
-                                  onPressed: _audioManager.previous,
+                                  onPressed: _audioManager!.previous,
                                 ),
                                 // seek 10 seconds backward
                                 ValueListenableBuilder<ProgressBarState>(
                                     valueListenable:
-                                        _audioManager.progressNotifier,
+                                        _audioManager!.progressNotifier,
                                     builder: (context, value, child) {
                                       Duration position = value.current;
                                       Duration seekPosition = (position <
@@ -263,7 +260,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         onPressed: (position == Duration.zero)
                                             ? null
                                             : () {
-                                                _audioManager
+                                                _audioManager!
                                                     .seek(seekPosition);
                                               },
                                       );
@@ -271,7 +268,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                 // Play/pause buttons
                                 ValueListenableBuilder<PlayButtonState>(
                                   valueListenable:
-                                      _audioManager.playButtonNotifier,
+                                      _audioManager!.playButtonNotifier,
                                   builder: (context, playState, child) {
                                     final playing =
                                         (playState == PlayButtonState.playing);
@@ -281,7 +278,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         // loading indicator
                                         ValueListenableBuilder<LoadingState>(
                                           valueListenable:
-                                              _audioManager.loadingNotifier,
+                                              _audioManager!.loadingNotifier,
                                           builder: (context, loadingState,
                                               snapshot) {
                                             bool isLoading = (loadingState ==
@@ -309,7 +306,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                 // seek 10 seconds forward
                                 ValueListenableBuilder<ProgressBarState>(
                                     valueListenable:
-                                        _audioManager.progressNotifier,
+                                        _audioManager!.progressNotifier,
                                     builder: (context, value, child) {
                                       Duration position = value.current;
                                       Duration duration = value.total;
@@ -327,7 +324,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         onPressed: (position == duration)
                                             ? null
                                             : () {
-                                                _audioManager
+                                                _audioManager!
                                                     .seek(seekPosition);
                                               },
                                       );
@@ -336,18 +333,14 @@ class _MediaPlayer extends State<MediaPlayer> {
                                   icon: const Icon(CupertinoIcons.forward_end),
                                   splashRadius: 24,
                                   iconSize: iconSize - 10,
-                                  onPressed: (mediaTitle != null &&
-                                          queue != null &&
-                                          queue.isNotEmpty &&
+                                  onPressed: (queue.isNotEmpty &&
                                           mediaTitle == queue.last)
                                       ? null
-                                      : (mediaTitle != null)
-                                          ? _audioManager.next
-                                          : null,
+                                      : _audioManager!.next,
                                 ),
                                 // shuffle mode button
                                 ValueListenableBuilder<bool>(
-                                  valueListenable: _audioManager
+                                  valueListenable: _audioManager!
                                       .isShuffleModeEnabledNotifier,
                                   builder: (context, isShuffle, child) {
                                     return IconButton(
@@ -359,7 +352,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                                               .colorScheme
                                               .secondary
                                           : null,
-                                      onPressed: _audioManager.shuffle,
+                                      onPressed: _audioManager!.shuffle,
                                     );
                                   },
                                 ),
@@ -412,13 +405,12 @@ class _MediaPlayer extends State<MediaPlayer> {
       'Share',
       'View Playing Queue',
     ];
-    return StreamBuilder<MediaItem>(
-        stream: _audioManager.currentMediaItem,
+    return StreamBuilder<MediaItem?>(
+        stream: _audioManager!.currentMediaItem,
         builder: (context, snapshot) {
           final mediaItem = snapshot.data;
-          final mediaId = (mediaItem != null && mediaItem?.id != null)
-              ? mediaItem.id
-              : 'loading media...';
+          final mediaId =
+              (mediaItem?.id != null) ? mediaItem?.id : 'loading media...';
           if (mediaId == 'loading media...') {
             return IconButton(
               icon: Icon(
@@ -474,11 +466,11 @@ class _MediaPlayer extends State<MediaPlayer> {
                       break;
                     case 'Download':
                       _downloadMediaFile(
-                          MediaHelper.getLinkFromFileId(mediaId));
+                          MediaHelper.getLinkFromFileId(mediaId!));
                       break;
                     case 'Share':
                       _shareMediaFileLink(
-                          MediaHelper.getLinkFromFileId(mediaId));
+                          MediaHelper.getLinkFromFileId(mediaId!));
                       break;
                   }
                 },
@@ -489,13 +481,12 @@ class _MediaPlayer extends State<MediaPlayer> {
   }
 
   Widget _shareButton() {
-    return StreamBuilder<MediaItem>(
-        stream: _audioManager.currentMediaItem,
+    return StreamBuilder<MediaItem?>(
+        stream: _audioManager!.currentMediaItem,
         builder: (context, snapshot) {
           final mediaItem = snapshot.data;
-          final mediaId = (mediaItem != null && mediaItem?.id != null)
-              ? mediaItem.id
-              : 'loading media...';
+          final mediaId =
+              (mediaItem?.id != null) ? mediaItem?.id : 'loading media...';
           if (mediaId == 'loading media...') {
             return IconButton(
               icon: Icon((Platform.isAndroid)
@@ -515,7 +506,7 @@ class _MediaPlayer extends State<MediaPlayer> {
             iconSize: 25,
             tooltip: 'Share link',
             onPressed: () {
-              _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId));
+              _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId!));
             },
           );
         });
@@ -526,7 +517,7 @@ class _MediaPlayer extends State<MediaPlayer> {
         icon: const Icon(CupertinoIcons.play),
         splashRadius: 25,
         iconSize: iconSize,
-        onPressed: _audioManager.play,
+        onPressed: _audioManager!.play,
       );
 
   /// pause button
@@ -534,7 +525,7 @@ class _MediaPlayer extends State<MediaPlayer> {
         icon: const Icon(CupertinoIcons.pause),
         splashRadius: 25,
         iconSize: iconSize,
-        onPressed: _audioManager.pause,
+        onPressed: _audioManager!.pause,
       );
 
   /// sets the path for directory
@@ -586,7 +577,7 @@ class _MediaPlayer extends State<MediaPlayer> {
     //   showNotification: true,
     //   openFileFromNotification: false,
     // );
-    int i = _downloadTasks.indexOf(task);
+    // int i = _downloadTasks.indexOf(task);
     // _downloadTasks[i].taskId = taskId;
   }
 

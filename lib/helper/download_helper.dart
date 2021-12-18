@@ -1,12 +1,11 @@
 import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:audio_service/audio_service.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+// import 'package:audio_service/audio_service.dart';
+// import 'package:flutter/material.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:radiosai/bloc/media/media_screen_bloc.dart';
-import 'package:radiosai/helper/media_helper.dart';
+// import 'package:radiosai/helper/media_helper.dart';
 
 class DownloadHelper {
   static List<DownloadTaskInfo> downloadTasks = [];
@@ -39,11 +38,11 @@ class DownloadHelper {
     }
     // _downloadTasks = [];
     port.listen((data) {
-      String id = data[0];
+      String? id = data[0];
       // DownloadTaskStatus status = data[1];
-      int progress = data[2];
+      int? progress = data[2];
 
-      if (downloadTasks != null && downloadTasks.isNotEmpty) {
+      if (downloadTasks.isNotEmpty) {
         final task =
             downloadTasks.firstWhere((element) => element.taskId == id);
 
@@ -75,35 +74,38 @@ class DownloadHelper {
     });
   }
 
-  /// shows the snack bar using the global scaffold key
-  static void _showSnackBar(
-      BuildContext context, String text, Duration duration) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(text),
-      behavior: SnackBarBehavior.floating,
-      duration: duration,
-    ));
-  }
+  // /// shows the snack bar using the global scaffold key
+  // static void _showSnackBar(
+  //     BuildContext context, String text, Duration duration) {
+  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+  //     content: Text(text),
+  //     behavior: SnackBarBehavior.floating,
+  //     duration: duration,
+  //   ));
+  // }
 
-  /// replace the media item with updated source if the item is in playing queue
-  static _replaceMedia(DownloadTaskInfo task) async {
-    // replace the uri to downloaded if present in playing queue
-    MediaItem mediaItem =
-        await MediaHelper.generateMediaItem(task.name, task.link, false);
-    if (AudioService.queue == null) return;
-    int index = AudioService.queue.indexOf(mediaItem);
-    if (index != -1) {
-      String uri = await MediaHelper.changeLinkToFileUri(task.link);
-      String id = await MediaHelper.getFileIdFromUri(task.link);
-      Map<String, dynamic> _params = {
-        'id': id,
-        'name': task.name,
-        'index': index,
-        'uri': uri,
-      };
-      AudioService.customAction('editUri', _params);
-    }
-  }
+  // /// replace the media item with updated source if the item is in playing queue
+  // static _replaceMedia(DownloadTaskInfo task) async {
+  //   // replace the uri to downloaded if present in playing queue
+  //   MediaItem mediaItem =
+  //       await MediaHelper.generateMediaItem(task.name!, task.link, false);
+  //   // ignore: deprecated_member_use
+  //   if (AudioService.queue == null) return;
+  //   // ignore: deprecated_member_use
+  //   int index = AudioService.queue!.indexOf(mediaItem);
+  //   if (index != -1) {
+  //     String uri = await MediaHelper.changeLinkToFileUri(task.link!);
+  //     String id = await MediaHelper.getFileIdFromUri(task.link!);
+  //     Map<String, dynamic> _params = {
+  //       'id': id,
+  //       'name': task.name,
+  //       'index': index,
+  //       'uri': uri,
+  //     };
+  //     // ignore: deprecated_member_use
+  //     AudioService.customAction('editUri', _params);
+  //   }
+  // }
 
   /// callback for the download regarding the status
   // static void downloadCallback(
@@ -120,11 +122,11 @@ class DownloadHelper {
 }
 
 class DownloadTaskInfo {
-  final String name;
-  final String link;
+  final String? name;
+  final String? link;
 
   String taskId = '';
-  int progress = 0;
+  int? progress = 0;
   // DownloadTaskStatus status = DownloadTaskStatus.undefined;
 
   DownloadTaskInfo({this.name, this.link});

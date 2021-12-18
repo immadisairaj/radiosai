@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MyConstants extends InheritedWidget {
-  static MyConstants of(BuildContext context) =>
+  static MyConstants? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<MyConstants>();
 
-  const MyConstants({Widget child, Key key}) : super(key: key, child: child);
+  const MyConstants({required Widget child, Key? key}) : super(key: key, child: child);
 
   /// The list of radio sai stream http source names and links
   final Map<String, String> radioStream = const {

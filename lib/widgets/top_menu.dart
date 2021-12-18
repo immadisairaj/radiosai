@@ -16,7 +16,7 @@ import 'package:radiosai/screens/settings/settings.dart';
 /// shows a pop-up menu for different screen navigations
 class TopMenu extends StatefulWidget {
   const TopMenu({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -28,7 +28,7 @@ class _TopMenu extends State<TopMenu> {
   Widget build(BuildContext context) {
     double topPadding = MediaQuery.of(context).padding.top + 5;
     double rightPadding = MediaQuery.of(context).size.width * 0.02;
-    List<String> menuTitles = MyConstants.of(context).menuTitles;
+    List<String> menuTitles = MyConstants.of(context)!.menuTitles;
     return Align(
       alignment: Alignment.topRight,
       child: Padding(

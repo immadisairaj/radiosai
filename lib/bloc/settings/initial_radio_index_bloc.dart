@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class InitialRadioIndexBloc {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-  int _index;
+  int? _index;
   // key for initial radio index shared preferences
   final _initialIndexKey = 'initialRadioIndex';
 
@@ -25,7 +25,7 @@ class InitialRadioIndexBloc {
   }
 
   // sets 0 as default value
-  final _indexStream = BehaviorSubject<int>.seeded(0);
+  final _indexStream = BehaviorSubject<int?>.seeded(0);
   // returns the stream to update anything based on values changed
   Stream get initialRadioIndexStream => _indexStream.stream;
   Sink get _addValue => _indexStream.sink;
@@ -43,7 +43,7 @@ class InitialRadioIndexBloc {
     }
     _addValue.add(_index);
     prefs.then((value) {
-      value.setInt(_initialIndexKey, _index);
+      value.setInt(_initialIndexKey, _index!);
     });
   }
 

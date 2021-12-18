@@ -23,9 +23,10 @@ import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
 import 'package:radiosai/screens/settings/settings.dart';
 
 void main() async {
-  // initialize flutter downloader
   WidgetsFlutterBinding.ensureInitialized();
-  // TODO: change the debug to false later / remove
+
+  // initialize flutter downloader
+  // // TODO: change the debug to false later / remove
   // await FlutterDownloader.initialize(debug: false);
 
   // initialize the audio service
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
     secondaryHeaderColor: Colors.deepOrange,
   );
 
-  MyApp({Key key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -111,16 +112,16 @@ class MyApp extends StatelessWidget {
       child: Consumer<AppThemeBloc>(
           // listen to change of app theme
           builder: (context, _appThemeBloc, child) {
-        return StreamBuilder<String>(
-            stream: _appThemeBloc.appThemeStream,
+        return StreamBuilder<String?>(
+            stream: _appThemeBloc.appThemeStream as Stream<String?>?,
             builder: (context, snapshot) {
               String appTheme =
-                  snapshot.data ?? MyConstants.of(context).appThemes[2];
+                  snapshot.data ?? MyConstants.of(context)!.appThemes[2];
 
               bool isSystemDefault =
-                  appTheme == MyConstants.of(context).appThemes[2];
+                  appTheme == MyConstants.of(context)!.appThemes[2];
               bool isDarkTheme =
-                  appTheme == MyConstants.of(context).appThemes[1];
+                  appTheme == MyConstants.of(context)!.appThemes[1];
 
               return MaterialApp(
                 title: 'Sai Voice',

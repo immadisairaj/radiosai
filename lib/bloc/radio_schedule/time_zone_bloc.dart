@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class TimeZoneBloc {
   Future<SharedPreferences> prefs = SharedPreferences.getInstance();
-  String _timeZone;
+  String? _timeZone;
   // key for time zone shared preferences
   final _timeZoneKey = 'timeZone';
   // initial time zone
@@ -26,7 +26,7 @@ class TimeZoneBloc {
   }
 
   // sets initial time zone (INDIA) as default value
-  final _timeZoneStream = BehaviorSubject<String>.seeded('INDIA');
+  final _timeZoneStream = BehaviorSubject<String?>.seeded('INDIA');
   // returns the stream to update anything based on values changed
   Stream get timeZoneStream => _timeZoneStream.stream;
   Sink get _addValue => _timeZoneStream.sink;
@@ -44,7 +44,7 @@ class TimeZoneBloc {
     }
     _addValue.add(_timeZone);
     prefs.then((value) {
-      value.setString(_timeZoneKey, _timeZone);
+      value.setString(_timeZoneKey, _timeZone!);
     });
   }
 

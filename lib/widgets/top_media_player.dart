@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
@@ -25,7 +24,7 @@ class TopMediaPlayer extends StatefulWidget {
 }
 
 class _TopMediaPlayer extends State<TopMediaPlayer> {
-  AudioManager _audioManager;
+  AudioManager? _audioManager;
 
   @override
   void initState() {
@@ -37,10 +36,10 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<List<String>>(
-        valueListenable: _audioManager.queueNotifier,
+        valueListenable: _audioManager!.queueNotifier,
         builder: (context, queueList, snapshot) {
           final running = queueList.isNotEmpty &&
-              _audioManager.mediaTypeNotifier.value != MediaType.radio;
+              _audioManager!.mediaTypeNotifier.value != MediaType.radio;
           // empty widget if the media player is not running
           if (!running) {
             return const SizedBox(
@@ -50,7 +49,7 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
           }
 
           return StreamBuilder<List<MediaItem>>(
-              stream: _audioManager.queue,
+              stream: _audioManager!.queue,
               builder: (context, snapshot) {
                 final queueList = snapshot.data;
                 // empty widget if radio player is running
@@ -62,7 +61,7 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
                 }
 
                 return ValueListenableBuilder<PlayButtonState>(
-                    valueListenable: _audioManager.playButtonNotifier,
+                    valueListenable: _audioManager!.playButtonNotifier,
                     builder: (context, playState, snapshot) {
                       final playing = (playState == PlayButtonState.playing);
 

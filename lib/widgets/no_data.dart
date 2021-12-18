@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// No Data - a widget to show that no data is present
@@ -13,9 +12,9 @@ import 'package:flutter/material.dart';
 class NoData extends StatefulWidget {
   const NoData({
     key,
-    @required this.backgroundColor,
-    @required this.text,
-    @required this.onPressed,
+    required this.backgroundColor,
+    required this.text,
+    required this.onPressed,
   }) : super(key: key);
 
   final Color backgroundColor;
@@ -52,7 +51,7 @@ class _NoData extends State<NoData> {
                   fontSize: 16,
                 ),
               ),
-              onPressed: widget.onPressed,
+              onPressed: widget.onPressed as void Function()?,
             )
           ],
         ),

@@ -21,13 +21,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 /// If using [initialSearch], it is recommended to use [initialSearchTItle] also
 class Search extends StatefulWidget {
   const Search({
-    Key key,
+    Key? key,
     this.initialSearch,
     this.initialSearchTitle,
   }) : super(key: key);
 
-  final String initialSearch;
-  final String initialSearchTitle;
+  final String? initialSearch;
+  final String? initialSearchTitle;
 
   @override
   _Search createState() => _Search();
@@ -35,7 +35,7 @@ class Search extends StatefulWidget {
 
 class _Search extends State<Search> {
   /// webview controller for hidden web view
-  WebViewController _webViewController;
+  late WebViewController _webViewController;
 
   /// variable to show the loading screen
   bool _isLoading = false;
@@ -44,7 +44,7 @@ class _Search extends State<Search> {
   bool _isGettingData = false;
 
   /// form data to send to web view after updating url
-  Map<String, String> globalFormData;
+  late Map<String, String?> globalFormData;
 
   /// contains the base url of the radio sai search page
   final String baseUrl = 'https://radiosai.org/program/SearchProgramme.php';
@@ -69,7 +69,7 @@ class _Search extends State<Search> {
   String description = '';
 
   /// current selected category
-  String category = 'Any'; // from categoriesList
+  String? category = 'Any'; // from categoriesList
   // String language = '';
 
   final DateTime now = DateTime.now();
@@ -77,7 +77,7 @@ class _Search extends State<Search> {
   /// date for the search (played on)
   ///
   /// set this null to unselect date
-  DateTime selectedDate;
+  DateTime? selectedDate;
 
   /// selected date string to display in the selection widget
   ///
@@ -102,16 +102,16 @@ class _Search extends State<Search> {
   /// set false if searching new
   bool _isChangingPage = false;
 
-  /// table head data retrieved from net
-  ///
-  /// doesn't use this as of now
-  ///
-  /// return data from tableHead
-  /// [0] Sl.No. [1] Category
-  /// [2] First Broad Cast [3] Programme Description
-  /// [4] Language [5] Duration(min)
-  /// [6] Download-fids
-  List<String> _finalTableHead = [];
+  // /// table head data retrieved from net
+  // ///
+  // /// doesn't use this as of now
+  // ///
+  // /// return data from tableHead
+  // /// [0] Sl.No. [1] Category
+  // /// [2] First Broad Cast [3] Programme Description
+  // /// [4] Language [5] Duration(min)
+  // /// [6] Download-fids
+  // List<String> _finalTableHead = [];
 
   /// final table body data retrieved from the net
   ///
@@ -124,7 +124,7 @@ class _Search extends State<Search> {
   /// [2] First Broad Cast [3] Programme Description
   /// [4] Language [5] Duration(min)
   /// [6] Download-fids
-  List<List<String>> _finalTableData = [
+  List<List<String?>> _finalTableData = [
     ['start']
   ];
 
@@ -135,7 +135,7 @@ class _Search extends State<Search> {
   final TextEditingController _dateController = TextEditingController();
 
   // below are used to hide/show the form widget
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   bool _showDropDown = true;
   bool _isScrollingDown = false;
 
@@ -149,7 +149,7 @@ class _Search extends State<Search> {
   final FocusNode _textFocusNode = FocusNode();
 
   /// text controller to add text for initial value
-  TextEditingController _textController;
+  TextEditingController? _textController;
   bool _textControllerClear = false;
 
   @override
@@ -159,9 +159,9 @@ class _Search extends State<Search> {
     super.initState();
 
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    _scrollController!.addListener(_scrollListener);
 
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+    if (Platform.isAndroid) WebView.platform = AndroidWebView();
 
     if (widget.initialSearch == null) {
       _textController = TextEditingController();
@@ -171,19 +171,19 @@ class _Search extends State<Search> {
       // initialize the search with the initialSearch
       _textController = TextEditingController(text: widget.initialSearch);
       // calls the submit method after the widget is build
-      WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
+      WidgetsBinding.instance!.addPostFrameCallback((_) => _submit());
     }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _textController.addListener(_textControllerListener);
+    WidgetsBinding.instance!.addPostFrameCallback((_) {
+      _textController!.addListener(_textControllerListener);
     });
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
+    _scrollController!.removeListener(_scrollListener);
+    _scrollController!.dispose();
 
-    _textController.removeListener(_textControllerListener);
+    _textController!.removeListener(_textControllerListener);
 
     super.dispose();
   }
@@ -204,13 +204,13 @@ class _Search extends State<Search> {
         title: Text(widget.initialSearch == null
             ? 'Search'
             : ((widget.initialSearchTitle != null)
-                ? widget.initialSearchTitle
-                : widget.initialSearch)),
+                ? widget.initialSearchTitle!
+                : widget.initialSearch!)),
         backgroundColor:
             MaterialStateColor.resolveWith((Set<MaterialState> states) {
           return states.contains(MaterialState.scrolledUnder)
               ? ((isDarkTheme)
-                  ? Colors.grey[700]
+                  ? Colors.grey[700]!
                   : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).primaryColor;
         }),
@@ -254,16 +254,28 @@ class _Search extends State<Search> {
                               child: Padding(
                                 padding:
                                     const EdgeInsets.only(left: 10, right: 10),
-                                child: Card(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(18)),
-                                  ),
-                                  elevation: 1,
-                                  color: isDarkTheme
-                                      ? Colors.grey[800]
-                                      : Colors.grey[200],
-                                  child: _searchItems(isDarkTheme),
+                                child: Column(
+                                  children: [
+                                    Card(
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(18)),
+                                      ),
+                                      elevation: 1,
+                                      color: isDarkTheme
+                                          ? Colors.grey[800]
+                                          : Colors.grey[200],
+                                      child: _searchItems(isDarkTheme),
+                                    ),
+                                    // Container when pagination is visible
+                                    if (lastPage > 1)
+                                      Container(
+                                        color: Colors.transparent,
+                                        height:
+                                            MediaQuery.of(context).size.height *
+                                                0.08,
+                                      )
+                                  ],
                                 ),
                               ),
                             ),
@@ -345,13 +357,13 @@ class _Search extends State<Search> {
         padding: const EdgeInsets.only(top: 4, bottom: 4),
         itemCount: _finalTableData.length,
         itemBuilder: (context, index) {
-          List<String> rowData = _finalTableData[index];
+          List<String?> rowData = _finalTableData[index];
 
-          String category = rowData[1];
-          String programe = rowData[3];
-          String language = rowData[4];
+          String category = rowData[1]!;
+          String programe = rowData[3]!;
+          String language = rowData[4]!;
           String duration = '${rowData[5]} min';
-          String fids = rowData[6];
+          String? fids = rowData[6];
           return Column(
             children: [
               Padding(
@@ -434,15 +446,15 @@ class _Search extends State<Search> {
     if (selectedDate == null) {
       formattedDate = '';
     } else {
-      formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate);
+      formattedDate = DateFormat('dd-MM-yyyy').format(selectedDate!);
     }
 
-    String categoryPass = category;
+    String? categoryPass = category;
     if (categoryPass == 'Any') {
       categoryPass = '';
     }
 
-    var data = <String, String>{};
+    var data = <String, String?>{};
     data['form'] = 'search';
     data['description_s'] = description;
     data['filesperpage_s'] = '$filesPerPage';
@@ -470,10 +482,10 @@ class _Search extends State<Search> {
   ///
   /// else continues the process by sending it to parse
   /// if the data is retrieved
-  _getData(Map<String, String> formData) async {
+  _getData(Map<String, String?> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
-    var fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
+    FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
       bool hasInternet =
           Provider.of<InternetConnectionStatus>(context, listen: false) ==
@@ -507,7 +519,7 @@ class _Search extends State<Search> {
 
     if (!_isChangingPage) {
       var paging = document.getElementsByTagName('p');
-      if (paging != null && paging.isNotEmpty) {
+      if (paging.isNotEmpty) {
         var pages = paging[0].getElementsByTagName('a');
 
         lastPage = (pages.isEmpty) ? 1 : pages.length;
@@ -518,7 +530,7 @@ class _Search extends State<Search> {
       }
     }
 
-    var table = document.getElementById('sea');
+    var table = document.getElementById('sea')!;
     // parsing table heads
     List<String> tableHead = [];
     for (int i = 1; i < 8; i++) {
@@ -536,7 +548,7 @@ class _Search extends State<Search> {
     // [6] Download-fids
 
     // parsing table data
-    List<List<String>> tableData = [];
+    List<List<String?>> tableData = [];
     int dataLength = table.getElementsByTagName('tr').length;
     if (dataLength == 0) {
       tableData = [
@@ -544,7 +556,7 @@ class _Search extends State<Search> {
       ];
       setState(() {
         // set the data
-        _finalTableHead = tableHead;
+        // _finalTableHead = tableHead;
         _finalTableData = tableData;
 
         // loading is done
@@ -558,7 +570,7 @@ class _Search extends State<Search> {
       ];
       setState(() {
         // set the data
-        _finalTableHead = tableHead;
+        // _finalTableHead = tableHead;
         _finalTableData = tableData;
 
         // loading is done
@@ -567,7 +579,7 @@ class _Search extends State<Search> {
       return;
     }
     for (int i = 1; i < dataLength; i++) {
-      List<String> tempList = [];
+      List<String?> tempList = [];
       var rowData =
           table.getElementsByTagName('tr')[i].getElementsByTagName('td');
       // do not add if there are any suggestions
@@ -576,11 +588,11 @@ class _Search extends State<Search> {
       for (int j = 1; j < 8; j++) {
         if (j != 4 && j != 7) {
           tempList.add(rowData[j].text);
-          var stringLength = tempList[j - 1].length;
-          tempList[j - 1] = tempList[j - 1].substring(4, stringLength - 3);
-          tempList[j - 1] = tempList[j - 1].replaceAll('\n', ' ');
-          tempList[j - 1] = tempList[j - 1].replaceAll('\t', '');
-          tempList[j - 1] = tempList[j - 1].trim();
+          var stringLength = tempList[j - 1]!.length;
+          tempList[j - 1] = tempList[j - 1]!.substring(4, stringLength - 3);
+          tempList[j - 1] = tempList[j - 1]!.replaceAll('\n', ' ');
+          tempList[j - 1] = tempList[j - 1]!.replaceAll('\t', '');
+          tempList[j - 1] = tempList[j - 1]!.trim();
         } else if (j == 4) {
           // if j is 4, parse it differently
 
@@ -610,7 +622,7 @@ class _Search extends State<Search> {
         else {
           // if j is 7, parse it differently
 
-          String fids = '';
+          String? fids = '';
           if (rowData[j].getElementsByTagName('input').isNotEmpty) {
             fids =
                 rowData[j].getElementsByTagName('input')[0].attributes['value'];
@@ -628,7 +640,7 @@ class _Search extends State<Search> {
     // [4] Language [5] Duration(min)
     // [6] Download-fids
 
-    if (tableData == null || tableData.isEmpty) {
+    if (tableData.isEmpty) {
       tableData = [
         ['wrong']
       ];
@@ -636,7 +648,7 @@ class _Search extends State<Search> {
 
     setState(() {
       // set the data
-      _finalTableHead = tableHead;
+      // _finalTableHead = tableHead;
       _finalTableData = tableData;
 
       // loading is done
@@ -657,7 +669,7 @@ class _Search extends State<Search> {
   /// used to add or remove clear button in search text field
   void _textControllerListener() {
     setState(() {
-      _textControllerClear = _textController.text != '';
+      _textControllerClear = _textController!.text != '';
     });
   }
 
@@ -666,7 +678,7 @@ class _Search extends State<Search> {
   ///
   /// if valid, loads and shows the data
   void _submit() {
-    if (_formKey.currentState.validate()) {
+    if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
       setState(() {
         _isLoading = true;
@@ -680,9 +692,9 @@ class _Search extends State<Search> {
   /// scroll listener to show/hide the form widget
   void _scrollListener() {
     int sensitivity = 8;
-    if (_scrollController.offset > sensitivity ||
-        _scrollController.offset < -sensitivity) {
-      if (_scrollController.position.userScrollDirection ==
+    if (_scrollController!.offset > sensitivity ||
+        _scrollController!.offset < -sensitivity) {
+      if (_scrollController!.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (!_isScrollingDown) {
           _isScrollingDown = true;
@@ -690,7 +702,7 @@ class _Search extends State<Search> {
           setState(() {});
         }
       }
-      if (_scrollController.position.userScrollDirection ==
+      if (_scrollController!.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (_isScrollingDown) {
           _isScrollingDown = false;
@@ -737,7 +749,7 @@ class _Search extends State<Search> {
                       ),
                       suffixIcon: (_textControllerClear)
                           ? IconButton(
-                              onPressed: _textController.clear,
+                              onPressed: _textController!.clear,
                               icon: const Icon(Icons.clear_outlined),
                               splashRadius: 24,
                             )
@@ -937,17 +949,17 @@ class _Search extends State<Search> {
   /// select the played on date
   Future<void> _selectDate(BuildContext context) async {
     selectedDate ??= now;
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       // Schedule started on 8th Nov 2019
       firstDate: DateTime(2019, 11, 8),
-      initialDate: selectedDate,
+      initialDate: selectedDate!,
       // Schedule is available for 1 day after current date
       lastDate: now,
     );
     if (picked != null) {
       selectedDate = picked;
-      selectedDateString = DateFormat('MMM dd, yyyy').format(selectedDate);
+      selectedDateString = DateFormat('MMM dd, yyyy').format(selectedDate!);
       _dateController.text = selectedDateString;
 
       setState(() {
@@ -959,7 +971,7 @@ class _Search extends State<Search> {
 
   /// select the played on date for iOS
   void _selectDateIOS(BuildContext context) {
-    DateTime _picked;
+    DateTime? _picked;
     if (selectedDate == null) {
       _picked = now;
     }
@@ -993,7 +1005,7 @@ class _Search extends State<Search> {
                         if (_picked != null) {
                           selectedDate = _picked;
                           selectedDateString =
-                              DateFormat('MMM dd, yyyy').format(selectedDate);
+                              DateFormat('MMM dd, yyyy').format(selectedDate!);
                           _dateController.text = selectedDateString;
 
                           setState(() {
@@ -1045,11 +1057,11 @@ class _Search extends State<Search> {
           minWidth: 50,
         ),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(8),
           color: Theme.of(context).backgroundColor,
         ),
         child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8),
+          padding: const EdgeInsets.only(left: 6, right: 6),
           child: Scrollbar(
             radius: const Radius.circular(8),
             isAlwaysShown: true,
@@ -1105,8 +1117,8 @@ class _Search extends State<Search> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
-        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
+        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
+        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
         enabled: true,
         child: Column(
           children: [

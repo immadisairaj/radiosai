@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:package_info/package_info.dart';
@@ -9,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
   const Settings({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   static const String route = 'settings';
@@ -55,7 +54,7 @@ class _Settings extends State<Settings> {
             MaterialStateColor.resolveWith((Set<MaterialState> states) {
           return states.contains(MaterialState.scrolledUnder)
               ? ((isDarkTheme)
-                  ? Colors.grey[700]
+                  ? Colors.grey[700]!
                   : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).primaryColor;
         }),

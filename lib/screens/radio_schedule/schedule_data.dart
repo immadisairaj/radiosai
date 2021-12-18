@@ -20,15 +20,15 @@ import 'package:shimmer/shimmer.dart';
 
 class ScheduleData extends StatefulWidget {
   const ScheduleData({
-    Key key,
+    Key? key,
     this.radioStreamIndex,
     this.timeZone,
     this.timeZoneBloc,
   }) : super(key: key);
 
-  final int radioStreamIndex;
-  final String timeZone;
-  final TimeZoneBloc timeZoneBloc;
+  final int? radioStreamIndex;
+  final String? timeZone;
+  final TimeZoneBloc? timeZoneBloc;
 
   @override
   _ScheduleData createState() => _ScheduleData();
@@ -41,15 +41,15 @@ class _ScheduleData extends State<ScheduleData> {
   final DateTime now = DateTime.now();
 
   /// date for the radio sai schedule
-  DateTime selectedDate;
+  DateTime? selectedDate;
 
   // below are used to hide/show the selection widget
-  ScrollController _scrollController;
+  ScrollController? _scrollController;
   bool _showDropDown = true;
   bool _isScrollingDown = false;
 
   // used for the initial build
-  int oldStreamId = 0;
+  int? oldStreamId = 0;
   final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
 
   /// contains the base url of the radio sai schedule page
@@ -71,14 +71,14 @@ class _ScheduleData extends State<ScheduleData> {
   /// selected time zone id
   String zoneId = '';
 
-  /// table head data retrieved from net
-  ///
-  /// doesn't use this as of now
-  ///
-  /// return data from tableHead
-  /// [0] Sl. No. [1] Loacl Time [2] GMT Time
-  /// [3] Programe List [4] Duration(min)
-  List<String> _finalTableHead = [];
+  // /// table head data retrieved from net
+  // ///
+  // /// doesn't use this as of now
+  // ///
+  // /// return data from tableHead
+  // /// [0] Sl. No. [1] Loacl Time [2] GMT Time
+  // /// [3] Programe List [4] Duration(min)
+  // List<String> _finalTableHead = [];
 
   /// final table body data retrieved from the net
   ///
@@ -110,13 +110,13 @@ class _ScheduleData extends State<ScheduleData> {
     super.initState();
 
     _scrollController = ScrollController();
-    _scrollController.addListener(_scrollListener);
+    _scrollController!.addListener(_scrollListener);
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_scrollListener);
-    _scrollController.dispose();
+    _scrollController!.removeListener(_scrollListener);
+    _scrollController!.dispose();
 
     super.dispose();
   }
@@ -145,7 +145,7 @@ class _ScheduleData extends State<ScheduleData> {
             MaterialStateColor.resolveWith((Set<MaterialState> states) {
           return states.contains(MaterialState.scrolledUnder)
               ? ((isDarkTheme)
-                  ? Colors.grey[700]
+                  ? Colors.grey[700]!
                   : Theme.of(context).colorScheme.secondary)
               : Theme.of(context).primaryColor;
         }),
@@ -187,7 +187,7 @@ class _ScheduleData extends State<ScheduleData> {
                             child: Padding(
                               padding: const EdgeInsets.all(2.0),
                               child: Text(
-                                'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate)}',
+                                'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate!)}',
                                 style: TextStyle(
                                   fontSize: 19,
                                   color: Theme.of(context).secondaryHeaderColor,
@@ -313,7 +313,7 @@ class _ScheduleData extends State<ScheduleData> {
                       onPressed: () {
                         setState(() {
                           _isLoading = true;
-                          _updateURL(selectedDate);
+                          _updateURL(selectedDate!);
                         });
                       },
                     ),
@@ -326,7 +326,7 @@ class _ScheduleData extends State<ScheduleData> {
                       onPressed: () {
                         setState(() {
                           _isLoading = true;
-                          _updateURL(selectedDate);
+                          _updateURL(selectedDate!);
                         });
                       },
                     ),
@@ -468,7 +468,7 @@ class _ScheduleData extends State<ScheduleData> {
   _getData(Map<String, dynamic> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
-    var fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
+    FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
       // get data from online if not present in cache
       http.Response response;
@@ -514,7 +514,7 @@ class _ScheduleData extends State<ScheduleData> {
   /// sets the final data to display
   _parseData(String response) {
     var document = parse(response);
-    var table = document.getElementById('sch');
+    var table = document.getElementById('sch')!;
     // parsing table heads
     List<String> tableHead = [];
     for (int i = 1; i < 6; i++) {
@@ -544,7 +544,7 @@ class _ScheduleData extends State<ScheduleData> {
       ];
       setState(() {
         // set the data
-        _finalTableHead = tableHead;
+        // _finalTableHead = tableHead;
         _finalTableData = tableData;
         _finalLocalTime = localTime;
 
@@ -585,7 +585,7 @@ class _ScheduleData extends State<ScheduleData> {
           }
           // TODO: get pdf scripts for discourse stream (click here tags)
 
-          String fids = '';
+          String? fids = '';
           if (rowData[j].getElementsByTagName('input').isNotEmpty) {
             fids =
                 rowData[j].getElementsByTagName('input')[0].attributes['value'];
@@ -605,7 +605,7 @@ class _ScheduleData extends State<ScheduleData> {
     // [0] Sl. No. [1] Loacl Time [2] GMT Time
     // [3] Programe List [4] Duration(min)
 
-    if (tableData == null || tableData.isEmpty) {
+    if (tableData.isEmpty) {
       tableData = [
         ['null']
       ];
@@ -613,7 +613,7 @@ class _ScheduleData extends State<ScheduleData> {
 
     setState(() {
       // set the data
-      _finalTableHead = tableHead;
+      // _finalTableHead = tableHead;
       _finalTableData = tableData;
       _finalLocalTime = localTime;
 
@@ -624,11 +624,11 @@ class _ScheduleData extends State<ScheduleData> {
 
   /// select the date and update the url
   Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
+    final DateTime? picked = await showDatePicker(
       context: context,
       // Schedule started on 8th Nov 2019
       firstDate: DateTime(2019, 11, 8),
-      initialDate: selectedDate,
+      initialDate: selectedDate!,
       // Schedule is available for 1 day after current date
       lastDate: now.add(const Duration(days: 1)),
     );
@@ -636,14 +636,14 @@ class _ScheduleData extends State<ScheduleData> {
       setState(() {
         _isLoading = true;
         selectedDate = picked;
-        _updateURL(selectedDate);
+        _updateURL(selectedDate!);
       });
     }
   }
 
   /// select the date and update the url for iOS
   void _selectDateIOS(BuildContext context) {
-    DateTime _picked;
+    DateTime? _picked;
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
@@ -674,7 +674,7 @@ class _ScheduleData extends State<ScheduleData> {
                           setState(() {
                             _isLoading = true;
                             selectedDate = _picked;
-                            _updateURL(selectedDate);
+                            _updateURL(selectedDate!);
                           });
                         }
                         Navigator.of(context).maybePop();
@@ -691,7 +691,7 @@ class _ScheduleData extends State<ScheduleData> {
     await DefaultCacheManager().removeFile(finalUrl);
     setState(() {
       _isLoading = true;
-      _updateURL(selectedDate);
+      _updateURL(selectedDate!);
     });
   }
 
@@ -704,24 +704,24 @@ class _ScheduleData extends State<ScheduleData> {
       return;
     }
     oldStreamId = widget.radioStreamIndex;
-    streamId = '${firstStreamMap[widget.radioStreamIndex]}';
-    zoneId = '${MyConstants.of(context).timeZones[widget.timeZone]}';
-    _updateURL(selectedDate);
+    streamId = '${firstStreamMap[widget.radioStreamIndex!]}';
+    zoneId = '${MyConstants.of(context)!.timeZones[widget.timeZone!]}';
+    _updateURL(selectedDate!);
   }
 
   /// handle stream name to show in dropdown
   void _handleStreamName() {
     if (streamId == '') return;
     int index = firstStreamMap.indexOf(int.parse(streamId));
-    selectedStream = MyConstants.of(context).radioStream.keys.toList()[index];
+    selectedStream = MyConstants.of(context)!.radioStream.keys.toList()[index];
   }
 
   /// scroll listener to show/hide the selecting widget
   void _scrollListener() {
     int sensitivity = 8;
-    if (_scrollController.offset > sensitivity ||
-        _scrollController.offset < -sensitivity) {
-      if (_scrollController.position.userScrollDirection ==
+    if (_scrollController!.offset > sensitivity ||
+        _scrollController!.offset < -sensitivity) {
+      if (_scrollController!.position.userScrollDirection ==
           ScrollDirection.reverse) {
         if (!_isScrollingDown) {
           _isScrollingDown = true;
@@ -729,7 +729,7 @@ class _ScheduleData extends State<ScheduleData> {
           setState(() {});
         }
       }
-      if (_scrollController.position.userScrollDirection ==
+      if (_scrollController!.position.userScrollDirection ==
           ScrollDirection.forward) {
         if (_isScrollingDown) {
           _isScrollingDown = false;
@@ -750,7 +750,7 @@ class _ScheduleData extends State<ScheduleData> {
       ),
       child: DropdownButton<String>(
         value: selectedStream,
-        items: MyConstants.of(context).scheduleStream.keys.map((String value) {
+        items: MyConstants.of(context)!.scheduleStream.keys.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
@@ -764,8 +764,8 @@ class _ScheduleData extends State<ScheduleData> {
           if (value != selectedStream) {
             setState(() {
               _isLoading = true;
-              streamId = '${MyConstants.of(context).scheduleStream[value]}';
-              _updateURL(selectedDate);
+              streamId = '${MyConstants.of(context)!.scheduleStream[value!]}';
+              _updateURL(selectedDate!);
             });
           }
         },
@@ -785,7 +785,7 @@ class _ScheduleData extends State<ScheduleData> {
       ),
       child: DropdownButton<String>(
         value: widget.timeZone,
-        items: MyConstants.of(context).timeZones.keys.map((String value) {
+        items: MyConstants.of(context)!.timeZones.keys.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
             child: Text(value),
@@ -799,9 +799,9 @@ class _ScheduleData extends State<ScheduleData> {
           if (value != widget.timeZone) {
             setState(() {
               _isLoading = true;
-              widget.timeZoneBloc.changeTimeZone.add(value);
-              zoneId = '${MyConstants.of(context).timeZones[value]}';
-              _updateURL(selectedDate);
+              widget.timeZoneBloc!.changeTimeZone.add(value);
+              zoneId = '${MyConstants.of(context)!.timeZones[value!]}';
+              _updateURL(selectedDate!);
             });
           }
         },
@@ -814,8 +814,8 @@ class _ScheduleData extends State<ScheduleData> {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500] : Colors.grey[300],
-        highlightColor: isDarkTheme ? Colors.grey[300] : Colors.grey[100],
+        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
+        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
         enabled: true,
         child: Column(
           children: [
