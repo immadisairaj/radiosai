@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 # versioning style <major>.<feature>.<fixes>+<commits>
-version: 0.11.0+139
+version: 0.11.0+140
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
@@ -59,7 +59,7 @@ dependencies:
   webview_flutter: ^3.0.0
   # Audio packages
   just_audio: ^0.9.18
-  audio_service: ^0.18.2 # when updating, look for changes in .MainActivity
+  audio_service: ^0.18.3 # when updating, look for changes in .MainActivity
 
 flutter_icons:
   image_path: assets/sai_voice_logo.png
