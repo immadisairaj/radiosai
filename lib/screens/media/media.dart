@@ -106,7 +106,7 @@ class _Media extends State<Media> {
         }),
       ),
       body: Container(
-        height: MediaQuery.of(context).size.height,
+        // height: MediaQuery.of(context).size.height,
         color: backgroundColor,
         child: Stack(
           children: [
@@ -121,8 +121,11 @@ class _Media extends State<Media> {
                   slivers: [
                     SliverToBoxAdapter(
                       child: Padding(
-                        padding:
-                            const EdgeInsets.only(top: 10, left: 10, right: 10),
+                        padding: EdgeInsets.only(
+                            top: 10,
+                            left: 10,
+                            right: 10,
+                            bottom: MediaQuery.of(context).viewPadding.bottom),
                         child: Card(
                           shape: const RoundedRectangleBorder(
                             borderRadius: BorderRadius.all(Radius.circular(18)),

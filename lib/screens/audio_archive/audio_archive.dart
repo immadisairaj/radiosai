@@ -49,6 +49,8 @@ class _AudioArchive extends State<AudioArchive> {
   Widget _audioArchiveGrid(bool isDarkTheme) {
     return Scrollbar(
       child: GridView(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom),
         physics: const BouncingScrollPhysics(
             parent: AlwaysScrollableScrollPhysics()),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -97,7 +99,8 @@ class _AudioArchive extends State<AudioArchive> {
                     title: title,
                   )));
     } else {
-      bool isLink = MyConstants.of(context)!.audioArchiveLink.containsKey(title);
+      bool isLink =
+          MyConstants.of(context)!.audioArchiveLink.containsKey(title);
       if (isLink) {
         // if contains link, launch the url
         _urlLaunch(MyConstants.of(context)!.audioArchiveLink[title!]);

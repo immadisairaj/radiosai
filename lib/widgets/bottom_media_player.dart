@@ -76,70 +76,73 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                   );
                 }
 
-                return GestureDetector(
-                  onTap: () {
-                    getIt<NavigationService>().navigateTo(MediaPlayer.route);
-                  },
-                  child: Container(
-                    height: (isBiggerScreen) ? height * 0.08 : height * 0.1,
-                    width: width,
-                    decoration: BoxDecoration(
-                      color: backgroundColor,
-                      border: Border(
-                        top: BorderSide(
-                          color: isDarkTheme ? Colors.grey[700]! : Colors.white,
+                return SafeArea(
+                  child: GestureDetector(
+                    onTap: () {
+                      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+                    },
+                    child: Container(
+                      height: (isBiggerScreen) ? height * 0.08 : height * 0.1,
+                      width: width,
+                      decoration: BoxDecoration(
+                        color: backgroundColor,
+                        border: Border(
+                          top: BorderSide(
+                            color:
+                                isDarkTheme ? Colors.grey[700]! : Colors.white,
+                          ),
                         ),
                       ),
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          const SizedBox(
-                            height: 40,
-                            width: 40,
-                            child: Image(
-                              fit: BoxFit.cover,
-                              alignment: Alignment(0, -1),
-                              // TODO: get image from artUri
-                              image: AssetImage('assets/sai_listens.jpg'),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            const SizedBox(
+                              height: 40,
+                              width: 40,
+                              child: Image(
+                                fit: BoxFit.cover,
+                                alignment: Alignment(0, -1),
+                                // TODO: get image from artUri
+                                image: AssetImage('assets/sai_listens.jpg'),
+                              ),
                             ),
-                          ),
-                          ValueListenableBuilder<String>(
-                            valueListenable:
-                                _audioManager!.currentSongTitleNotifier,
-                            builder: (context, mediaTitle, child) {
-                              if (mediaTitle == '') {
-                                mediaTitle = 'loading media...';
-                              }
-                              return SizedBox(
-                                width: width * 0.65,
-                                child: Text(
-                                  // Display Audio Title
-                                  mediaTitle,
-                                  textAlign: TextAlign.start,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  ),
-                                ),
-                              );
-                            },
-                          ),
-                          // Pause/Play button
-                          ValueListenableBuilder<PlayButtonState>(
+                            ValueListenableBuilder<String>(
                               valueListenable:
-                                  _audioManager!.playButtonNotifier,
-                              builder: (context, playState, snapshot) {
-                                final playing =
-                                    (playState == PlayButtonState.playing);
+                                  _audioManager!.currentSongTitleNotifier,
+                              builder: (context, mediaTitle, child) {
+                                if (mediaTitle == '') {
+                                  mediaTitle = 'loading media...';
+                                }
+                                return SizedBox(
+                                  width: width * 0.65,
+                                  child: Text(
+                                    // Display Audio Title
+                                    mediaTitle,
+                                    textAlign: TextAlign.start,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            // Pause/Play button
+                            ValueListenableBuilder<PlayButtonState>(
+                                valueListenable:
+                                    _audioManager!.playButtonNotifier,
+                                builder: (context, playState, snapshot) {
+                                  final playing =
+                                      (playState == PlayButtonState.playing);
 
-                                return playing ? pauseButton() : playButton();
-                              }),
-                        ],
+                                  return playing ? pauseButton() : playButton();
+                                }),
+                          ],
+                        ),
                       ),
                     ),
                   ),

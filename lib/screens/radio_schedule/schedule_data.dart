@@ -285,8 +285,17 @@ class _ScheduleData extends State<ScheduleData> {
                           slivers: [
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
+                                padding: EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                    bottom: (MediaQuery.of(context)
+                                                .viewPadding
+                                                .bottom >
+                                            0)
+                                        ? MediaQuery.of(context)
+                                            .viewPadding
+                                            .bottom
+                                        : 20),
                                 child: Card(
                                   shape: const RoundedRectangleBorder(
                                     borderRadius:

@@ -252,30 +252,29 @@ class _Search extends State<Search> {
                           slivers: [
                             SliverToBoxAdapter(
                               child: Padding(
-                                padding:
-                                    const EdgeInsets.only(left: 10, right: 10),
-                                child: Column(
-                                  children: [
-                                    Card(
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(18)),
-                                      ),
-                                      elevation: 1,
-                                      color: isDarkTheme
-                                          ? Colors.grey[800]
-                                          : Colors.grey[200],
-                                      child: _searchItems(isDarkTheme),
-                                    ),
-                                    // Container when pagination is visible
-                                    if (lastPage > 1)
-                                      Container(
-                                        color: Colors.transparent,
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.08,
-                                      )
-                                  ],
+                                padding: EdgeInsets.only(
+                                    left: 10,
+                                    right: 10,
+                                    bottom: MediaQuery.of(context)
+                                            .viewPadding
+                                            .bottom +
+                                        20 +
+                                        ((lastPage > 1)
+                                            ? MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.08
+                                            : 0)),
+                                child: Card(
+                                  shape: const RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(18)),
+                                  ),
+                                  elevation: 1,
+                                  color: isDarkTheme
+                                      ? Colors.grey[800]
+                                      : Colors.grey[200],
+                                  child: _searchItems(isDarkTheme),
                                 ),
                               ),
                             ),
@@ -1048,8 +1047,11 @@ class _Search extends State<Search> {
     // and this scroll bar is always shown
     ScrollController scrollController = ScrollController();
 
+    // check if it needs a bottom padding for bottom notch
+    bool hasBottomNotch = MediaQuery.of(context).viewPadding.bottom > 0;
+
     return Positioned(
-      bottom: 10,
+      bottom: hasBottomNotch ? 30 : 20,
       child: Container(
         constraints: BoxConstraints(
           maxHeight: MediaQuery.of(context).size.height * 0.07,
@@ -1123,7 +1125,7 @@ class _Search extends State<Search> {
         child: Column(
           children: [
             // 3 shimmer context
-            for (int i = 0; i < 3; i++) _shimmerContent(),
+            for (int i = 0; i < 2; i++) _shimmerContent(),
           ],
         ),
       ),
