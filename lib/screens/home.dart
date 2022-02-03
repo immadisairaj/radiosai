@@ -41,8 +41,7 @@ class _Home extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // to show if the download is happened in the whole app
-      // calling from download helper is a must
+      // scaffold key for whole app to show snackbar
       key: getIt<ScaffoldHelper>().scaffoldKey,
       body: Stack(
         children: const [

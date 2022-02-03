@@ -51,6 +51,23 @@ __Open Source:__ We believe that there is nothing to hide and like you to experi
 __File Permissions:__ File write permission is requested only to save images from Sai Inspires. One can deny these permissions from the settings.
 
 > "Sai Ram, and Happy Listening"
+## Features
+
+| Feature                            |  Android |   iOS  |
+| -------                            | :-------:| :-----:|
+| background audio                   | ✔️        | ✔️      |
+| headset clicks                     | ✔️        | ✔️      |
+| play/pause/seek                    | ✔️        | ✔️      |
+| fast forward/rewind                | ✔️        | ✔️      |
+| repeat/shuffle mode                | ✔️        | ✔️      |
+| skip next/prev                     | ✔️        | ✔️      |
+| notifications/control center       | ✔️        | ✔️      |
+| light/dark theme                   | ✔️        | ✔️      |
+| starting with fav stream           | ✔️        | ✔️      |
+| sai inspires share/download        | ✔️        | ✔️      |
+| share media links                  | ✔️        | ✔️      |
+| splash screen                      | ✔️        |        |
+| app links                          | ✔️        |        |
 
 ## Future Updates
 
@@ -140,8 +157,6 @@ Thanks to the Open Source community for providing such great libraries and frame
 <!-- keep updating this -->
 - __Flutter version:__ 2.8.1
 - __Dart version:__ 2.15.1
-- __Visual Studio Code:__ 1.63.2
-- __Operating System:__ macOS Big Monterey version 12.1.0
 - __Gradle version:__ 7.0.4
 - __Android Emulator:__ Pixel 4a API 31
 - __iOS Simulator:__ Apple iPhone 13 iOS 15

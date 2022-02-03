@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/scaffold_helper.dart';
@@ -29,8 +31,9 @@ class _SaiInspires extends State<SaiInspires> {
   /// contains the base url of the images/new SI source
   final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
 
-  /// contains the base url of the sai inspires page
-  final String baseUrl = 'https://www.radiosai.org/pages/ThoughtText.asp';
+  /// contains the updated base url of the sai inspires page
+  final String baseUrl =
+      'https://api.sssmediacentre.org/web/saiinspire/filterBy';
 
   final DateTime now = DateTime.now();
 
@@ -38,7 +41,7 @@ class _SaiInspires extends State<SaiInspires> {
   DateTime? selectedDate;
 
   /// image url for the selected date
-  String? imageFinalUrl;
+  String? imageFinalUrl = '';
 
   /// sai inspires source url for the selected date
   late String finalUrl;
@@ -54,10 +57,6 @@ class _SaiInspires extends State<SaiInspires> {
   String _contentText = ''; // content text id is 'Content'
   String _byBaba = '-BABA';
   String _quote = '';
-
-  /// variable to know if the url fetch
-  /// is old data source / new data source
-  bool _isOldData = false;
 
   @override
   void initState() {
@@ -133,6 +132,28 @@ class _SaiInspires extends State<SaiInspires> {
                                         imageUrl: imageFinalUrl!,
                                         errorWidget: (context, url, error) =>
                                             const Icon(Icons.error),
+                                        // shimmer place holder for loading
+                                        placeholder: (context, placeholder) =>
+                                            Shimmer.fromColors(
+                                          baseColor: isDarkTheme
+                                              ? Colors.grey[500]!
+                                              : Colors.grey[300]!,
+                                          highlightColor: isDarkTheme
+                                              ? Colors.grey[300]!
+                                              : Colors.grey[100]!,
+                                          enabled: true,
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.5,
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.4,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -147,7 +168,7 @@ class _SaiInspires extends State<SaiInspires> {
                       child: Padding(
                         padding:
                             const EdgeInsets.only(left: 20, right: 20, top: 8),
-                        child: _isOldData ? _oldContent() : _newContent(),
+                        child: _content(),
                       ),
                     ),
                   ],
@@ -199,13 +220,15 @@ class _SaiInspires extends State<SaiInspires> {
     String fileName =
         'SI_${imageFinalUrl!.substring(urlLength - 12, urlLength - 4)}';
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SaiImage(
-                  heroTag: heroTag,
-                  imageUrl: imageFinalUrl,
-                  fileName: fileName,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (context) => SaiImage(
+          heroTag: heroTag,
+          imageUrl: imageFinalUrl,
+          fileName: fileName,
+        ),
+      ),
+    );
   }
 
   /// update the URL after picking the new date
@@ -216,25 +239,17 @@ class _SaiInspires extends State<SaiInspires> {
   ///
   /// continues the process by retrieving the data
   _updateURL(DateTime date) async {
-    String imageFormattedDate = DateFormat('yyyyMMdd').format(date);
-    String formattedDate = DateFormat('dd/MM/yyyy').format(date);
-    imageFinalUrl =
-        '$imageBaseUrl/${date.year}/uploadimages/SI_$imageFormattedDate.jpg';
-    if (date.isAfter(DateTime(2011, 8, 25))) {
-      finalUrl = '$imageBaseUrl/${date.year}/SI_$imageFormattedDate.htm';
-      _getNewData();
-    } else {
-      finalUrl = '$baseUrl?mydate=$formattedDate';
-      _getOldData();
-    }
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
+    finalUrl = '$baseUrl?publishDate=$formattedDate';
+    _getData();
   }
 
-  /// get data of date from 26 Aug 2011
+  /// get data of date before Jul 15 2011
   ///
-  /// retrieve the data from finalUrl
+  /// retrieve the data from finalUrl and set the image url
   ///
   /// parses the data too
-  _getNewData() async {
+  _getData() async {
     File file;
     try {
       file = await DefaultCacheManager()
@@ -258,156 +273,57 @@ class _SaiInspires extends State<SaiInspires> {
       return;
     }
     var response = file.readAsStringSync();
-    var document = parse(response);
+    final body = jsonDecode(response);
 
-    int k;
-    if (document
-        .getElementsByTagName('tbody')[0]
-        .children[1]
-        .getElementsByTagName('font')
-        .isEmpty) {
-      k = 2;
-    } else {
-      k = 1;
-    }
-
-    String dateText = document
-        .getElementsByTagName('tbody')[0]
-        .children[k]
-        .getElementsByTagName('font')[0]
-        .text;
-
-    String top = document
-        .getElementsByTagName('tbody')[0]
-        .children[k]
-        .getElementsByTagName('font')[1]
-        .text;
-    if (top.contains('Featured')) {
-      top = document
-          .getElementsByTagName('tbody')[0]
-          .children[k]
-          .getElementsByTagName('font')[2]
-          .text;
-    }
-
-    String contentText = document
-        .getElementsByTagName('tbody')[0]
-        .children[k + 1]
-        .getElementsByTagName('font')[0]
-        .text;
-
-    String from = document
-        .getElementsByTagName('tbody')[0]
-        .children[k + 1]
-        .getElementsByTagName('font')[1]
-        .text;
-
-    int l = document.getElementsByTagName('tbody')[0].children.length;
-    String quote = document
-        .getElementsByTagName('tbody')[0]
-        .children[l - 2]
-        .getElementsByTagName('font')[0]
-        .text;
-
-    // Trim the data to remove unnecessary content
-    dateText = dateText.replaceAll('"', '');
-    dateText = dateText.trim();
-    dateText = 'Date: $dateText';
-
-    top = top.replaceAll('\\n', '');
-    top = top.replaceAll('\\t', '');
-    // to not remove " from the text add temp tag
-    top = top.replaceAll('\\"', '<q>');
-    top = top.replaceAll('"', '');
-    // remove temp tag and replace with "
-    top = top.replaceAll('<q>', '"');
-    top = top.replaceAll('\n', ' ');
-    // replace multiple spaces with single space
-    top = top.replaceAll(RegExp(' +'), ' ');
-    top = top.trim();
-
-    contentText = contentText.replaceAll('\\n', '');
-    // to not remove " from the text add temp tag
-    contentText = contentText.replaceAll('\\"', '<q>');
-    contentText = contentText.replaceAll('"', '');
-    // remove temp tag and replace with "
-    contentText = contentText.replaceAll('<q>', '"');
-    contentText = contentText.replaceAll('\n', ' ');
-    // replace multiple spaces with single space
-    contentText = contentText.replaceAll(RegExp(' +'), ' ');
-    contentText = contentText.trim();
-
-    quote = quote.replaceAll('\n', ' ');
-    // replace multiple spaces with single space
-    quote = quote.replaceAll(RegExp(' +'), ' ');
-    quote = quote.trim();
-
-    setState(() {
-      // set the data
-      _dateText = dateText;
-      _contentText = contentText;
-      _thoughtOfTheDay = top;
-      _byBaba = from;
-      _quote = quote;
-
-      _isOldData = false;
-
-      // loading is done
-      _isLoading = false;
-    });
-  }
-
-  /// get data of date before Aug 26 2011
-  ///
-  /// retrieve the data from finalUrl
-  ///
-  /// parses the data too
-  _getOldData() async {
-    File file;
-    try {
-      file = await DefaultCacheManager()
-          .getSingleFile(finalUrl)
-          .timeout(const Duration(seconds: 40));
-    } on SocketException catch (_) {
+    if (body['result'] == null) {
+      DefaultCacheManager().removeFile(finalUrl);
       setState(() {
-        // if there is no internet
+        // if no data is available
         _contentText = 'null';
         imageFinalUrl = '';
         _isLoading = false;
       });
       return;
-    } on TimeoutException catch (_) {
-      setState(() {
-        // if timeout
-        _contentText = 'timeout';
-        imageFinalUrl = '';
-        _isLoading = false;
-      });
-      return;
     }
-    var response = file.readAsStringSync();
-    var document = parse(response);
-    String dateText = document.getElementById('Head')!.text;
-    String contentText = document.getElementById('Content')!.text;
 
-    // Trim the data to remove unnecessary content
-    dateText = dateText.replaceAll('"', '');
-    dateText = dateText.trim();
-    contentText = contentText.replaceAll('\\n', '');
-    // to not remove " from the text add temp tag
-    contentText = contentText.replaceAll('\\"', '<q>');
-    contentText = contentText.replaceAll('"', '');
-    // remove temp tag and replace with "
-    contentText = contentText.replaceAll('<q>', '"');
-    contentText = contentText.trim();
+    final mainBody = body['result'][0];
+
+    String dateText = mainBody['title'];
+    dateText = dateText.replaceAll('Sai Inspires - ', '');
+    dateText = dateText.replaceAll('SAI INSPIRES - ', '');
+
+    var description = parse(mainBody['description']);
+    var descriptionP = description.body!.getElementsByTagName('p');
+    String topText = '';
+    String contentText = '';
+    if (descriptionP.isEmpty) {
+      String descriptionText = mainBody['description'];
+      topText = description.getElementsByTagName('strong')[0].text;
+      contentText = descriptionText.replaceAll(topText, '');
+      contentText = contentText.replaceAll('<strong>', '');
+      contentText = contentText.replaceAll('</strong>', '');
+      contentText = contentText.replaceAll('<em>', '');
+      contentText = contentText.replaceAll('</em>', '');
+      contentText = contentText.replaceAll('\n', '');
+    } else {
+      topText = descriptionP[0].text;
+      contentText = descriptionP[descriptionP.length - 1].text;
+    }
+
+    String fromText = mainBody['info'];
+    fromText = fromText.replaceAll('<em>', '');
+    fromText = fromText.replaceAll('</em>', '');
+
     setState(() {
       // set the data
       _dateText = dateText;
       _contentText = contentText;
-      _thoughtOfTheDay = 'THOUGHT OF THE DAY';
-      _byBaba = '-BABA';
+      // _contentText = description.body!.innerHtml;
+      _thoughtOfTheDay = topText;
+      _byBaba = fromText;
+      _quote = mainBody['remark'];
 
-      _isOldData = true;
+      imageFinalUrl = mainBody['thumbnail'];
 
       // loading is done
       _isLoading = false;
@@ -418,8 +334,8 @@ class _SaiInspires extends State<SaiInspires> {
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      // Sai Inspires started on 19th Feb 2011
-      firstDate: DateTime(2011, 2, 19),
+      // Sai Inspires started on 15th Jul 2011
+      firstDate: DateTime(2011, 7, 15),
       initialDate: selectedDate!,
       lastDate: now,
     );
@@ -436,62 +352,77 @@ class _SaiInspires extends State<SaiInspires> {
   void _selectDateIOS(BuildContext context) {
     DateTime? _picked;
     showCupertinoModalPopup(
-        context: context,
-        builder: (_) => Container(
-              color: Theme.of(context).backgroundColor,
-              height: 200,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 120,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: selectedDate,
-                      // Sai Inspires started on 19th Feb 2011
-                      minimumDate: DateTime(2011, 2, 19),
-                      maximumDate: now,
-                      onDateTimeChanged: (picked) {
-                        _picked = picked;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 70,
-                    child: CupertinoButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        if (_picked != null && _picked != selectedDate) {
-                          setState(() {
-                            _isLoading = true;
-                            selectedDate = _picked;
-                            _updateURL(selectedDate!);
-                          });
-                        }
-                        Navigator.of(context).maybePop();
-                      },
-                    ),
-                  ),
-                ],
+      context: context,
+      builder: (_) => Container(
+        color: Theme.of(context).backgroundColor,
+        height: 200,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 120,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: selectedDate,
+                // Sai Inspires started on 15th Jul 2011
+                minimumDate: DateTime(2011, 7, 15),
+                maximumDate: now,
+                onDateTimeChanged: (picked) {
+                  _picked = picked;
+                },
               ),
-            ));
+            ),
+            SizedBox(
+              height: 70,
+              child: CupertinoButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  if (_picked != null && _picked != selectedDate) {
+                    setState(() {
+                      _isLoading = true;
+                      selectedDate = _picked;
+                      _updateURL(selectedDate!);
+                    });
+                  }
+                  Navigator.of(context).maybePop();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// share Sai Inspires content if data is visible
   void _share(BuildContext context) async {
     if (_contentText != 'null') {
-      String textData;
-      if (_isOldData) {
-        textData =
-            '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba';
-      } else {
-        textData =
-            '$_dateText\n\n$_thoughtOfTheDay\n\n$_contentText\n\n$_byBaba\n\n$_quote';
-      }
-      textData = 'Sai Inspires - ' + textData;
       // if data is visible, share the data
-      File imageFile =
-          await DefaultCacheManager().getSingleFile(imageFinalUrl!);
-      Share.shareFiles([imageFile.path], text: textData);
+      String textData;
+      textData = '$_dateText\n\n$_thoughtOfTheDay\n'
+          '\n$_contentText\n\n$_byBaba\n\n$_quote';
+      textData = 'Sai Inspires - ' + textData;
+      // currently downloading image from old api and sharing it
+      // will send only text when old api fails
+      String imageFormattedDate = DateFormat('yyyyMMdd').format(selectedDate!);
+      String imageUrl =
+          '$imageBaseUrl/${selectedDate!.year}/uploadimages/SI_$imageFormattedDate.jpg';
+      final response = await http.head(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // share with image if old api is working
+        File? imageFile;
+        try {
+          imageFile = await DefaultCacheManager()
+              .getSingleFile(imageUrl)
+              .timeout(const Duration(seconds: 20));
+        } on Exception catch (_) {
+          // do nothing
+        }
+        Share.shareFiles([imageFile!.path], text: textData);
+      } else {
+        // TODO: change from binary to image before sharing for new links
+        // share only text if old api is not working
+        Share.share(textData);
+      }
     } else {
       // if there is no data, show snackbar that no data is available
       getIt<ScaffoldHelper>().showSnackBar(
@@ -499,8 +430,8 @@ class _SaiInspires extends State<SaiInspires> {
     }
   }
 
-  /// widget for new data >= 26 Aug 2011
-  Widget _newContent() {
+  /// widget for new data >= 15 Jul 2011
+  Widget _content() {
     return Column(
       children: [
         Align(
@@ -553,53 +484,6 @@ class _SaiInspires extends State<SaiInspires> {
               color: Color(0xFFFF9014),
               fontSize: 16,
               fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// widget for old data < 26 Aug 2011
-  Widget _oldContent() {
-    return Column(
-      children: [
-        Align(
-          alignment: const Alignment(1, 0),
-          child: SelectableText(
-            _dateText,
-            style: const TextStyle(
-              fontSize: 14,
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SelectableText(
-            _thoughtOfTheDay,
-            style: const TextStyle(
-              color: Color(0xFFFF9014),
-              fontSize: 16,
-            ),
-          ),
-        ),
-        SelectableText(
-          _contentText,
-          textAlign: TextAlign.justify,
-          style: const TextStyle(
-            fontSize: 17,
-            height: 1.3,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(top: 8.0, bottom: 20),
-          child: Align(
-            alignment: const Alignment(1, 0),
-            child: SelectableText(
-              _byBaba,
-              style: const TextStyle(
-                fontSize: 15,
-              ),
             ),
           ),
         ),
