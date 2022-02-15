@@ -305,12 +305,28 @@ class _SaiInspires extends State<SaiInspires> {
       contentText = contentText.replaceAll('<em>', '');
       contentText = contentText.replaceAll('</em>', '');
       contentText = contentText.replaceAll('\n', '');
-    } else {
+    } else if (descriptionP.length > 2) {
+      String descriptionText = description.body!.text;
       topText = descriptionP[0].text;
-      contentText = descriptionP[descriptionP.length - 1].text;
+      contentText = descriptionText.replaceAll(topText, '');
+      contentText = contentText.replaceAll('<strong>', '');
+      contentText = contentText.replaceAll('</strong>', '');
+      contentText = contentText.replaceAll('<em>', '');
+      contentText = contentText.replaceAll('</em>', '');
+      contentText = contentText.replaceAll('\n', '');
+    } else {
+      var descriptionS = description.body!.getElementsByTagName('span');
+      if (descriptionS.isEmpty) {
+        topText = descriptionP[0].text;
+      } else {
+        topText = descriptionS[0].text;
+      }
+      contentText = '${descriptionP[0].text}${descriptionP[1].text}';
+      contentText = contentText.replaceAll(topText, '');
     }
 
-    String fromText = mainBody['info'];
+    var from = parse(mainBody['info']);
+    String fromText = from.body!.text;
     fromText = fromText.replaceAll('<em>', '');
     fromText = fromText.replaceAll('</em>', '');
 

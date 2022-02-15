@@ -155,8 +155,8 @@ Thanks to the Open Source community for providing such great libraries and frame
 
 ## Built using
 <!-- keep updating this -->
-- __Flutter version:__ 2.8.1
-- __Dart version:__ 2.15.1
+- __Flutter version:__ 2.10.1
+- __Dart version:__ 2.16.1
 - __Gradle version:__ 7.0.4
 - __Android Emulator:__ Pixel 4a API 31
 - __iOS Simulator:__ Apple iPhone 13 iOS 15
