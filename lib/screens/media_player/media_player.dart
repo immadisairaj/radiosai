@@ -616,9 +616,7 @@ class _MediaPlayer extends State<MediaPlayer> {
   /// pass the url [fileLink] to where it is in the internet
   _shareMediaFileLink(String fileLink) {
     String subject = "Checkout this audio from radiosai!";
-    String text = fileLink +
-        "\n\nShared using Sai Voice app" +
-        "\nInstall from https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai";
+    String text = fileLink + "\n\nShared from Sai Voice app";
     Share.share(text, subject: subject);
   }
 
