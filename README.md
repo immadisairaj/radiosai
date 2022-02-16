@@ -66,7 +66,7 @@ __File Permissions:__ File write permission is requested only to save images fro
 | starting with fav stream           | ✔️        | ✔️      |
 | sai inspires share/download        | ✔️        | ✔️      |
 | share media links                  | ✔️        | ✔️      |
-| splash screen                      | ✔️        |        |
+| splash screen/launch screen        | ✔️        | ✔️      |
 | app links                          | ✔️        |        |
 
 ## Future Updates
