@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+enum MenuNavigation { saiInspires, settings, schedule, audio }
+
 class NavigationService {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 

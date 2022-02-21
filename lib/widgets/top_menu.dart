@@ -28,7 +28,7 @@ class _TopMenu extends State<TopMenu> {
   Widget build(BuildContext context) {
     double topPadding = MediaQuery.of(context).padding.top + 5;
     double rightPadding = MediaQuery.of(context).size.width * 0.02;
-    List<String> menuTitles = MyConstants.of(context)!.menuTitles;
+    Map<dynamic, String> menuTitles = MyConstants.of(context)!.menuTitles;
     return Align(
       alignment: Alignment.topRight,
       child: Padding(
@@ -68,7 +68,7 @@ class _TopMenu extends State<TopMenu> {
               borderRadius: BorderRadius.circular(24),
               child: Material(
                 color: Colors.transparent,
-                child: PopupMenuButton<String>(
+                child: PopupMenuButton<dynamic>(
                   icon: Icon(
                     (Platform.isAndroid)
                         ? Icons.more_vert
@@ -79,30 +79,43 @@ class _TopMenu extends State<TopMenu> {
                   offset: const Offset(-10, 10),
                   itemBuilder: (context) {
                     // Takes list of data from constants
-                    return menuTitles.map<PopupMenuEntry<String>>((value) {
-                      return PopupMenuItem<String>(
+                    return menuTitles.keys
+                        .toList()
+                        .map<PopupMenuEntry<dynamic>>((value) {
+                      return PopupMenuItem<dynamic>(
                         value: value,
-                        child: Text(
-                          value,
+                        child: Row(
+                          children: [
+                            Icon(Platform.isAndroid
+                                ? MyConstants.of(context)!
+                                    .menuTitleAndroidIcons[value]!
+                                : MyConstants.of(context)!
+                                    .menuTitleIosIcons[value]!),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8),
+                              child: Text(
+                                MyConstants.of(context)!.menuTitles[value]!,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     }).toList();
                   },
                   onSelected: (value) {
                     switch (value) {
-                      // TODO: don't hardcode this and maybe add enum
-                      case 'Sai Inspires':
+                      case MenuNavigation.saiInspires:
                         getIt<NavigationService>()
                             .navigateTo(SaiInspires.route);
                         break;
-                      case 'Settings':
+                      case MenuNavigation.settings:
                         getIt<NavigationService>().navigateTo(Settings.route);
                         break;
-                      case 'Schedule':
+                      case MenuNavigation.schedule:
                         getIt<NavigationService>()
                             .navigateTo(RadioSchedule.route);
                         break;
-                      case 'Audio Archive':
+                      case MenuNavigation.audio:
                         getIt<NavigationService>()
                             .navigateTo(AudioArchive.route);
                         break;
