@@ -536,7 +536,9 @@ class _MediaPlayer extends State<MediaPlayer> {
             iconSize: 25,
             tooltip: 'Share link',
             onPressed: () {
-              _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId!));
+              _shareMediaFileLink('${MediaHelper.getLinkFromFileId(mediaId!)}'
+                  '\n\nShared from Sai Voice App\n'
+                  'https://immadisairaj.github.io/radiosai');
             },
           );
         });

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:radiosai/screens/settings/general/app_theme.dart';
 import 'package:radiosai/screens/settings/general/starting_radio_stream.dart';
 import 'package:radiosai/widgets/settings/settings_section.dart';

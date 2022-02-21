@@ -2,7 +2,7 @@
 
 A radio player which streams audio from Radio Sai Global Harmony.
 
-<img src="/assets/sai_voice_logo.png" height="150">
+<img src="./sai_voice_logo.png" height="150">
 
 _*Special Thanks to Aman Achutan for the logo_
 
@@ -23,7 +23,7 @@ __Radio Streams include:__
 - Discourse Stream
 - Telugu Stream
 
-| :memo: Radio Streams in iOS takes some time to load due to a constraint with the http audio source |
+| :memo: Radio Streams in iOS takes time to load due to a constraint from the audio source |
 |-|
 
 __Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
