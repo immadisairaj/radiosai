@@ -32,7 +32,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
 
             String subtitle = (initialRadioStreamIndex >= 0)
                 ? MyConstants.of(context)!
-                    .radioStream
+                    .radioStreamHttps
                     .keys
                     .toList()[initialRadioStreamIndex]
                 : recentlyPlayed;
@@ -58,7 +58,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                               child: SingleChildScrollView(
                                 child: ListView.builder(
                                     itemCount: MyConstants.of(context)!
-                                            .radioStream
+                                            .radioStreamHttps
                                             .length +
                                         1,
                                     shrinkWrap: true,
@@ -74,7 +74,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                               value == initialRadioStreamIndex,
                                           title: (value >= 0)
                                               ? Text(MyConstants.of(context)!
-                                                  .radioStream
+                                                  .radioStreamHttps
                                                   .keys
                                                   .toList()[value])
                                               : const Text(recentlyPlayed),
