@@ -216,9 +216,7 @@ class _SaiInspires extends State<SaiInspires> {
 
   /// navigate to new page to view full image
   _viewImage() {
-    int urlLength = imageFinalUrl!.length;
-    String fileName =
-        'SI_${imageFinalUrl!.substring(urlLength - 12, urlLength - 4)}';
+    String fileName = 'SI_${DateFormat('yyyyMMdd').format(selectedDate!)}';
     Navigator.push(
       context,
       MaterialPageRoute(
