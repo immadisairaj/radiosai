@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -227,8 +225,10 @@ class _RadioPlayer extends State<RadioPlayer>
     bool isSmallerScreen = (height * 0.1 < 30);
     double iconSize = isBigScreen ? 40 : 30;
 
-    String playingRadioStreamName =
-        MyConstants.of(context)!.radioStream.keys.toList()[streamIndex ?? 0];
+    String playingRadioStreamName = MyConstants.of(context)!
+        .radioStreamHttps
+        .keys
+        .toList()[streamIndex ?? 0];
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -310,9 +310,7 @@ class _RadioPlayer extends State<RadioPlayer>
   Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
     await _audioManager!.init(MediaType.radio, {
-      'radioStream': (Platform.isAndroid)
-          ? MyConstants.of(context)!.radioStream
-          : MyConstants.of(context)!.radioStreamHttps,
+      'radioStream': MyConstants.of(context)!.radioStreamHttps,
       'index': index
     });
     _audioManager!.playRadio(index);
@@ -341,7 +339,10 @@ class _RadioPlayer extends State<RadioPlayer>
         _audioManager!.clear();
         _startRadioPlayer(index, isPlaying, hasInternet!);
       } else {
-        _startRadioPlayer(index, isPlaying, hasInternet!);
+        if (!widget.loadingState!) {
+          _startRadioPlayer(index, isPlaying, hasInternet!);
+        }
+        // don't respond when the radio player has started and is loading
       }
     } else {
       stopRadioService();

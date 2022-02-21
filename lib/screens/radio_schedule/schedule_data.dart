@@ -722,7 +722,8 @@ class _ScheduleData extends State<ScheduleData> {
   void _handleStreamName() {
     if (streamId == '') return;
     int index = firstStreamMap.indexOf(int.parse(streamId));
-    selectedStream = MyConstants.of(context)!.radioStream.keys.toList()[index];
+    selectedStream =
+        MyConstants.of(context)!.radioStreamHttps.keys.toList()[index];
   }
 
   /// scroll listener to show/hide the selecting widget

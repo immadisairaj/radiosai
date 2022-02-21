@@ -68,7 +68,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
         crossAxisCount: 2,
         childAspectRatio: width * 0.4 / (height * 0.27 / 2),
       ),
-      itemCount: MyConstants.of(context)!.radioStream.length,
+      itemCount: MyConstants.of(context)!.radioStreamHttps.length,
       // override the default top padding
       padding: const EdgeInsets.only(top: 10),
       primary: false,
@@ -76,8 +76,10 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
       itemBuilder: (context, widgetIndex) {
         // check if the radio selected index matches the widget
         bool isMatch = (widgetIndex == radioIndex);
-        String radioName =
-            MyConstants.of(context)!.radioStream.keys.toList()[widgetIndex];
+        String radioName = MyConstants.of(context)!
+            .radioStreamHttps
+            .keys
+            .toList()[widgetIndex];
         return Padding(
           padding:
               isBigScreen ? const EdgeInsets.all(4) : const EdgeInsets.all(2),

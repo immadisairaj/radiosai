@@ -4,21 +4,20 @@ class MyConstants extends InheritedWidget {
   static MyConstants? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<MyConstants>();
 
-  const MyConstants({required Widget child, Key? key}) : super(key: key, child: child);
+  const MyConstants({required Widget child, Key? key})
+      : super(key: key, child: child);
 
-  /// The list of radio sai stream http source names and links
-  final Map<String, String> radioStream = const {
-    'Asia Stream': 'http://stream.radiosai.net:8002',
-    'Africa Stream': 'http://stream.radiosai.net:8004',
-    'America Stream': 'http://stream.radiosai.net:8006',
-    'Bhajan Stream': 'http://stream.radiosai.net:8000',
-    'Discourse Stream': 'http://stream.radiosai.net:8008',
-    'Telugu Stream': 'http://stream.radiosai.net:8020'
-  };
+  // /// The list of radio sai stream http source names and links
+  // final Map<String, String> radioStream = const {
+  //   'Asia Stream': 'http://stream.radiosai.net:8002',
+  //   'Africa Stream': 'http://stream.radiosai.net:8004',
+  //   'America Stream': 'http://stream.radiosai.net:8006',
+  //   'Bhajan Stream': 'http://stream.radiosai.net:8000',
+  //   'Discourse Stream': 'http://stream.radiosai.net:8008',
+  //   'Telugu Stream': 'http://stream.radiosai.net:8020'
+  // };
 
   /// The list of radio sai stream https source names and links
-  ///
-  /// HTTPS is used by iOS
   final Map<String, String> radioStreamHttps = const {
     'Asia Stream': 'https://stream.sssmediacentre.org:8443/asia',
     'Africa Stream': 'https://stream.sssmediacentre.org:8443/afri',
