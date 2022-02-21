@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:radiosai/helper/navigator_helper.dart';
 
 class MyConstants extends InheritedWidget {
   static MyConstants? of(BuildContext context) =>
@@ -28,12 +30,28 @@ class MyConstants extends InheritedWidget {
   };
 
   /// The list of items in the top menu bar
-  final List<String> menuTitles = const [
-    'Schedule',
-    'Sai Inspires',
-    'Audio Archive',
-    'Settings',
-  ];
+  final Map<dynamic, String> menuTitles = const {
+    MenuNavigation.schedule: 'Schedule',
+    MenuNavigation.saiInspires: 'Sai Inspires',
+    MenuNavigation.audio: 'Audio',
+    MenuNavigation.settings: 'Settings',
+  };
+
+  /// The list of android icons in the top menu bar
+  final Map<dynamic, IconData> menuTitleAndroidIcons = const {
+    MenuNavigation.schedule: Icons.schedule_outlined,
+    MenuNavigation.saiInspires: Icons.text_snippet_outlined,
+    MenuNavigation.audio: Icons.library_music_outlined,
+    MenuNavigation.settings: Icons.settings_outlined,
+  };
+
+  /// The list of ios icons in the top menu bar
+  final Map<dynamic, IconData> menuTitleIosIcons = const {
+    MenuNavigation.schedule: CupertinoIcons.time,
+    MenuNavigation.saiInspires: CupertinoIcons.text_quote,
+    MenuNavigation.audio: CupertinoIcons.music_albums,
+    MenuNavigation.settings: CupertinoIcons.settings,
+  };
 
   /// list of radio streams for radio sai schedule
   final Map<String, int> scheduleStream = const {
