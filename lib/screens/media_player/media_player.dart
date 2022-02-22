@@ -536,9 +536,7 @@ class _MediaPlayer extends State<MediaPlayer> {
             iconSize: 25,
             tooltip: 'Share link',
             onPressed: () {
-              _shareMediaFileLink('${MediaHelper.getLinkFromFileId(mediaId!)}'
-                  '\n\nShared from Sai Voice App\n'
-                  'https://immadisairaj.github.io/radiosai');
+              _shareMediaFileLink(MediaHelper.getLinkFromFileId(mediaId!));
             },
           );
         });
@@ -618,7 +616,9 @@ class _MediaPlayer extends State<MediaPlayer> {
   /// pass the url [fileLink] to where it is in the internet
   _shareMediaFileLink(String fileLink) {
     String subject = "Checkout this audio from radiosai!";
-    String text = fileLink + "\n\nShared from Sai Voice app";
+    String text = '$fileLink'
+        '\n\nShared from Sai Voice App\n'
+        'https://immadisairaj.github.io/radiosai';
     Share.share(text, subject: subject);
   }
 
