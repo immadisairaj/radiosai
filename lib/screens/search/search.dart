@@ -47,7 +47,8 @@ class _Search extends State<Search> {
   late Map<String, String?> globalFormData;
 
   /// contains the base url of the radio sai search page
-  final String baseUrl = 'https://radiosai.org/program/SearchProgramme.php';
+  final String baseUrl =
+      'https://schedule.sssmediacentre.org/program/SearchProgramme.php';
 
   /// the url with all the parameters (a unique url)
   String finalUrl = '';

@@ -53,7 +53,8 @@ class _ScheduleData extends State<ScheduleData> {
   final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
 
   /// contains the base url of the radio sai schedule page
-  final String baseUrl = 'https://radiosai.org/program/Index.php';
+  final String baseUrl =
+      'https://schedule.sssmediacentre.org/program/Index.php';
 
   /// the url with all the parameters (a unique url)
   String finalUrl = '';
