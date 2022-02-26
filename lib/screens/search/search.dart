@@ -233,111 +233,125 @@ class _Search extends State<Search> {
                 ),
               ),
             Expanded(
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  if (_isLoading == false &&
-                      _finalTableData[0][0] != 'null' &&
-                      _finalTableData[0][0] != 'timeout' &&
-                      _finalTableData[0][0] != 'wrong' &&
-                      _finalTableData[0][0] != 'start')
-                    RefreshIndicator(
-                      onRefresh: _refresh,
-                      child: Scrollbar(
-                        controller: _scrollController,
-                        radius: const Radius.circular(8),
-                        child: CustomScrollView(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
-                          slivers: [
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    left: 10,
-                                    right: 10,
-                                    bottom: MediaQuery.of(context)
-                                            .viewPadding
-                                            .bottom +
-                                        20 +
-                                        ((lastPage > 1)
-                                            ? MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.08
-                                            : 0)),
-                                child: Card(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(18)),
+              child: AnimatedCrossFade(
+                crossFadeState: _isLoading
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(seconds: 1),
+                firstChild: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height,
+                  ),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      if (_finalTableData[0][0] != 'null' &&
+                          _finalTableData[0][0] != 'timeout' &&
+                          _finalTableData[0][0] != 'wrong' &&
+                          _finalTableData[0][0] != 'start')
+                        RefreshIndicator(
+                          onRefresh: _refresh,
+                          child: Scrollbar(
+                            controller: _scrollController,
+                            radius: const Radius.circular(8),
+                            child: CustomScrollView(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(
+                                  parent: AlwaysScrollableScrollPhysics()),
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        bottom: MediaQuery.of(context)
+                                                .viewPadding
+                                                .bottom +
+                                            20 +
+                                            ((lastPage > 1)
+                                                ? MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.08
+                                                : 0)),
+                                    child: Card(
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(18)),
+                                      ),
+                                      elevation: 1,
+                                      color: isDarkTheme
+                                          ? Colors.grey[800]
+                                          : Colors.grey[200],
+                                      child: _searchItems(isDarkTheme),
+                                    ),
                                   ),
-                                  elevation: 1,
-                                  color: isDarkTheme
-                                      ? Colors.grey[800]
-                                      : Colors.grey[200],
-                                  child: _searchItems(isDarkTheme),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  // show the below when wrong string is typed
-                  if (_finalTableData[0][0] == 'wrong' && _isLoading == false)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text('No Data Available for the search values'),
-                      ),
-                    ),
-                  // show the below when at start
-                  if (_finalTableData[0][0] == 'start' && _isLoading == false)
-                    const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: Text('Start by entering value in Search'),
-                      ),
-                    ),
-                  // show when no data is retrieved
-                  if (_finalTableData[0][0] == 'null' && _isLoading == false)
-                    NoData(
-                      backgroundColor: backgroundColor,
-                      text:
-                          'No Data Available,\ncheck your internet and try again',
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                          _updateURL();
-                        });
-                      },
-                    ),
-                  // show when no data is retrieved and timeout
-                  if (_finalTableData[0][0] == 'timeout' && _isLoading == false)
-                    NoData(
-                      backgroundColor: backgroundColor,
-                      text:
-                          'No Data Available,\nURL timeout, try again after some time',
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                          _updateURL();
-                        });
-                      },
-                    ),
-                  // Shown but hidden when loading the data
-                  if (_isGettingData) _hiddenWebView(),
-                  // Shown when it is loading
-                  if (_isLoading)
+                      // show the below when wrong string is typed
+                      if (_finalTableData[0][0] == 'wrong')
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child:
+                                Text('No Data Available for the search values'),
+                          ),
+                        ),
+                      // show the below when at start
+                      if (_finalTableData[0][0] == 'start')
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Text('Start by entering value in Search'),
+                          ),
+                        ),
+                      // show when no data is retrieved
+                      if (_finalTableData[0][0] == 'null')
+                        NoData(
+                          backgroundColor: backgroundColor,
+                          text:
+                              'No Data Available,\ncheck your internet and try again',
+                          onPressed: () {
+                            setState(() {
+                              _isLoading = true;
+                              _updateURL();
+                            });
+                          },
+                        ),
+                      // show when no data is retrieved and timeout
+                      if (_finalTableData[0][0] == 'timeout')
+                        NoData(
+                          backgroundColor: backgroundColor,
+                          text:
+                              'No Data Available,\nURL timeout, try again after some time',
+                          onPressed: () {
+                            setState(() {
+                              _isLoading = true;
+                              _updateURL();
+                            });
+                          },
+                        ),
+                      // Pagination when there are more than one page
+                      _pagination(),
+                    ],
+                  ),
+                ),
+                // Shown second child it is loading
+                secondChild: Stack(
+                  children: [
+                    // Shown but hidden when loading the data
+                    if (_isGettingData) _hiddenWebView(),
                     Container(
                       color: backgroundColor,
                       child: Center(
                         child: _showLoading(isDarkTheme),
                       ),
                     ),
-                  // Pagination when there are more than one page
-                  _pagination(),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

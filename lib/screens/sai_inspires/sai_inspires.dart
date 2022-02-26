@@ -108,107 +108,117 @@ class _SaiInspires extends State<SaiInspires> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         color: backgroundColor,
-        child: Stack(
-          children: [
-            InteractiveViewer(
-              constrained: false,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 5),
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.35,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: (imageFinalUrl == '')
-                            ? Container()
-                            : Material(
-                                child: InkWell(
-                                  child: Container(
-                                    color: backgroundColor,
-                                    child: Hero(
-                                      tag: heroTag,
-                                      child: CachedNetworkImage(
-                                        imageUrl: imageFinalUrl!,
-                                        errorWidget: (context, url, error) =>
-                                            const Icon(Icons.error),
-                                        // shimmer place holder for loading
-                                        placeholder: (context, placeholder) =>
-                                            Shimmer.fromColors(
-                                          baseColor: isDarkTheme
-                                              ? Colors.grey[500]!
-                                              : Colors.grey[300]!,
-                                          highlightColor: isDarkTheme
-                                              ? Colors.grey[300]!
-                                              : Colors.grey[100]!,
-                                          enabled: true,
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width *
-                                                0.5,
-                                            height: MediaQuery.of(context)
-                                                    .size
-                                                    .height *
-                                                0.4,
-                                            color: Colors.white,
+        child: AnimatedCrossFade(
+          crossFadeState:
+              _isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          duration: const Duration(seconds: 1),
+          firstChild: SizedBox(
+            height: MediaQuery.of(context).size.height,
+            child: Stack(
+              children: [
+                InteractiveViewer(
+                  constrained: false,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.35,
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
+                            child: (imageFinalUrl == '')
+                                ? Container()
+                                : Material(
+                                    child: InkWell(
+                                      child: Container(
+                                        color: backgroundColor,
+                                        child: Hero(
+                                          tag: heroTag,
+                                          child: CachedNetworkImage(
+                                            imageUrl: imageFinalUrl!,
+                                            errorWidget:
+                                                (context, url, error) =>
+                                                    const Icon(Icons.error),
+                                            // shimmer place holder for loading
+                                            placeholder:
+                                                (context, placeholder) =>
+                                                    Shimmer.fromColors(
+                                              baseColor: isDarkTheme
+                                                  ? Colors.grey[500]!
+                                                  : Colors.grey[300]!,
+                                              highlightColor: isDarkTheme
+                                                  ? Colors.grey[300]!
+                                                  : Colors.grey[100]!,
+                                              enabled: true,
+                                              child: Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.4,
+                                                color: Colors.white,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
+                                      onTap: () => _viewImage(),
                                     ),
                                   ),
-                                  onTap: () => _viewImage(),
-                                ),
-                              ),
-                      ),
+                          ),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          color: backgroundColor,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 8),
+                            child: _content(),
+                          ),
+                        ),
+                      ],
                     ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      color: backgroundColor,
-                      child: Padding(
-                        padding:
-                            const EdgeInsets.only(left: 20, right: 20, top: 8),
-                        child: _content(),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                // show when no data is retrieved
+                if (_contentText == 'null')
+                  NoData(
+                    backgroundColor: backgroundColor,
+                    text:
+                        'No Data Available,\ncheck your internet and try again',
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _updateURL(selectedDate!);
+                      });
+                    },
+                  ),
+                // show when no data is retrieved and timeout
+                if (_contentText == 'timeout')
+                  NoData(
+                    backgroundColor: backgroundColor,
+                    text:
+                        'No Data Available,\nURL timeout, try again after some time',
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _updateURL(selectedDate!);
+                      });
+                    },
+                  ),
+              ],
             ),
-            // show when no data is retrieved
-            if (_contentText == 'null')
-              NoData(
-                backgroundColor: backgroundColor,
-                text: 'No Data Available,\ncheck your internet and try again',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL(selectedDate!);
-                  });
-                },
-              ),
-            // show when no data is retrieved and timeout
-            if (_contentText == 'timeout')
-              NoData(
-                backgroundColor: backgroundColor,
-                text:
-                    'No Data Available,\nURL timeout, try again after some time',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL(selectedDate!);
-                  });
-                },
-              ),
-            // Shown when it is loading
-            if (_isLoading)
-              Container(
-                color: backgroundColor,
-                child: Center(
-                  child: _showLoading(isDarkTheme),
-                ),
-              ),
-          ],
+          ),
+          // Shown second child it is loading
+          secondChild: Container(
+            color: backgroundColor,
+            child: Center(
+              child: _showLoading(isDarkTheme),
+            ),
+          ),
         ),
       ),
     );

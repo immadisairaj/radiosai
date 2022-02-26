@@ -269,86 +269,95 @@ class _ScheduleData extends State<ScheduleData> {
                 ),
               ),
             Expanded(
-              child: Stack(
-                children: [
-                  if (_isLoading == false &&
-                      _finalTableData[0][0] != 'null' &&
-                      _finalTableData[0][0] != 'timeout')
-                    RefreshIndicator(
-                      onRefresh: _refresh,
-                      child: Scrollbar(
-                        radius: const Radius.circular(8),
-                        controller: _scrollController,
-                        child: CustomScrollView(
-                          controller: _scrollController,
-                          physics: const BouncingScrollPhysics(
-                              parent: AlwaysScrollableScrollPhysics()),
-                          slivers: [
-                            SliverToBoxAdapter(
-                              child: Padding(
-                                padding: EdgeInsets.only(
-                                    left: 10,
-                                    right: 10,
-                                    bottom: (MediaQuery.of(context)
+              child: AnimatedCrossFade(
+                crossFadeState: _isLoading
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
+                duration: const Duration(seconds: 1),
+                firstChild: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: height,
+                  ),
+                  child: Stack(
+                    children: [
+                      if (_finalTableData[0][0] != 'null' &&
+                          _finalTableData[0][0] != 'timeout')
+                        RefreshIndicator(
+                          onRefresh: _refresh,
+                          child: Scrollbar(
+                            radius: const Radius.circular(8),
+                            controller: _scrollController,
+                            child: CustomScrollView(
+                              controller: _scrollController,
+                              physics: const BouncingScrollPhysics(
+                                  parent: AlwaysScrollableScrollPhysics()),
+                              slivers: [
+                                SliverToBoxAdapter(
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 10,
+                                        right: 10,
+                                        bottom: (MediaQuery.of(context)
+                                                    .viewPadding
+                                                    .bottom >
+                                                0)
+                                            ? MediaQuery.of(context)
                                                 .viewPadding
-                                                .bottom >
-                                            0)
-                                        ? MediaQuery.of(context)
-                                            .viewPadding
-                                            .bottom
-                                        : 20),
-                                child: Card(
-                                  shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(18)),
+                                                .bottom
+                                            : 20),
+                                    child: Card(
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(18)),
+                                      ),
+                                      elevation: 1,
+                                      color: isDarkTheme
+                                          ? Colors.grey[800]
+                                          : Colors.grey[200],
+                                      child: _scheduleItems(isDarkTheme),
+                                    ),
                                   ),
-                                  elevation: 1,
-                                  color: isDarkTheme
-                                      ? Colors.grey[800]
-                                      : Colors.grey[200],
-                                  child: _scheduleItems(isDarkTheme),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-                    ),
-                  // show when no data is retrieved
-                  if (_finalTableData[0][0] == 'null' && _isLoading == false)
-                    NoData(
-                      backgroundColor: backgroundColor,
-                      text:
-                          'No Data Available,\ncheck your internet or try again',
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                          _updateURL(selectedDate!);
-                        });
-                      },
-                    ),
-                  // show when no data is retrieved and timeout
-                  if (_finalTableData[0][0] == 'timeout' && _isLoading == false)
-                    NoData(
-                      backgroundColor: backgroundColor,
-                      text:
-                          'No Data Available,\nURL timeout, try again after some time',
-                      onPressed: () {
-                        setState(() {
-                          _isLoading = true;
-                          _updateURL(selectedDate!);
-                        });
-                      },
-                    ),
-                  // Shown when it is loading
-                  if (_isLoading)
-                    Container(
-                      color: backgroundColor,
-                      child: Center(
-                        child: _showLoading(isDarkTheme),
-                      ),
-                    ),
-                ],
+                      // show when no data is retrieved
+                      if (_finalTableData[0][0] == 'null')
+                        NoData(
+                          backgroundColor: backgroundColor,
+                          text:
+                              'No Data Available,\ncheck your internet or try again',
+                          onPressed: () {
+                            setState(() {
+                              _isLoading = true;
+                              _updateURL(selectedDate!);
+                            });
+                          },
+                        ),
+                      // show when no data is retrieved and timeout
+                      if (_finalTableData[0][0] == 'timeout')
+                        NoData(
+                          backgroundColor: backgroundColor,
+                          text:
+                              'No Data Available,\nURL timeout, try again after some time',
+                          onPressed: () {
+                            setState(() {
+                              _isLoading = true;
+                              _updateURL(selectedDate!);
+                            });
+                          },
+                        ),
+                    ],
+                  ),
+                ),
+                // Shown second child it is loading
+                secondChild: Container(
+                  color: backgroundColor,
+                  child: Center(
+                    child: _showLoading(isDarkTheme),
+                  ),
+                ),
               ),
             ),
           ],

@@ -106,86 +106,97 @@ class _Media extends State<Media> {
         }),
       ),
       body: Container(
-        // height: MediaQuery.of(context).size.height,
         color: backgroundColor,
-        child: Stack(
-          children: [
-            if (_isLoading == false &&
-                _finalMediaData[0][0] != 'null' &&
-                _finalMediaData[0][0] != 'timeout')
-              Scrollbar(
-                radius: const Radius.circular(8),
-                child: CustomScrollView(
-                  physics: const BouncingScrollPhysics(
-                      parent: AlwaysScrollableScrollPhysics()),
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.only(
-                            top: 10,
-                            left: 10,
-                            right: 10,
-                            bottom: MediaQuery.of(context).viewPadding.bottom),
-                        child: Card(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(18)),
-                          ),
-                          elevation: 1,
-                          color:
-                              isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+        child: AnimatedCrossFade(
+          crossFadeState:
+              _isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          duration: const Duration(seconds: 1),
+          firstChild: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height,
+            ),
+            child: Stack(
+              children: [
+                if (_finalMediaData[0][0] != 'null' &&
+                    _finalMediaData[0][0] != 'timeout')
+                  Scrollbar(
+                    radius: const Radius.circular(8),
+                    child: CustomScrollView(
+                      physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics()),
+                      slivers: [
+                        SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                                top: 10,
+                                left: 10,
+                                right: 10,
+                                bottom:
+                                    MediaQuery.of(context).viewPadding.bottom),
+                            child: Card(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(18)),
+                              ),
+                              elevation: 1,
+                              color: isDarkTheme
+                                  ? Colors.grey[800]
+                                  : Colors.grey[200],
 
-                          // updates the media screen based on download state
-                          child: Consumer<MediaScreenBloc>(
-                              builder: (context, _mediaScreenStateBloc, child) {
-                            return StreamBuilder<bool?>(
-                                stream: _mediaScreenStateBloc.mediaScreenStream
-                                    as Stream<bool?>?,
-                                builder: (context, snapshot) {
-                                  // can use the below commented line to know if updated
-                                  // bool screenUpdate = snapshot.data ?? false;
-                                  return _mediaItems(isDarkTheme);
-                                });
-                          }),
+                              // updates the media screen based on download state
+                              child: Consumer<MediaScreenBloc>(builder:
+                                  (context, _mediaScreenStateBloc, child) {
+                                return StreamBuilder<bool?>(
+                                    stream: _mediaScreenStateBloc
+                                        .mediaScreenStream as Stream<bool?>?,
+                                    builder: (context, snapshot) {
+                                      // can use the below commented line to know if updated
+                                      // bool screenUpdate = snapshot.data ?? false;
+                                      return _mediaItems(isDarkTheme);
+                                    });
+                              }),
+                            ),
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            // show when no data is retrieved
-            if (_finalMediaData[0] == 'null' && _isLoading == false)
-              NoData(
-                backgroundColor: backgroundColor,
-                text: 'No Data Available,\ncheck your internet and try again',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL();
-                  });
-                },
-              ),
-            // show when no data is retrieved and timeout
-            if (_finalMediaData[0] == 'timeout' && _isLoading == false)
-              NoData(
-                backgroundColor: backgroundColor,
-                text:
-                    'No Data Available,\nURL timeout, try again after some time',
-                onPressed: () {
-                  setState(() {
-                    _isLoading = true;
-                    _updateURL();
-                  });
-                },
-              ),
-            // Shown when it is loading
-            if (_isLoading)
-              Container(
-                color: backgroundColor,
-                child: Center(
-                  child: _showLoading(isDarkTheme),
-                ),
-              ),
-          ],
+                  ),
+                // show when no data is retrieved
+                if (_finalMediaData[0] == 'null')
+                  NoData(
+                    backgroundColor: backgroundColor,
+                    text:
+                        'No Data Available,\ncheck your internet and try again',
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _updateURL();
+                      });
+                    },
+                  ),
+                // show when no data is retrieved and timeout
+                if (_finalMediaData[0] == 'timeout')
+                  NoData(
+                    backgroundColor: backgroundColor,
+                    text:
+                        'No Data Available,\nURL timeout, try again after some time',
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _updateURL();
+                      });
+                    },
+                  ),
+              ],
+            ),
+          ),
+          // Shown second child it is loading
+          secondChild: Container(
+            color: backgroundColor,
+            child: Center(
+              child: _showLoading(isDarkTheme),
+            ),
+          ),
         ),
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
