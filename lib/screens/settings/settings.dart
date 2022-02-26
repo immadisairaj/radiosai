@@ -134,17 +134,16 @@ class _Settings extends State<Settings> {
           ListTile(
             contentPadding: _contentPadding,
             title: const Text('About Sai'),
-            subtitle: const Text('Who is Sri Sathya Sai Baba?'),
+            subtitle: const Text('Who is Sai Baba'),
             onTap: () {
-              _urlLaunch(
-                  'http://media.radiosai.org/journals/Portal/bhagavan.htm');
+              _urlLaunch('https://www.sssmediacentre.org/#/Sri-Sathya-Sai');
             },
           ),
           ListTile(
             contentPadding: _contentPadding,
             title: const Text('About Radio Sai'),
             onTap: () {
-              _urlLaunch('https://www.radiosai.org');
+              _urlLaunch('https://www.sssmediacentre.org/');
             },
           ),
           const Divider(),
