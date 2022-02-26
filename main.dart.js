@@ -54509,7 +54509,7 @@ q=A.ae1("Sai Voice",A.agh(l,l,l,l,l,l,l,"RobotoMono",l,l,l,l,A.aY([B.y2,new A.ei
 if(r)n=A.a8K(A.a([A.vz(A.Dt(l,A.a8a(k,g*0.2),B.an,!1,l,l,l,l,l,l,l,l,l,l,new A.a3S(),l,l,l,l,l),B.dz,l,l,l)],t.p),B.eJ,B.dk)
 else n=A.abP(A.a([A.vz(A.Dt(l,A.a8a(k,g*0.3),B.an,!1,l,l,l,l,l,l,l,l,l,l,new A.a3T(),l,l,l,l,l),B.dz,l,l,l)],t.p),B.dY,B.eJ)
 m=r?g*0.06:g*0.1
-o=A.ae1("Source Code: ",A.agh(l,l,B.j,l,l,l,l,"PTMono",l,m,l,l,A.aY([B.kv,new A.ei("76d11b0f53258fdd742b27fc7e194046840c2fc0cafe1246aa0c27718a5f031a",84568)],p,o),l,l,l,l,l,l,l,l),l,l)
+o=A.ae1("More Information: ",A.agh(l,l,B.j,l,l,l,l,"PTMono",l,m,l,l,A.aY([B.kv,new A.ei("76d11b0f53258fdd742b27fc7e194046840c2fc0cafe1246aa0c27718a5f031a",84568)],p,o),l,l,l,l,l,l,l,l),l,l)
 p=t.p
 j=A.a7P(new A.kI(B.xS,A.H7(A.abP(A.a([s,q,n,A.vz(A.Dt(l,A.a8K(A.a([o,A.a8a("assets/github.png",r?g*0.08:g*0.15)],p),B.eJ,B.dk),B.an,!1,l,l,l,l,l,l,l,l,l,l,new A.a3U(),l,l,l,l,l),B.dz,l,l,l)],p),B.dY,B.BV),j.a.b-40,l),l),l,l)
 return new A.wB(A.aoD(A.adO(new A.H4(!0,j,l),l,!0),!0),B.x_,l)}}

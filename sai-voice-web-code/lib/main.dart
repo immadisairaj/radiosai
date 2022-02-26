@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                'Source Code: ',
+                                'More Information: ',
                                 style: GoogleFonts.ptMono(
                                   color: Colors.white,
                                   fontSize: (height < width)
