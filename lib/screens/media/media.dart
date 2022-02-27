@@ -43,7 +43,8 @@ class _Media extends State<Media> {
   bool _isLoading = true;
 
   /// contains the base url of the downloads page
-  final String baseUrl = 'https://radiosai.org/program/Download.php';
+  final String baseUrl =
+      'https://schedule.sssmediacentre.org/program/Download.php';
 
   /// the url with all the parameters (a unique url)
   String finalUrl = '';

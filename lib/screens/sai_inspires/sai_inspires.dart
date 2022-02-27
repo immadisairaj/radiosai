@@ -28,9 +28,6 @@ class SaiInspires extends StatefulWidget {
 }
 
 class _SaiInspires extends State<SaiInspires> {
-  /// contains the base url of the images/new SI source
-  final String imageBaseUrl = 'http://media.radiosai.org/sai_inspires';
-
   /// contains the updated base url of the sai inspires page
   final String baseUrl =
       'https://api.sssmediacentre.org/web/saiinspire/filterBy';
@@ -428,6 +425,8 @@ class _SaiInspires extends State<SaiInspires> {
       // currently downloading image from old api and sharing it
       // will send only text when old api fails
       String imageFormattedDate = DateFormat('yyyyMMdd').format(selectedDate!);
+      const String imageBaseUrl =
+          'https://archive.sssmediacentre.org/sai_inspires';
       String imageUrl =
           '$imageBaseUrl/${selectedDate!.year}/uploadimages/SI_$imageFormattedDate.jpg';
       final response = await http.head(Uri.parse(imageUrl));

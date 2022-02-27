@@ -13,7 +13,7 @@ Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Globa
 | :warning: Internet is needed for the app to function properly. |
 |-|
 
-_*All the data inside the app is taken from [radiosai.org](https://www.radiosai.org)_
+_*All the data inside the app is taken from [sssmediacentre.org](https://www.sssmediacentre.org)_
 
 __Radio Streams include:__
 - Asia Stream
