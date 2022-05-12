@@ -62,78 +62,81 @@ class _RadioHome extends State<RadioHome> {
     Radius radius = const Radius.circular(24.0);
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Stack(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: const Image(
-              fit: BoxFit.cover,
-              alignment: Alignment(0, -1),
-              image: AssetImage('assets/sai_listens.jpg'),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: Stack(
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              child: const Image(
+                fit: BoxFit.cover,
+                alignment: Alignment(0, -1),
+                image: AssetImage('assets/sai_listens.jpg'),
+              ),
             ),
-          ),
-          // Container to reduce the brightness of background pic
-          Container(
-            color: const Color(0X2F000000),
-          ),
-          // Consumers of all the providers to get the stream of data
-          Consumer<RadioIndexBloc>(
-            // listen to change of radio stream index
-            builder: (context, _radioIndexBloc, child) {
-              return StreamBuilder<int?>(
-                stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
-                builder: (context, snapshot) {
-                  int radioStreamIndex = snapshot.data ?? 0;
+            // Container to reduce the brightness of background pic
+            Container(
+              color: const Color(0X2F000000),
+            ),
+            // Consumers of all the providers to get the stream of data
+            Consumer<RadioIndexBloc>(
+              // listen to change of radio stream index
+              builder: (context, _radioIndexBloc, child) {
+                return StreamBuilder<int?>(
+                  stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
+                  builder: (context, snapshot) {
+                    int radioStreamIndex = snapshot.data ?? 0;
 
-                  // listen to change of radio player loading state
-                  return Consumer<RadioLoadingBloc>(
-                    builder: (context, _radioLoadingBloc, child) {
-                      return StreamBuilder<bool?>(
-                        stream: _radioLoadingBloc.radioLoadingStream
-                            as Stream<bool?>?,
-                        builder: (context, snapshot) {
-                          bool loadingState = snapshot.data ?? false;
+                    // listen to change of radio player loading state
+                    return Consumer<RadioLoadingBloc>(
+                      builder: (context, _radioLoadingBloc, child) {
+                        return StreamBuilder<bool?>(
+                          stream: _radioLoadingBloc.radioLoadingStream
+                              as Stream<bool?>?,
+                          builder: (context, snapshot) {
+                            bool loadingState = snapshot.data ?? false;
 
-                          // listen to change of playing state
-                          // from audio service
-                          return ValueListenableBuilder<PlayButtonState>(
-                              valueListenable:
-                                  _audioManager!.playButtonNotifier,
-                              builder: (context, playButtonState, snapshot) {
-                                bool isPlaying =
-                                    playButtonState == PlayButtonState.playing;
+                            // listen to change of playing state
+                            // from audio service
+                            return ValueListenableBuilder<PlayButtonState>(
+                                valueListenable:
+                                    _audioManager!.playButtonNotifier,
+                                builder: (context, playButtonState, snapshot) {
+                                  bool isPlaying = playButtonState ==
+                                      PlayButtonState.playing;
 
-                                // change the playing state only when radio
-                                // player is playing
-                                if (_audioManager!.mediaTypeNotifier.value ==
-                                    MediaType.media) {
-                                  isPlaying = false;
-                                }
+                                  // change the playing state only when radio
+                                  // player is playing
+                                  if (_audioManager!.mediaTypeNotifier.value ==
+                                      MediaType.media) {
+                                    isPlaying = false;
+                                  }
 
-                                // get the data of the internet
-                                // connectivity change
-                                bool hasInternet =
-                                    Provider.of<InternetConnectionStatus>(
-                                            context) ==
-                                        InternetConnectionStatus.connected;
-                                return RadioPlayer(
-                                    radius: radius,
-                                    radioStreamIndex: radioStreamIndex,
-                                    isPlaying: isPlaying,
-                                    loadingState: loadingState,
-                                    radioLoadingBloc: _radioLoadingBloc,
-                                    hasInternet: hasInternet);
-                              });
-                        },
-                      );
-                    },
-                  );
-                },
-              );
-            },
-          ),
-        ],
+                                  // get the data of the internet
+                                  // connectivity change
+                                  bool hasInternet =
+                                      Provider.of<InternetConnectionStatus>(
+                                              context) ==
+                                          InternetConnectionStatus.connected;
+                                  return RadioPlayer(
+                                      radius: radius,
+                                      radioStreamIndex: radioStreamIndex,
+                                      isPlaying: isPlaying,
+                                      loadingState: loadingState,
+                                      radioLoadingBloc: _radioLoadingBloc,
+                                      hasInternet: hasInternet);
+                                });
+                          },
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

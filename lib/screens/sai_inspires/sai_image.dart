@@ -68,73 +68,76 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double appBarSize =
-        kToolbarHeight + MediaQuery.of(context).padding.top + 25;
+    double appBarSize = kToolbarHeight + MediaQuery.of(context).padding.top;
+    if (Platform.isIOS) appBarSize += 35;
     Size screenSize = MediaQuery.of(context).size;
     bool isScaleFit = _scale <= 1;
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: _animationController,
-        builder: (context, child) {
-          return Stack(
-            children: [
-              GestureDetector(
-                onTap: _toggleFullScreen,
-                onDoubleTap: () {
-                  // do nothing: to prevent single tap twice
-                },
-                child: Container(
-                  color: Colors.black,
-                  child: InteractiveViewer(
-                    transformationController: _transformationController,
-                    onInteractionUpdate: _onInteractionUpdate,
-                    onInteractionStart: _onInteractionStart,
-                    onInteractionEnd: _onInteractionEnd,
-                    panEnabled: (isScaleFit) ? false : true,
-                    constrained: false,
-                    minScale: 0.1,
-                    maxScale: 3,
-                    boundaryMargin: (isScaleFit)
-                        ? const EdgeInsets.all(double.infinity)
-                        : EdgeInsets.zero,
-                    child: Hero(
-                        tag: widget.heroTag!,
-                        child: SizedBox(
-                          height: screenSize.height,
-                          width: screenSize.width,
-                          child: Image(
-                            image: CachedNetworkImageProvider(widget.imageUrl!),
-                            fit: BoxFit.contain,
-                          ),
-                        )),
-                  ),
-                ),
-              ),
-              Transform.translate(
-                offset: Offset(0, -_animationController.value * appBarSize),
-                child: SizedBox(
-                  height: appBarSize,
-                  child: SafeArea(
-                    child: AppBar(
-                      title: Text(widget.fileName!),
-                      backgroundColor: Colors.transparent,
-                      actions: [
-                        IconButton(
-                          icon: Icon((Platform.isAndroid)
-                              ? Icons.download_outlined
-                              : CupertinoIcons.cloud_download),
-                          tooltip: 'Save image',
-                          splashRadius: 24,
-                          onPressed: () => _saveImage(),
-                        ),
-                      ],
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle.light,
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return Stack(
+              children: [
+                GestureDetector(
+                  onTap: _toggleFullScreen,
+                  onDoubleTap: () {
+                    // do nothing: to prevent single tap twice
+                  },
+                  child: Container(
+                    color: Colors.black,
+                    child: InteractiveViewer(
+                      transformationController: _transformationController,
+                      onInteractionUpdate: _onInteractionUpdate,
+                      onInteractionStart: _onInteractionStart,
+                      onInteractionEnd: _onInteractionEnd,
+                      panEnabled: (isScaleFit) ? false : true,
+                      constrained: false,
+                      minScale: 0.1,
+                      maxScale: 3,
+                      boundaryMargin: (isScaleFit)
+                          ? const EdgeInsets.all(double.infinity)
+                          : EdgeInsets.zero,
+                      child: Hero(
+                          tag: widget.heroTag!,
+                          child: SizedBox(
+                            height: screenSize.height,
+                            width: screenSize.width,
+                            child: Image(
+                              image:
+                                  CachedNetworkImageProvider(widget.imageUrl!),
+                              fit: BoxFit.contain,
+                            ),
+                          )),
                     ),
                   ),
                 ),
-              ),
-            ],
-          );
-        },
+                Transform.translate(
+                  offset: Offset(0, -_animationController.value * appBarSize),
+                  child: SizedBox(
+                    height: appBarSize,
+                    child: SafeArea(
+                      child: AppBar(
+                        title: Text(widget.fileName!),
+                        actions: [
+                          IconButton(
+                            icon: Icon((Platform.isAndroid)
+                                ? Icons.download_outlined
+                                : CupertinoIcons.cloud_download),
+                            tooltip: 'Save image',
+                            splashRadius: 24,
+                            onPressed: () => _saveImage(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

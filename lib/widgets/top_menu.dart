@@ -75,6 +75,8 @@ class _TopMenu extends State<TopMenu> {
                         : CupertinoIcons.ellipsis,
                     color: Colors.white,
                   ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                   iconSize: 30,
                   offset: const Offset(-10, 10),
                   itemBuilder: (context) {

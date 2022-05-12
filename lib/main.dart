@@ -36,26 +36,15 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  // Colors for the app
-  final Color secondaryColor = const Color(0xFFE86413);
-
   final ThemeData lightTheme = ThemeData(
-    primarySwatch: Colors.deepOrange,
-    appBarTheme: const AppBarTheme(
-      systemOverlayStyle: SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.dark,
-      ),
-    ),
-    backgroundColor: Colors.white,
-    secondaryHeaderColor: Colors.deepOrange,
+    useMaterial3: true,
+    colorSchemeSeed: Colors.deepOrange,
   );
 
   final ThemeData darkTheme = ThemeData(
-    primarySwatch: Colors.deepOrange,
+    useMaterial3: true,
+    colorSchemeSeed: Colors.deepOrange,
     brightness: Brightness.dark,
-    cardColor: Colors.grey[700],
-    backgroundColor: Colors.grey[700],
-    secondaryHeaderColor: Colors.deepOrange,
   );
 
   MyApp({Key? key}) : super(key: key);
@@ -126,22 +115,11 @@ class MyApp extends StatelessWidget {
               return MaterialApp(
                 title: 'Sai Voice',
                 debugShowCheckedModeBanner: false,
-                theme: isSystemDefault
-                    ? lightTheme.copyWith(
-                        colorScheme: lightTheme.colorScheme
-                            .copyWith(secondary: secondaryColor))
-                    : (isDarkTheme
-                        ? darkTheme.copyWith(
-                            colorScheme: darkTheme.colorScheme
-                                .copyWith(secondary: secondaryColor))
-                        : lightTheme.copyWith(
-                            colorScheme: lightTheme.colorScheme
-                                .copyWith(secondary: secondaryColor))),
-                darkTheme: isSystemDefault
-                    ? darkTheme.copyWith(
-                        colorScheme: darkTheme.colorScheme
-                            .copyWith(secondary: secondaryColor))
-                    : null,
+                themeMode: isSystemDefault
+                    ? ThemeMode.system
+                    : (isDarkTheme ? ThemeMode.dark : ThemeMode.light),
+                theme: lightTheme,
+                darkTheme: darkTheme,
                 home: const Home(),
                 navigatorKey: getIt<NavigationService>().navigatorKey,
                 routes: {

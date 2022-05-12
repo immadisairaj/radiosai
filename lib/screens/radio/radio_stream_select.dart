@@ -22,9 +22,6 @@ class RadioStreamSelect extends StatefulWidget {
 class _RadioStreamSelect extends State<RadioStreamSelect> {
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
     return Consumer<RadioIndexBloc>(
       builder: (context, _radioIndexBloc, child) {
         return StreamBuilder<int?>(
@@ -36,7 +33,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
               onTap: () => widget.panelController!.open(),
               child: Container(
                 decoration: BoxDecoration(
-                  color: isDarkTheme ? Colors.grey[700] : Colors.white,
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   borderRadius: BorderRadius.all(widget.radius!),
                 ),
                 margin: const EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -44,7 +41,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   children: [
                     const SizedBox(height: 12),
                     const SliderHandle(),
-                    _slide(_radioIndexBloc, index, isDarkTheme),
+                    _slide(_radioIndexBloc, index),
                   ],
                 ),
               ),
@@ -58,8 +55,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
   /// widget for slide widget
   ///
   /// shows the selection of different radio streams
-  Widget _slide(
-      RadioIndexBloc _radioIndexBloc, int radioIndex, bool isDarkTheme) {
+  Widget _slide(RadioIndexBloc _radioIndexBloc, int radioIndex) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50);
@@ -85,11 +81,10 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
               isBigScreen ? const EdgeInsets.all(4) : const EdgeInsets.all(2),
           child: Card(
             elevation: 1.5,
-            shadowColor:
-                isDarkTheme ? Colors.white : Theme.of(context).primaryColor,
+            shadowColor: Theme.of(context).colorScheme.onSecondary,
             color: isMatch
-                ? (isDarkTheme ? Colors.black : Theme.of(context).primaryColor)
-                : (isDarkTheme ? Colors.grey[800] : null),
+                ? Theme.of(context).colorScheme.secondaryContainer
+                : null,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8.0),
             ),
@@ -116,7 +111,9 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                       radioName,
                       style: TextStyle(
                         fontSize: 16.5,
-                        color: isMatch ? Colors.white : null,
+                        color: isMatch
+                            ? Theme.of(context).colorScheme.onPrimaryContainer
+                            : null,
                       ),
                     ),
                   ),

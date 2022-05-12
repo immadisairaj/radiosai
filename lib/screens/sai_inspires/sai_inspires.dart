@@ -65,22 +65,9 @@ class _SaiInspires extends State<SaiInspires> {
 
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    Color backgroundColor = Theme.of(context).backgroundColor;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sai Inspires'),
-        backgroundColor:
-            MaterialStateColor.resolveWith((Set<MaterialState> states) {
-          return states.contains(MaterialState.scrolledUnder)
-              ? ((isDarkTheme)
-                  ? Colors.grey[700]!
-                  : Theme.of(context).colorScheme.secondary)
-              : Theme.of(context).primaryColor;
-        }),
         actions: <Widget>[
           IconButton(
             icon: Icon((Platform.isAndroid)
@@ -102,9 +89,8 @@ class _SaiInspires extends State<SaiInspires> {
           ),
         ],
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
         child: AnimatedCrossFade(
           crossFadeState:
               _isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
@@ -127,37 +113,31 @@ class _SaiInspires extends State<SaiInspires> {
                                 ? Container()
                                 : Material(
                                     child: InkWell(
-                                      child: Container(
-                                        color: backgroundColor,
-                                        child: Hero(
-                                          tag: heroTag,
-                                          child: CachedNetworkImage(
-                                            imageUrl: imageFinalUrl!,
-                                            errorWidget:
-                                                (context, url, error) =>
-                                                    const Icon(Icons.error),
-                                            // shimmer place holder for loading
-                                            placeholder:
-                                                (context, placeholder) =>
-                                                    Shimmer.fromColors(
-                                              baseColor: isDarkTheme
-                                                  ? Colors.grey[500]!
-                                                  : Colors.grey[300]!,
-                                              highlightColor: isDarkTheme
-                                                  ? Colors.grey[300]!
-                                                  : Colors.grey[100]!,
-                                              enabled: true,
-                                              child: Container(
-                                                width: MediaQuery.of(context)
-                                                        .size
-                                                        .width *
-                                                    0.5,
-                                                height: MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.4,
-                                                color: Colors.white,
-                                              ),
+                                      child: Hero(
+                                        tag: heroTag,
+                                        child: CachedNetworkImage(
+                                          imageUrl: imageFinalUrl!,
+                                          errorWidget: (context, url, error) =>
+                                              const Icon(Icons.error),
+                                          // shimmer place holder for loading
+                                          placeholder: (context, placeholder) =>
+                                              Shimmer.fromColors(
+                                            baseColor: Theme.of(context)
+                                                .colorScheme
+                                                .secondaryContainer,
+                                            highlightColor: Theme.of(context)
+                                                .colorScheme
+                                                .onSecondaryContainer,
+                                            enabled: true,
+                                            child: SizedBox(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.5,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.4,
                                             ),
                                           ),
                                         ),
@@ -167,9 +147,8 @@ class _SaiInspires extends State<SaiInspires> {
                                   ),
                           ),
                         ),
-                        Container(
+                        SizedBox(
                           width: MediaQuery.of(context).size.width,
-                          color: backgroundColor,
                           child: Padding(
                             padding: const EdgeInsets.only(
                                 left: 20, right: 20, top: 8),
@@ -183,7 +162,7 @@ class _SaiInspires extends State<SaiInspires> {
                 // show when no data is retrieved
                 if (_contentText == 'null')
                   NoData(
-                    backgroundColor: backgroundColor,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                     text:
                         'No Data Available,\ncheck your internet and try again',
                     onPressed: () {
@@ -196,7 +175,7 @@ class _SaiInspires extends State<SaiInspires> {
                 // show when no data is retrieved and timeout
                 if (_contentText == 'timeout')
                   NoData(
-                    backgroundColor: backgroundColor,
+                    backgroundColor: Theme.of(context).colorScheme.background,
                     text:
                         'No Data Available,\nURL timeout, try again after some time',
                     onPressed: () {
@@ -210,11 +189,8 @@ class _SaiInspires extends State<SaiInspires> {
             ),
           ),
           // Shown second child it is loading
-          secondChild: Container(
-            color: backgroundColor,
-            child: Center(
-              child: _showLoading(isDarkTheme),
-            ),
+          secondChild: Center(
+            child: _showLoading(),
           ),
         ),
       ),
@@ -375,7 +351,7 @@ class _SaiInspires extends State<SaiInspires> {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
-        color: Theme.of(context).backgroundColor,
+        color: Theme.of(context).colorScheme.background,
         height: 200,
         child: Column(
           children: [
@@ -471,8 +447,8 @@ class _SaiInspires extends State<SaiInspires> {
           child: SelectableText(
             _thoughtOfTheDay,
             textAlign: TextAlign.justify,
-            style: const TextStyle(
-              color: Color(0xFFFF9014),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -503,8 +479,8 @@ class _SaiInspires extends State<SaiInspires> {
           child: SelectableText(
             _quote,
             textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Color(0xFFFF9014),
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
@@ -515,12 +491,12 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   /// Shimmer effect while loading the content
-  Widget _showLoading(bool isDarkTheme) {
+  Widget _showLoading() {
     return Padding(
       padding: const EdgeInsets.only(top: 30, left: 20, right: 20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
-        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
+        baseColor: Theme.of(context).colorScheme.secondaryContainer,
+        highlightColor: Theme.of(context).colorScheme.onSecondaryContainer,
         enabled: true,
         child: Column(
           children: [

@@ -44,23 +44,11 @@ class _Settings extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Settings'),
-        backgroundColor:
-            MaterialStateColor.resolveWith((Set<MaterialState> states) {
-          return states.contains(MaterialState.scrolledUnder)
-              ? ((isDarkTheme)
-                  ? Colors.grey[700]!
-                  : Theme.of(context).colorScheme.secondary)
-              : Theme.of(context).primaryColor;
-        }),
       ),
-      body: Container(
-        color: Theme.of(context).backgroundColor,
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Scrollbar(
           radius: const Radius.circular(8),
@@ -207,8 +195,8 @@ class _Settings extends State<Settings> {
   /// launch the url from url_launcher
   _urlLaunch(urlString) async {
     try {
-      if (await canLaunch(urlString)) {
-        await launch(urlString);
+      if (await canLaunchUrl(Uri.parse(urlString))) {
+        await launchUrl(Uri.parse(urlString));
       }
     } catch (e) {
       // do nothing

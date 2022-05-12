@@ -19,34 +19,20 @@ class AudioArchive extends StatefulWidget {
 class _AudioArchive extends State<AudioArchive> {
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    Color backgroundColor = Theme.of(context).backgroundColor;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Audio Archive'),
-        backgroundColor:
-            MaterialStateColor.resolveWith((Set<MaterialState> states) {
-          return states.contains(MaterialState.scrolledUnder)
-              ? ((isDarkTheme)
-                  ? Colors.grey[700]!
-                  : Theme.of(context).colorScheme.secondary)
-              : Theme.of(context).primaryColor;
-        }),
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
-        color: backgroundColor,
-        child: _audioArchiveGrid(isDarkTheme),
+        child: _audioArchiveGrid(),
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
     );
   }
 
-  Widget _audioArchiveGrid(bool isDarkTheme) {
+  Widget _audioArchiveGrid() {
     return Scrollbar(
       child: GridView(
         padding:
@@ -63,8 +49,7 @@ class _AudioArchive extends State<AudioArchive> {
               padding: const EdgeInsets.all(5),
               child: Card(
                 elevation: 5,
-                shadowColor:
-                    isDarkTheme ? Colors.white : Theme.of(context).primaryColor,
+                shadowColor: Theme.of(context).colorScheme.onSecondary,
                 child: InkWell(
                   onTap: () {
                     _navigateAudioArchive(
@@ -125,8 +110,8 @@ class _AudioArchive extends State<AudioArchive> {
   /// launch the url from url_launcher
   _urlLaunch(urlString) async {
     try {
-      if (await canLaunch(urlString)) {
-        await launch(urlString);
+      if (await canLaunchUrl(Uri.parse(urlString))) {
+        await launchUrl(Uri.parse(urlString));
       }
     } catch (e) {
       // do nothing

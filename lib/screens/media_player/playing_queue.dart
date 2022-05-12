@@ -33,8 +33,6 @@ class _PlayingQueue extends State<PlayingQueue> {
     // check if dark theme
     bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
-    Color backgroundColor = Theme.of(context).backgroundColor;
-
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
@@ -45,147 +43,137 @@ class _PlayingQueue extends State<PlayingQueue> {
     return Scaffold(
       body: _annotatedRegion(
           SafeArea(
-            child: Container(
-              color: backgroundColor,
-              child: Center(
-                child: Column(
-                  children: [
-                    if (!isSmallerScreen)
-                      GestureDetector(
-                        onTap: () {
-                          // pop to media player
-                          Navigator.maybePop(context);
-                        },
-                        child: Container(
-                          height: height * 0.1,
-                          width: width,
-                          color: Colors.transparent,
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                IconButton(
-                                  icon: Icon((Platform.isAndroid)
-                                      ? Icons.keyboard_arrow_down_outlined
-                                      : CupertinoIcons.back),
-                                  splashRadius: 24,
-                                  iconSize: 25,
-                                  onPressed: () {
-                                    // pop to media player
-                                    Navigator.maybePop(context);
-                                  },
-                                ),
-                                ValueListenableBuilder<String>(
-                                  valueListenable:
-                                      _audioManager!.currentSongTitleNotifier,
-                                  builder: (context, mediaTitle, child) {
-                                    return SizedBox(
-                                      width: width * 0.65,
-                                      child: Text(
-                                        // Display Audio Title
-                                        mediaTitle,
-                                        textAlign: TextAlign.start,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
-                                          fontSize: 18,
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                                // Pause/Play button
-                                ValueListenableBuilder<PlayButtonState>(
-                                    valueListenable:
-                                        _audioManager!.playButtonNotifier,
-                                    builder: (context, playState, child) {
-                                      final playing = (playState ==
-                                          PlayButtonState.playing);
-
-                                      return playing
-                                          ? pauseButton()
-                                          : playButton();
-                                    }),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    Expanded(
-                      child: ValueListenableBuilder<List<String>>(
-                        valueListenable: _audioManager!.queueNotifier,
-                        builder: (context, queueList, child) {
-                          if (queueList.isEmpty) {
-                            return const Center(
-                              child: Text('No files in queue'),
-                            );
-                          }
-
-                          return ValueListenableBuilder<String>(
-                              valueListenable:
-                                  _audioManager!.currentSongTitleNotifier,
-                              builder: (context, currentMediaTitle, child) {
-                                return Scrollbar(
-                                  radius: const Radius.circular(8),
-                                  child: SingleChildScrollView(
-                                    physics: const BouncingScrollPhysics(
-                                        parent:
-                                            AlwaysScrollableScrollPhysics()),
-                                    child: ListView.builder(
-                                      shrinkWrap: true,
-                                      primary: false,
-                                      padding: const EdgeInsets.only(
-                                          top: 2, bottom: 2),
-                                      itemCount: queueList.length,
-                                      itemBuilder: (context, index) {
-                                        final mediaTitle = queueList[index];
-                                        bool isCurrentItem = false;
-                                        if (mediaTitle == currentMediaTitle) {
-                                          isCurrentItem = true;
-                                        }
-                                        return _queueItemWidget(
-                                            context,
-                                            mediaTitle,
-                                            isCurrentItem,
-                                            queueList.length,
-                                            isDarkTheme);
-                                      },
-                                    ),
-                                  ),
-                                );
-                              });
-                        },
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: Material(
+            child: Center(
+              child: Column(
+                children: [
+                  if (!isSmallerScreen)
+                    GestureDetector(
+                      onTap: () {
+                        // pop to media player
+                        Navigator.maybePop(context);
+                      },
+                      child: Container(
+                        height: height * 0.1,
+                        width: width,
                         color: Colors.transparent,
-                        child: InkWell(
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                                left: 10, right: 10, top: 8, bottom: 8),
-                            child: Text(
-                              'CLEAR',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Theme.of(context).colorScheme.secondary,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                icon: Icon((Platform.isAndroid)
+                                    ? Icons.keyboard_arrow_down_outlined
+                                    : CupertinoIcons.back),
+                                splashRadius: 24,
+                                iconSize: 25,
+                                onPressed: () {
+                                  // pop to media player
+                                  Navigator.maybePop(context);
+                                },
                               ),
-                            ),
+                              ValueListenableBuilder<String>(
+                                valueListenable:
+                                    _audioManager!.currentSongTitleNotifier,
+                                builder: (context, mediaTitle, child) {
+                                  return SizedBox(
+                                    width: width * 0.65,
+                                    child: Text(
+                                      // Display Audio Title
+                                      mediaTitle,
+                                      textAlign: TextAlign.start,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                              // Pause/Play button
+                              ValueListenableBuilder<PlayButtonState>(
+                                  valueListenable:
+                                      _audioManager!.playButtonNotifier,
+                                  builder: (context, playState, child) {
+                                    final playing =
+                                        (playState == PlayButtonState.playing);
+
+                                    return playing
+                                        ? pauseButton()
+                                        : playButton();
+                                  }),
+                            ],
                           ),
-                          borderRadius: BorderRadius.circular(8.0),
-                          onTap: () async {
-                            // stop the player and clear the queue
-                            _audioManager!.clear();
-                            Navigator.maybePop(context);
-                          },
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  Expanded(
+                    child: ValueListenableBuilder<List<String>>(
+                      valueListenable: _audioManager!.queueNotifier,
+                      builder: (context, queueList, child) {
+                        if (queueList.isEmpty) {
+                          return const Center(
+                            child: Text('No files in queue'),
+                          );
+                        }
+
+                        return ValueListenableBuilder<String>(
+                            valueListenable:
+                                _audioManager!.currentSongTitleNotifier,
+                            builder: (context, currentMediaTitle, child) {
+                              return Scrollbar(
+                                radius: const Radius.circular(8),
+                                child: SingleChildScrollView(
+                                  physics: const BouncingScrollPhysics(
+                                      parent: AlwaysScrollableScrollPhysics()),
+                                  child: ListView.builder(
+                                    shrinkWrap: true,
+                                    primary: false,
+                                    padding: const EdgeInsets.only(
+                                        top: 2, bottom: 2),
+                                    itemCount: queueList.length,
+                                    itemBuilder: (context, index) {
+                                      final mediaTitle = queueList[index];
+                                      bool isCurrentItem = false;
+                                      if (mediaTitle == currentMediaTitle) {
+                                        isCurrentItem = true;
+                                      }
+                                      return _queueItemWidget(
+                                        context,
+                                        mediaTitle,
+                                        isCurrentItem,
+                                        queueList.length,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+                            });
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 10),
+                    child: TextButton(
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        child: Text(
+                          'CLEAR',
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                      onPressed: () async {
+                        // stop the player and clear the queue
+                        _audioManager!.clear();
+                        Navigator.maybePop(context);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -210,9 +198,9 @@ class _PlayingQueue extends State<PlayingQueue> {
   /// widget for each queue item
   ///
   /// also shows if the widget is playing (with different color)
-  Widget _queueItemWidget(BuildContext context, String mediaTitle,
-      bool isCurrentItem, int length, bool isDarkTheme) {
-    Color? selectedColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
+  Widget _queueItemWidget(
+      BuildContext context, String mediaTitle, bool isCurrentItem, int length) {
+    Color? selectedColor = Theme.of(context).colorScheme.secondaryContainer;
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -256,10 +244,10 @@ class _PlayingQueue extends State<PlayingQueue> {
                   _audioManager!.queueNotifier.value.indexOf(mediaTitle);
               _audioManager!.skipToQueueItem(index);
             },
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),

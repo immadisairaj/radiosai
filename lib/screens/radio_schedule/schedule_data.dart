@@ -124,11 +124,6 @@ class _ScheduleData extends State<ScheduleData> {
 
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    Color backgroundColor = Theme.of(context).backgroundColor;
-
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
@@ -142,14 +137,6 @@ class _ScheduleData extends State<ScheduleData> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Schedule'),
-        backgroundColor:
-            MaterialStateColor.resolveWith((Set<MaterialState> states) {
-          return states.contains(MaterialState.scrolledUnder)
-              ? ((isDarkTheme)
-                  ? Colors.grey[700]!
-                  : Theme.of(context).colorScheme.secondary)
-              : Theme.of(context).primaryColor;
-        }),
         actions: <Widget>[
           IconButton(
             icon: Icon((Platform.isAndroid)
@@ -163,9 +150,8 @@ class _ScheduleData extends State<ScheduleData> {
           )
         ],
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
         child: Column(
           children: [
             if (!isSmallerScreen)
@@ -191,7 +177,9 @@ class _ScheduleData extends State<ScheduleData> {
                                 'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate!)}',
                                 style: TextStyle(
                                   fontSize: 19,
-                                  color: Theme.of(context).secondaryHeaderColor,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -248,7 +236,7 @@ class _ScheduleData extends State<ScheduleData> {
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 5),
-                                  child: _timeZoneDropDown(isDarkTheme),
+                                  child: _timeZoneDropDown(),
                                 ),
                               ),
                             ),
@@ -257,7 +245,7 @@ class _ScheduleData extends State<ScheduleData> {
                                 child: Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 5),
-                                  child: _streamDropDown(isDarkTheme),
+                                  child: _streamDropDown(),
                                 ),
                               ),
                             ),
@@ -308,13 +296,13 @@ class _ScheduleData extends State<ScheduleData> {
                                     child: Card(
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(18)),
+                                            Radius.circular(10)),
                                       ),
                                       elevation: 1,
-                                      color: isDarkTheme
-                                          ? Colors.grey[800]
-                                          : Colors.grey[200],
-                                      child: _scheduleItems(isDarkTheme),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      child: _scheduleItems(),
                                     ),
                                   ),
                                 ),
@@ -325,7 +313,8 @@ class _ScheduleData extends State<ScheduleData> {
                       // show when no data is retrieved
                       if (_finalTableData[0][0] == 'null')
                         NoData(
-                          backgroundColor: backgroundColor,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
                           text:
                               'No Data Available,\ncheck your internet or try again',
                           onPressed: () {
@@ -338,7 +327,8 @@ class _ScheduleData extends State<ScheduleData> {
                       // show when no data is retrieved and timeout
                       if (_finalTableData[0][0] == 'timeout')
                         NoData(
-                          backgroundColor: backgroundColor,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
                           text:
                               'No Data Available,\nURL timeout, try again after some time',
                           onPressed: () {
@@ -352,11 +342,8 @@ class _ScheduleData extends State<ScheduleData> {
                   ),
                 ),
                 // Shown second child it is loading
-                secondChild: Container(
-                  color: backgroundColor,
-                  child: Center(
-                    child: _showLoading(isDarkTheme),
-                  ),
+                secondChild: Center(
+                  child: _showLoading(),
                 ),
               ),
             ),
@@ -370,7 +357,7 @@ class _ScheduleData extends State<ScheduleData> {
   /// widget for schedule items (contains the list)
   ///
   /// showed after getting data
-  Widget _scheduleItems(bool isDarkTheme) {
+  Widget _scheduleItems() {
     return ListView.builder(
         shrinkWrap: true,
         primary: false,
@@ -390,8 +377,8 @@ class _ScheduleData extends State<ScheduleData> {
               Padding(
                 padding: const EdgeInsets.only(left: 4, right: 4),
                 child: Card(
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   elevation: 0,
-                  color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
                   child: InkWell(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4, bottom: 4),
@@ -400,7 +387,7 @@ class _ScheduleData extends State<ScheduleData> {
                           title: Text(
                             category,
                             style: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -411,17 +398,13 @@ class _ScheduleData extends State<ScheduleData> {
                               Text(
                                 localTime,
                                 style: TextStyle(
-                                  color: isDarkTheme
-                                      ? Colors.grey[300]
-                                      : Colors.grey[700],
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                               Text(
                                 duration,
                                 style: TextStyle(
-                                  color: isDarkTheme
-                                      ? Colors.grey[300]
-                                      : Colors.grey[700],
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                             ],
@@ -430,8 +413,6 @@ class _ScheduleData extends State<ScheduleData> {
                       ),
                     ),
                     borderRadius: BorderRadius.circular(8.0),
-                    focusColor:
-                        isDarkTheme ? Colors.grey[700] : Colors.grey[300],
                     onTap: () {
                       if (fids != '') {
                         Navigator.push(
@@ -445,7 +426,7 @@ class _ScheduleData extends State<ScheduleData> {
                     },
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -630,15 +611,17 @@ class _ScheduleData extends State<ScheduleData> {
       ];
     }
 
-    setState(() {
-      // set the data
-      // _finalTableHead = tableHead;
-      _finalTableData = tableData;
-      _finalLocalTime = localTime;
+    if (mounted) {
+      setState(() {
+        // set the data
+        // _finalTableHead = tableHead;
+        _finalTableData = tableData;
+        _finalLocalTime = localTime;
 
-      // loading is done
-      _isLoading = false;
-    });
+        // loading is done
+        _isLoading = false;
+      });
+    }
   }
 
   /// select the date and update the url
@@ -666,7 +649,7 @@ class _ScheduleData extends State<ScheduleData> {
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).colorScheme.background,
               height: 200,
               child: Column(
                 children: [
@@ -761,11 +744,11 @@ class _ScheduleData extends State<ScheduleData> {
   }
 
   /// widget - dropdown for selecting radio stream
-  Widget _streamDropDown(bool isDarkTheme) {
+  Widget _streamDropDown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+        color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(10),
       ),
       child: DropdownButton<String>(
@@ -773,7 +756,14 @@ class _ScheduleData extends State<ScheduleData> {
         items: MyConstants.of(context)!.scheduleStream.keys.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Text(value),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: (value == selectedStream)
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+            ),
           );
         }).toList(),
         underline: const SizedBox(),
@@ -796,11 +786,11 @@ class _ScheduleData extends State<ScheduleData> {
   /// widget - dropdown for selecting time zone
   ///
   /// updates the data in shared prefs
-  Widget _timeZoneDropDown(bool isDarkTheme) {
+  Widget _timeZoneDropDown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+        color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(10),
       ),
       child: DropdownButton<String>(
@@ -808,7 +798,14 @@ class _ScheduleData extends State<ScheduleData> {
         items: MyConstants.of(context)!.timeZones.keys.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Text(value),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: (value == widget.timeZone)
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+            ),
           );
         }).toList(),
         underline: const SizedBox(),
@@ -830,12 +827,12 @@ class _ScheduleData extends State<ScheduleData> {
   }
 
   /// Shimmer effect while loading the content
-  Widget _showLoading(bool isDarkTheme) {
+  Widget _showLoading() {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
-        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
+        baseColor: Theme.of(context).colorScheme.secondaryContainer,
+        highlightColor: Theme.of(context).colorScheme.onSecondaryContainer,
         enabled: true,
         child: Column(
           children: [

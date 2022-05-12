@@ -68,7 +68,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                       return RadioListTile(
                                           activeColor: Theme.of(context)
                                               .colorScheme
-                                              .secondary,
+                                              .primary,
                                           value: value,
                                           selected:
                                               value == initialRadioStreamIndex,

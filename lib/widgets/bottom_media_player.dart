@@ -33,11 +33,6 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    Color? backgroundColor = isDarkTheme ? Colors.grey[800] : Colors.grey[300];
-
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
@@ -85,11 +80,12 @@ class _BottomMediaPlayer extends State<BottomMediaPlayer> {
                       height: (isBiggerScreen) ? height * 0.08 : height * 0.1,
                       width: width,
                       decoration: BoxDecoration(
-                        color: backgroundColor,
+                        color: Theme.of(context).colorScheme.secondaryContainer,
                         border: Border(
                           top: BorderSide(
-                            color:
-                                isDarkTheme ? Colors.grey[700]! : Colors.white,
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSecondaryContainer,
                           ),
                         ),
                       ),

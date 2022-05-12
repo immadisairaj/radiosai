@@ -59,7 +59,7 @@ class _AppTheme extends State<AppTheme> {
                                       return RadioListTile(
                                           activeColor: Theme.of(context)
                                               .colorScheme
-                                              .secondary,
+                                              .primary,
                                           value: value,
                                           selected: value == appTheme,
                                           title: Text(value),

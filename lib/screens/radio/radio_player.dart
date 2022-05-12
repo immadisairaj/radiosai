@@ -66,7 +66,7 @@ class _RadioPlayer extends State<RadioPlayer>
     super.initState();
 
     // false the value after the build is completed
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       initialBuild = false;
     });
   }
@@ -81,11 +81,11 @@ class _RadioPlayer extends State<RadioPlayer>
   @override
   Widget build(BuildContext context) {
     // notification status bar color
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.black26,
-      statusBarBrightness: Brightness.dark,
-      statusBarIconBrightness: Brightness.light,
-    ));
+    // SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    //   statusBarColor: Colors.black26,
+    //   statusBarBrightness: Brightness.dark,
+    //   statusBarIconBrightness: Brightness.light,
+    // ));
 
     // handle the pause and play button
     _handlePlayingState(widget.isPlaying!);
@@ -180,9 +180,6 @@ class _RadioPlayer extends State<RadioPlayer>
 
   /// main radio player widget after all streams
   Widget _slidingPanelCollapsed(Radius? radius) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: () {
         _panelController.open();
@@ -192,7 +189,7 @@ class _RadioPlayer extends State<RadioPlayer>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
               topLeft: widget.radius!, topRight: widget.radius!),
-          color: isDarkTheme ? Colors.grey[700] : Colors.white,
+          color: Theme.of(context).colorScheme.secondaryContainer,
         ),
         child: Column(
           children: const [
@@ -260,8 +257,7 @@ class _RadioPlayer extends State<RadioPlayer>
                     ),
                   IconButton(
                     splashRadius: 24,
-                    splashColor: Theme.of(context).primaryColor,
-                    highlightColor: Theme.of(context).primaryColor,
+                    highlightColor: Theme.of(context).colorScheme.primary,
                     iconSize: iconSize,
                     color: Colors.white,
                     icon: AnimatedIcon(

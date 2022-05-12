@@ -13,7 +13,7 @@ class SliderHandle extends StatelessWidget {
       height: 5,
       width: 30,
       decoration: BoxDecoration(
-        color: isDarkTheme ? Colors.grey[400] : Colors.grey[200],
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
         borderRadius: BorderRadius.circular(16),
       ),
     );

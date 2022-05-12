@@ -172,9 +172,9 @@ class _Search extends State<Search> {
       // initialize the search with the initialSearch
       _textController = TextEditingController(text: widget.initialSearch);
       // calls the submit method after the widget is build
-      WidgetsBinding.instance!.addPostFrameCallback((_) => _submit());
+      WidgetsBinding.instance.addPostFrameCallback((_) => _submit());
     }
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _textController!.addListener(_textControllerListener);
     });
   }
@@ -191,11 +191,6 @@ class _Search extends State<Search> {
 
   @override
   Widget build(BuildContext context) {
-    // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
-
-    Color backgroundColor = Theme.of(context).backgroundColor;
-
     // get the heights of the screen (useful for split screen)
     double height = MediaQuery.of(context).size.height;
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
@@ -207,18 +202,9 @@ class _Search extends State<Search> {
             : ((widget.initialSearchTitle != null)
                 ? widget.initialSearchTitle!
                 : widget.initialSearch!)),
-        backgroundColor:
-            MaterialStateColor.resolveWith((Set<MaterialState> states) {
-          return states.contains(MaterialState.scrolledUnder)
-              ? ((isDarkTheme)
-                  ? Colors.grey[700]!
-                  : Theme.of(context).colorScheme.secondary)
-              : Theme.of(context).primaryColor;
-        }),
       ),
-      body: Container(
+      body: SizedBox(
         height: MediaQuery.of(context).size.height,
-        color: backgroundColor,
         child: Column(
           children: [
             if (!isSmallerScreen)
@@ -229,7 +215,7 @@ class _Search extends State<Search> {
                   duration: _showDropDown
                       ? const Duration(milliseconds: 200)
                       : const Duration(milliseconds: 300),
-                  child: _searchForm(isDarkTheme),
+                  child: _searchForm(),
                 ),
               ),
             Expanded(
@@ -277,13 +263,13 @@ class _Search extends State<Search> {
                                     child: Card(
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(18)),
+                                            Radius.circular(10)),
                                       ),
                                       elevation: 1,
-                                      color: isDarkTheme
-                                          ? Colors.grey[800]
-                                          : Colors.grey[200],
-                                      child: _searchItems(isDarkTheme),
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryContainer,
+                                      child: _searchItems(),
                                     ),
                                   ),
                                 ),
@@ -311,7 +297,8 @@ class _Search extends State<Search> {
                       // show when no data is retrieved
                       if (_finalTableData[0][0] == 'null')
                         NoData(
-                          backgroundColor: backgroundColor,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
                           text:
                               'No Data Available,\ncheck your internet and try again',
                           onPressed: () {
@@ -324,7 +311,8 @@ class _Search extends State<Search> {
                       // show when no data is retrieved and timeout
                       if (_finalTableData[0][0] == 'timeout')
                         NoData(
-                          backgroundColor: backgroundColor,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.background,
                           text:
                               'No Data Available,\nURL timeout, try again after some time',
                           onPressed: () {
@@ -345,9 +333,9 @@ class _Search extends State<Search> {
                     // Shown but hidden when loading the data
                     if (_isGettingData) _hiddenWebView(),
                     Container(
-                      color: backgroundColor,
+                      color: Theme.of(context).colorScheme.background,
                       child: Center(
-                        child: _showLoading(isDarkTheme),
+                        child: _showLoading(),
                       ),
                     ),
                   ],
@@ -364,7 +352,7 @@ class _Search extends State<Search> {
   /// widget for search items (contains the list)
   ///
   /// showed after getting data
-  Widget _searchItems(bool isDarkTheme) {
+  Widget _searchItems() {
     return ListView.builder(
         shrinkWrap: true,
         primary: false,
@@ -384,7 +372,7 @@ class _Search extends State<Search> {
                 padding: const EdgeInsets.only(left: 4, right: 4),
                 child: Card(
                   elevation: 0,
-                  color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+                  color: Theme.of(context).colorScheme.secondaryContainer,
                   child: InkWell(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 2, bottom: 2),
@@ -393,7 +381,7 @@ class _Search extends State<Search> {
                           title: Text(
                             category,
                             style: TextStyle(
-                              color: Theme.of(context).secondaryHeaderColor,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -404,17 +392,13 @@ class _Search extends State<Search> {
                               Text(
                                 language,
                                 style: TextStyle(
-                                  color: isDarkTheme
-                                      ? Colors.grey[300]
-                                      : Colors.grey[700],
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                               Text(
                                 duration,
                                 style: TextStyle(
-                                  color: isDarkTheme
-                                      ? Colors.grey[300]
-                                      : Colors.grey[700],
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                             ],
@@ -423,8 +407,6 @@ class _Search extends State<Search> {
                       ),
                     ),
                     borderRadius: BorderRadius.circular(8.0),
-                    focusColor:
-                        isDarkTheme ? Colors.grey[700] : Colors.grey[300],
                     onTap: () {
                       if (fids != '') {
                         Navigator.push(
@@ -438,7 +420,7 @@ class _Search extends State<Search> {
                     },
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -728,7 +710,7 @@ class _Search extends State<Search> {
   }
 
   /// widget to show and select the new search value
-  Widget _searchForm(bool isDarkTheme) {
+  Widget _searchForm() {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     return Form(
@@ -818,7 +800,7 @@ class _Search extends State<Search> {
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 5),
-                                      child: _categoryDropDown(isDarkTheme),
+                                      child: _categoryDropDown(),
                                     ),
                                   ),
                                 ],
@@ -927,11 +909,11 @@ class _Search extends State<Search> {
   }
 
   /// widget - dropdown for selecting category
-  Widget _categoryDropDown(bool isDarkTheme) {
+  Widget _categoryDropDown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: isDarkTheme ? Colors.grey[800] : Colors.grey[200],
+        color: Theme.of(context).colorScheme.secondaryContainer,
         borderRadius: BorderRadius.circular(10),
       ),
       child: DropdownButton<String>(
@@ -939,7 +921,14 @@ class _Search extends State<Search> {
         items: categoriesList.map((String value) {
           return DropdownMenuItem<String>(
             value: value,
-            child: Text(value),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: (value == category)
+                    ? Theme.of(context).colorScheme.primary
+                    : null,
+              ),
+            ),
           );
         }).toList(),
         underline: const SizedBox(),
@@ -992,7 +981,7 @@ class _Search extends State<Search> {
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
-              color: Theme.of(context).backgroundColor,
+              color: Theme.of(context).colorScheme.background,
               height: 200,
               child: Column(
                 children: [
@@ -1075,13 +1064,13 @@ class _Search extends State<Search> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Theme.of(context).backgroundColor,
+          color: Theme.of(context).colorScheme.background,
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 6, right: 6),
           child: Scrollbar(
             radius: const Radius.circular(8),
-            isAlwaysShown: true,
+            thumbVisibility: true,
             controller: scrollController,
             child: ListView.builder(
               padding:
@@ -1100,7 +1089,7 @@ class _Search extends State<Search> {
                     child: Card(
                       elevation: 0,
                       color: isSelectedPage
-                          ? Theme.of(context).colorScheme.secondary
+                          ? Theme.of(context).colorScheme.primaryContainer
                           : null,
                       child: InkWell(
                         child: Center(
@@ -1130,12 +1119,12 @@ class _Search extends State<Search> {
   }
 
   /// Shimmer effect while loading the content
-  Widget _showLoading(bool isDarkTheme) {
+  Widget _showLoading() {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Shimmer.fromColors(
-        baseColor: isDarkTheme ? Colors.grey[500]! : Colors.grey[300]!,
-        highlightColor: isDarkTheme ? Colors.grey[300]! : Colors.grey[100]!,
+        baseColor: Theme.of(context).colorScheme.secondaryContainer,
+        highlightColor: Theme.of(context).colorScheme.onSecondaryContainer,
         enabled: true,
         child: Column(
           children: [
