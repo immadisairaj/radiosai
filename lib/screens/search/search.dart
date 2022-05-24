@@ -1235,7 +1235,7 @@ class _Search extends State<Search> {
                 "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
             await _webViewController.runJavascript(
                 "document.forms[1].page.value=${globalFormData['page']};");
-            await _webViewController.runJavascript("javascript:check()");
+            await _webViewController.runJavascript('javascript:check()');
             _isFirstLoading = false;
           } else if (_isSecondLoading) {
             await _webViewController
@@ -1244,7 +1244,7 @@ class _Search extends State<Search> {
           } else {
             String tempResponse =
                 await _webViewController.runJavascriptReturningResult(
-                    "encodeURIComponent(document.documentElement.outerHTML)");
+                    'encodeURIComponent(document.documentElement.outerHTML)');
             tempResponse = Uri.decodeComponent(tempResponse);
 
             // put data into cache after getting from internet

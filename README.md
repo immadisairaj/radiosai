@@ -1,10 +1,20 @@
-# Sai Voice
-
-A radio player which streams audio from Radio Sai Global Harmony.
-
-<img src="./sai_voice_logo.png" height="150">
-
-_*Special Thanks to Aman Achutan for the logo_
+<p align="center">
+    <img src="./sai_voice_logo.png" height="150">
+</p>
+<h1 align=center>Sai Voice</h1>
+<p align=center>A radio player which streams audio from Radio Sai Global Harmony.</p>
+<p align="center">
+ <a href="https://immadisairaj.github.io/radiosai">
+    <img src="https://img.shields.io/badge/Visit-Website-e91e62" alt="website"></img>
+  </a>
+  <a href="https://github.com/immadisairaj/radiosai/blob/main/LICENSE.md">
+    <img src="https://img.shields.io/badge/License-GPL V2-a32d2a" alt="license">
+  </a>
+  <a href="https://immadisairaj.github.io/radiosai/privacy_policy.html">
+    <img src="https://img.shields.io/badge/Privacy-Policy-ea4ca0" alt="privacy policy">
+  </a>
+</p>
+<br/>
 
 Om Sri Sai Ram :pray:
 
@@ -22,9 +32,6 @@ __Radio Streams include:__
 - Bhajan Stream
 - Discourse Stream
 - Telugu Stream
-
-| :memo: Radio Streams in iOS takes time to load due to a constraint from the audio source |
-|-|
 
 __Smooth:__ The app is built to keep a smooth user experience. One can change the streams they want to listen to with ease by just sliding the panel up and selecting the new stream.
 
@@ -49,6 +56,8 @@ __Free without ads:__ The app is free for all and will remain the same further. 
 __Open Source:__ We believe that there is nothing to hide and like you to experience the bliss of Swamy. So, the source code of the app is open-source and will remain the same in future.
 
 __File Permissions:__ File write permission is requested only to save images from Sai Inspires. One can deny these permissions from the settings.
+
+_*Special Thanks to Aman Achutan for the logo_
 
 > "Sai Ram, and Happy Listening"
 ## Features
@@ -96,7 +105,11 @@ I like to listen to various bhajans which made me fond of radio sai. I've instal
 
 ## Screenshots
 
-<img src="/screenshots/screenshot_1.png" height="500"> <img src="/screenshots/screenshot_2.png" height="500"> <img src="/screenshots/screenshot_3.jpg" height="500"> <img src="/screenshots/screenshot_4.jpg" height="500"> <img src="/screenshots/screenshot_5.jpg" height="500"> <img src="/screenshots/screenshot_6.jpg" height="500"> <img src="/screenshots/screenshot_7.png" height="500"> <img src="/screenshots/screenshot_8.png" height="500"> <img src="/screenshots/screenshot_9.png" height="500"> <img src="/screenshots/screenshot_10.png" height="500"> <img src="/screenshots/screenshot_11.png" height="500"> <img src="/screenshots/screenshot_12.png" height="500"> <img src="/screenshots/screenshot_13.png" height="500"> <img src="/screenshots/screenshot_14.png" height="500"> <img src="/screenshots/screenshot_15.jpg" height="500"> <img src="/screenshots/screenshot_16.jpg" height="500"> <img src="/screenshots/screenshot_17.jpg" height="500"> <img src="/screenshots/screenshot_18.jpg" height="500"> <img src="/screenshots/screenshot_19.png" height="500"> <img src="/screenshots/screenshot_20.png" height="500"> <img src="/screenshots/screenshot_21.png" height="500"> <img src="/screenshots/screenshot_22.png" height="500"> <img src="/screenshots/screenshot_23.png" height="500"> <img src="/screenshots/screenshot_24.png" height="500">
+### Light Theme
+<img src="./screenshots/screenshot_1.png" height="500"> <img src="./screenshots/screenshot_2.png" height="500"> <img src="./screenshots/screenshot_3.png" height="500"> <img src="./screenshots/screenshot_4.png" height="500"> <img src="./screenshots/screenshot_5.png" height="500"> <img src="./screenshots/screenshot_6.png" height="500"> <img src="./screenshots/screenshot_7.png" height="500"> <img src="./screenshots/screenshot_8.png" height="500"> <img src="./screenshots/screenshot_9.png" height="500"> <img src="./screenshots/screenshot_10.png" height="500"> <img src="./screenshots/screenshot_11.png" height="500"> <img src="./screenshots/screenshot_12.png" height="500">
+
+### Dark Theme
+<img src="./screenshots/screenshot_13.png" height="500"> <img src="./screenshots/screenshot_14.png" height="500"> <img src="./screenshots/screenshot_15.png" height="500"> <img src="./screenshots/screenshot_16.png" height="500"> <img src="./screenshots/screenshot_17.png" height="500"> <img src="./screenshots/screenshot_18.png" height="500"> <img src="./screenshots/screenshot_19.png" height="500"> <img src="./screenshots/screenshot_20.png" height="500"> <img src="./screenshots/screenshot_21.png" height="500"> <img src="./screenshots/screenshot_22.png" height="500"> <img src="./screenshots/screenshot_23.png" height="500"> <img src="./screenshots/screenshot_24.png" height="500">
 
 ## Architecture
 
@@ -142,9 +155,6 @@ used to show loading progress in the data loading screens
 __internet_connection_checker:__
 used to detect the internet status of the device
 
-__flutter_downloader:__
-used to download files/media from the internet
-
 __just_audio & audio_service:__
 the main base of the app helps play the audio seamlessly with media control. Thank you @ryanheise
 
@@ -152,14 +162,6 @@ _and many other open-source libraries._
 
 
 Thanks to the Open Source community for providing such great libraries and framework which was very helpful in building the application.
-
-## Built using
-<!-- keep updating this -->
-- __Flutter version:__ 2.10.1
-- __Dart version:__ 2.16.1
-- __Gradle version:__ 7.1.1
-- __Android Emulator:__ Pixel 4a API 31
-- __iOS Simulator:__ Apple iPhone 13 iOS 15
 
 ## Privacy Policy
 

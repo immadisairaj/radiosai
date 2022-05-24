@@ -54,7 +54,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                             width: MediaQuery.of(context).size.width * 0.6,
                             child: Scrollbar(
                               radius: const Radius.circular(8),
-                              isAlwaysShown: true,
+                              thumbVisibility: true,
                               child: SingleChildScrollView(
                                 child: ListView.builder(
                                     itemCount: MyConstants.of(context)!

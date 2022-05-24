@@ -73,8 +73,8 @@ class AudioManager {
     return MediaItem(
         id: key,
         title: key,
-        album: "Radio Sai Global Harmony",
-        artist: "Radio Sai",
+        album: 'Radio Sai Global Harmony',
+        artist: 'Radio Sai',
         artUri: Uri.parse('file://$path'),
         extras: {'uri': value});
   }
