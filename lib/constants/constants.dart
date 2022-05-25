@@ -6,8 +6,7 @@ class MyConstants extends InheritedWidget {
   static MyConstants? of(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<MyConstants>();
 
-  const MyConstants({required Widget child, Key? key})
-      : super(key: key, child: child);
+  const MyConstants({required super.child, super.key});
 
   // /// The list of radio sai stream http source names and links
   // final Map<String, String> radioStream = const {

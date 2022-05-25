@@ -13,14 +13,13 @@ import 'package:radiosai/screens/radio/radio_stream_select.dart';
 
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer(
-      {Key? key,
+      {super.key,
       this.radius,
       this.radioStreamIndex,
       this.isPlaying,
       this.loadingState,
       this.radioLoadingBloc,
-      this.hasInternet})
-      : super(key: key);
+      this.hasInternet});
 
   final Radius? radius;
   final int? radioStreamIndex;

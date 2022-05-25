@@ -18,8 +18,8 @@ import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
   const SaiInspires({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'saiInspires';
 

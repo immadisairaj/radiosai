@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 ///
 /// [child] - the content of the section
 class SettingsSection extends StatelessWidget {
-  const SettingsSection({Key? key, this.title, this.child}) : super(key: key);
+  const SettingsSection({super.key, this.title, this.child});
 
   final String? title;
   final Widget? child;

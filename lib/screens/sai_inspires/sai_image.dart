@@ -13,11 +13,11 @@ import 'package:radiosai/helper/scaffold_helper.dart';
 
 class SaiImage extends StatefulWidget {
   const SaiImage({
-    Key? key,
+    super.key,
     this.heroTag,
     this.imageUrl,
     this.fileName,
-  }) : super(key: key);
+  });
 
   final String? heroTag;
   final String? imageUrl;

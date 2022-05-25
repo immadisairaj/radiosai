@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
     brightness: Brightness.dark,
   );
 
-  MyApp({Key? key}) : super(key: key);
+  MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

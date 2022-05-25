@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// Slider Handle - small oval shape widget
 class SliderHandle extends StatelessWidget {
-  const SliderHandle({Key? key}) : super(key: key);
+  const SliderHandle({super.key});
 
   @override
   Widget build(BuildContext context) {

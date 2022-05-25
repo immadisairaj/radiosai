@@ -26,10 +26,10 @@ import 'package:shimmer/shimmer.dart';
 
 class Media extends StatefulWidget {
   const Media({
-    Key? key,
+    super.key,
     required this.fids,
     this.title,
-  }) : super(key: key);
+  });
 
   final String? fids;
   final String? title;

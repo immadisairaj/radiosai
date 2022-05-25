@@ -21,10 +21,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 /// If using [initialSearch], it is recommended to use [initialSearchTItle] also
 class Search extends StatefulWidget {
   const Search({
-    Key? key,
+    super.key,
     this.initialSearch,
     this.initialSearchTitle,
-  }) : super(key: key);
+  });
 
   final String? initialSearch;
   final String? initialSearchTitle;

@@ -8,8 +8,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
   const Settings({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'settings';
 

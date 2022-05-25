@@ -14,8 +14,8 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// else, returns a empty (zero container) widget
 class BottomMediaPlayer extends StatefulWidget {
   const BottomMediaPlayer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _BottomMediaPlayer createState() => _BottomMediaPlayer();

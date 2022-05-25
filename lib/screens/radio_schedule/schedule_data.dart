@@ -20,11 +20,11 @@ import 'package:shimmer/shimmer.dart';
 
 class ScheduleData extends StatefulWidget {
   const ScheduleData({
-    Key? key,
+    super.key,
     this.radioStreamIndex,
     this.timeZone,
     this.timeZoneBloc,
-  }) : super(key: key);
+  });
 
   final int? radioStreamIndex;
   final String? timeZone;

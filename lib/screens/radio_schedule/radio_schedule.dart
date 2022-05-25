@@ -6,8 +6,8 @@ import 'package:radiosai/screens/radio_schedule/schedule_data.dart';
 
 class RadioSchedule extends StatefulWidget {
   const RadioSchedule({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'radioSchedule';
 

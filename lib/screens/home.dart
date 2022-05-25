@@ -8,8 +8,8 @@ import 'package:radiosai/widgets/top_menu.dart';
 
 class Home extends StatefulWidget {
   const Home({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _Home createState() => _Home();

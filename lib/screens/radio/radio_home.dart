@@ -22,8 +22,8 @@ import 'package:uni_links/uni_links.dart';
 
 class RadioHome extends StatefulWidget {
   const RadioHome({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _RadioHome createState() => _RadioHome();

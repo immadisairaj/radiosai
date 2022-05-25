@@ -16,8 +16,8 @@ import 'package:radiosai/screens/settings/settings.dart';
 /// shows a pop-up menu for different screen navigations
 class TopMenu extends StatefulWidget {
   const TopMenu({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _TopMenu createState() => _TopMenu();

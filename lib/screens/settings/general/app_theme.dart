@@ -6,9 +6,9 @@ import 'package:radiosai/constants/constants.dart';
 /// App Theme - option to change the app theme
 class AppTheme extends StatefulWidget {
   const AppTheme({
-    Key? key,
+    super.key,
     this.contentPadding,
-  }) : super(key: key);
+  });
 
   final EdgeInsetsGeometry? contentPadding;
 

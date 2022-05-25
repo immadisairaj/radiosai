@@ -7,8 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 class AudioArchive extends StatefulWidget {
   const AudioArchive({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'audioArchive';
 

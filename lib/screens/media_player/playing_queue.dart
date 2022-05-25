@@ -9,8 +9,8 @@ import 'package:radiosai/audio_service/service_locator.dart';
 
 class PlayingQueue extends StatefulWidget {
   const PlayingQueue({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'playingQueue';
 

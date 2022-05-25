@@ -8,9 +8,9 @@ const String recentlyPlayed = 'Recently played';
 /// StartingRadioStream - Option to change the radio stream open on app start
 class StartingRadioStream extends StatefulWidget {
   const StartingRadioStream({
-    Key? key,
+    super.key,
     this.contentPadding,
-  }) : super(key: key);
+  });
 
   final EdgeInsetsGeometry? contentPadding;
 

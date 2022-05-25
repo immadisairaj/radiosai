@@ -7,10 +7,10 @@ import 'package:radiosai/constants/constants.dart';
 
 class RadioStreamSelect extends StatefulWidget {
   const RadioStreamSelect({
-    Key? key,
+    super.key,
     this.panelController,
     this.radius,
-  }) : super(key: key);
+  });
 
   final PanelController? panelController;
   final Radius? radius;

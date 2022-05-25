@@ -24,8 +24,8 @@ import 'package:share_plus/share_plus.dart';
 
 class MediaPlayer extends StatefulWidget {
   const MediaPlayer({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   static const String route = 'mediaPlayer';
 
