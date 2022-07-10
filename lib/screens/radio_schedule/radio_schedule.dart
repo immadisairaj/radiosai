@@ -28,7 +28,9 @@ class _RadioSchedule extends State<RadioSchedule> {
             int radioStreamIndex = snapshot.data ?? -1;
 
             // schedule doesn't have bhajan stream
-            if (radioStreamIndex == 3) radioStreamIndex = 0;
+            if (radioStreamIndex == 1) {
+              radioStreamIndex = 0;
+            }
 
             return Consumer<TimeZoneBloc>(
               // listen to change of time zone

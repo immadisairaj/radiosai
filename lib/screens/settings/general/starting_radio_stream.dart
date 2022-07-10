@@ -30,6 +30,15 @@ class _StartingRadioStream extends State<StartingRadioStream> {
           builder: (context, snapshot) {
             int initialRadioStreamIndex = snapshot.data ?? -1;
 
+            // default to recently playing stream if the index
+            // is out of length
+            final length = MyConstants.of(context)!.radioStreamHttps.length;
+            if (!(initialRadioStreamIndex >= -1 &&
+                initialRadioStreamIndex < length)) {
+              _initialRadioIndexBloc.changeInitialRadioIndex.add(-1);
+              return const Text('Please wait!');
+            }
+
             String subtitle = (initialRadioStreamIndex >= 0)
                 ? MyConstants.of(context)!
                     .radioStreamHttps

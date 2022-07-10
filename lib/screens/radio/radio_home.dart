@@ -11,6 +11,7 @@ import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
+import 'package:radiosai/constants/constants.dart';
 // import 'package:radiosai/helper/download_helper.dart';
 import 'package:radiosai/helper/media_helper.dart';
 import 'package:radiosai/helper/navigator_helper.dart';
@@ -119,6 +120,18 @@ class _RadioHome extends State<RadioHome> {
                                       Provider.of<InternetConnectionStatus>(
                                               context) ==
                                           InternetConnectionStatus.connected;
+
+                                  // default to prasanthi stream if the index
+                                  // is out of length
+                                  final length = MyConstants.of(context)!
+                                      .radioStreamHttps
+                                      .length;
+                                  if (!(radioStreamIndex > -1 &&
+                                      radioStreamIndex < length)) {
+                                    _radioIndexBloc.changeRadioIndex.add(0);
+                                    return const Text('Please wait!');
+                                  }
+
                                   return RadioPlayer(
                                       radius: radius,
                                       radioStreamIndex: radioStreamIndex,

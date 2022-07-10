@@ -126,9 +126,10 @@ class _RadioPlayer extends State<RadioPlayer>
                   isBigScreen ? _slidingPanelCollapsed(widget.radius) : null,
               renderPanelSheet: false,
               // handle the height of the panel for different sizes
+              // it was 0.54 for bigger, 0.57 for big small, 0.6 for mid - 6 str
               maxHeight: isBigScreen
-                  ? (isBiggerScreen ? height * 0.54 : height * 0.57)
-                  : height * 0.6,
+                  ? (isBiggerScreen ? height * 0.38 : height * 0.4)
+                  : height * 0.45,
               // remove panel if small screen
               panel: isSmallerScreen
                   ? Container()

@@ -26,9 +26,9 @@ Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Globa
 _*All the data inside the app is taken from [sssmediacentre.org](https://www.sssmediacentre.org)_
 
 __Radio Streams include:__
-- Asia Stream
-- Africa Stream
-- America Stream
+- ~~Asia~~ Prasanthi Stream
+- ~~Africa Stream~~
+- ~~America Stream~~
 - Bhajan Stream
 - Discourse Stream
 - Telugu Stream

@@ -50,7 +50,7 @@ class _ScheduleData extends State<ScheduleData> {
 
   // used for the initial build
   int? oldStreamId = 0;
-  final List<int> firstStreamMap = [1, 3, 2, 1, 6, 5];
+  final List<int> firstStreamMap = [1, 1, 6, 5];
 
   /// contains the base url of the radio sai schedule page
   final String baseUrl =
@@ -105,7 +105,7 @@ class _ScheduleData extends State<ScheduleData> {
   void initState() {
     _isLoading = true;
     selectedDate = now;
-    selectedStream = 'Asia Stream';
+    selectedStream = 'Prasanthi Stream';
     oldStreamId = widget.radioStreamIndex;
 
     super.initState();

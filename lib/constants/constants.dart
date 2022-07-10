@@ -20,9 +20,9 @@ class MyConstants extends InheritedWidget {
 
   /// The list of radio sai stream https source names and links
   final Map<String, String> radioStreamHttps = const {
-    'Asia Stream': 'https://stream.sssmediacentre.org:8443/asia',
-    'Africa Stream': 'https://stream.sssmediacentre.org:8443/afri',
-    'America Stream': 'https://stream.sssmediacentre.org:8443/ameri',
+    'Prasanthi Stream': 'https://stream.sssmediacentre.org:8443/asia',
+    // 'Africa Stream': 'https://stream.sssmediacentre.org:8443/afri',
+    // 'America Stream': 'https://stream.sssmediacentre.org:8443/ameri',
     'Bhajan Stream': 'https://stream.sssmediacentre.org:8443/bhajan',
     'Discourse Stream': 'https://stream.sssmediacentre.org:8443/discourse',
     'Telugu Stream': 'https://stream.sssmediacentre.org:8443/telugu'
@@ -54,9 +54,9 @@ class MyConstants extends InheritedWidget {
 
   /// list of radio streams for radio sai schedule
   final Map<String, int> scheduleStream = const {
-    'Asia Stream': 1,
-    'Africa Stream': 3,
-    'America Stream': 2,
+    'Prasanthi Stream': 1,
+    // 'Africa Stream': 3,
+    // 'America Stream': 2,
     'Discourse Stream': 6,
     'Telugu Stream': 5,
   };

@@ -209,7 +209,27 @@ class _Media extends State<Media> {
                 child: Card(
                   elevation: 0,
                   color: Theme.of(context).colorScheme.secondaryContainer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                   child: InkWell(
+                    borderRadius: BorderRadius.circular(8.0),
+                    onTap: () async {
+                      bool hasInternet = Provider.of<InternetConnectionStatus>(
+                              context,
+                              listen: false) ==
+                          InternetConnectionStatus.connected;
+                      // No download option. So,
+                      // everything is considered to use internet
+                      if (hasInternet) {
+                        await startPlayer(
+                            mediaName, _finalMediaLinks[index], isFileExists);
+                      } else {
+                        getIt<ScaffoldHelper>().showSnackBar(
+                            'Connect to the Internet and try again',
+                            const Duration(seconds: 2));
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4, bottom: 4),
                       child: Center(
@@ -279,26 +299,6 @@ class _Media extends State<Media> {
                         ),
                       ),
                     ),
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () async {
-                      bool hasInternet = Provider.of<InternetConnectionStatus>(
-                              context,
-                              listen: false) ==
-                          InternetConnectionStatus.connected;
-                      // No download option. So,
-                      // everything is considered to use internet
-                      if (hasInternet) {
-                        await startPlayer(
-                            mediaName, _finalMediaLinks[index], isFileExists);
-                      } else {
-                        getIt<ScaffoldHelper>().showSnackBar(
-                            'Connect to the Internet and try again',
-                            const Duration(seconds: 2));
-                      }
-                    },
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
               ),
@@ -476,6 +476,7 @@ class _Media extends State<Media> {
   //   Audio Service    //
   // ****************** //
   // Change in radio_home.dart if changed here
+  // Also change in sai_inspires.dart if changed here
 
   /// start the media player
   ///
