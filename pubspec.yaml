@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 # versioning style <major>.<feature>.<fixes>+<commits>
-version: 1.1.1+161
+version: 1.1.1+165
 
 environment:
   sdk: '>=2.17.0 <3.0.0'
@@ -36,24 +36,24 @@ dependencies:
   path_provider: ^2.0.11
   # packages
   internet_connection_checker: ^1.0.0+1
-  url_launcher: ^6.1.6
+  url_launcher: ^6.1.7
   html: ^0.15.1
   http: ^0.13.5
   permission_handler: ^10.2.0
   gallery_saver: ^2.3.2
   flutter_cache_manager: ^3.3.0
   # flutter_downloader: ^1.6.1
-  share_plus: ^6.0.1
-  package_info_plus: ^3.0.1
+  share_plus: ^6.3.0
+  package_info_plus: ^3.0.2
   intl: ^0.17.0
-  rxdart: ^0.27.5
+  rxdart: ^0.27.7
   provider: ^6.0.4
   get_it: ^7.2.0
   uni_links: ^0.5.1
   # widgets
   sliding_up_panel: ^2.0.0+1
   shimmer: ^2.0.0
-  cached_network_image: ^3.2.2
+  cached_network_image: ^3.2.3
   audio_video_progress_bar: ^0.11.0
   webview_flutter: ^3.0.4
   # Audio packages
