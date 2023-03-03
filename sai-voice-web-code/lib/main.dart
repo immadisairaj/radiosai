@@ -43,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
       backgroundColor: const Color(0xFFCC0C63),
       body: SafeArea(
         child: Scrollbar(
-          isAlwaysShown: true,
+          thumbVisibility: true,
           child: SingleChildScrollView(
             child: Center(
               child: Padding(
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         style: GoogleFonts.robotoMono(
                           textStyle: TextStyle(
                             fontSize: (height < width)
-                                ? iconSize * 0.23
+                                ? iconSize * 0.2
                                 : iconSize * 0.3,
                             color: Colors.white,
                             fontWeight: FontWeight.w400,
@@ -82,13 +82,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   cursor: SystemMouseCursors.click,
                                   child: GestureDetector(
                                     onTap: () {
-                                      launch(
-                                          'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai');
+                                      _launchUrl(Uri.parse(
+                                          'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai'));
                                     },
                                     child: Image.asset(
                                       'assets/google-play-badge.png',
                                       height: (height < width)
-                                          ? iconSize * 0.2
+                                          ? iconSize * 0.23
                                           : iconSize * 0.3,
                                     ),
                                   ),
@@ -102,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   cursor: SystemMouseCursors.click,
                                   child: GestureDetector(
                                     onTap: () {
-                                      launch(
-                                          'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai');
+                                      _launchUrl(Uri.parse(
+                                          'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai'));
                                     },
                                     child: Image.asset(
                                       'assets/google-play-badge.png',
@@ -119,7 +119,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         cursor: SystemMouseCursors.click,
                         child: GestureDetector(
                           onTap: () {
-                            launch('https://github.com/immadisairaj/radiosai');
+                            _launchUrl(Uri.parse(
+                                'https://github.com/immadisairaj/radiosai'));
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -153,8 +154,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-}
 
-void _launchURL(String url) async {
-  if (!await launch(url)) throw 'Could not launch $url';
+  void _launchUrl(Uri url) async {
+    if (!await launchUrl(url)) throw 'Could not launch $url';
+  }
 }

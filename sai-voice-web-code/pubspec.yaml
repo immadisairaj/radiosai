@@ -18,7 +18,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.16.1 <3.0.0"
+  sdk: ">=2.17.5 <3.0.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -47,8 +47,8 @@ dev_dependencies:
   flutter_lints: ^1.0.0
 
   # packages
-  google_fonts: ^2.3.1
-  url_launcher: ^6.0.18
+  google_fonts: ^4.0.3
+  url_launcher: ^6.1.10
   rive: ^0.8.1 # animations
 
 # For information on the generic Dart part of this file, see the
