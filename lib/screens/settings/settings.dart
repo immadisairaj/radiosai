@@ -14,7 +14,7 @@ class Settings extends StatefulWidget {
   static const String route = 'settings';
 
   @override
-  _Settings createState() => _Settings();
+  State<Settings> createState() => _Settings();
 }
 
 class _Settings extends State<Settings> {

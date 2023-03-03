@@ -35,7 +35,7 @@ class Media extends StatefulWidget {
   final String? title;
 
   @override
-  _Media createState() => _Media();
+  State<Media> createState() => _Media();
 }
 
 class _Media extends State<Media> {
@@ -131,10 +131,10 @@ class _Media extends State<Media> {
 
                             // updates the media screen based on download state
                             child: Consumer<MediaScreenBloc>(builder:
-                                (context, _mediaScreenStateBloc, child) {
+                                (context, mediaScreenStateBloc, child) {
                               return StreamBuilder<bool?>(
-                                  stream: _mediaScreenStateBloc
-                                      .mediaScreenStream as Stream<bool?>?,
+                                  stream: mediaScreenStateBloc.mediaScreenStream
+                                      as Stream<bool?>?,
                                   builder: (context, snapshot) {
                                     // can use the below commented line to know if updated
                                     // bool screenUpdate = snapshot.data ?? false;
@@ -545,7 +545,7 @@ class _Media extends State<Media> {
         await MediaHelper.generateMediaItem(name, link, isFileExists);
 
     // passing params to send the source to play
-    Map<String, dynamic> _params = {
+    Map<String, dynamic> params = {
       'id': tempMediaItem.id,
       'album': tempMediaItem.album,
       'title': tempMediaItem.title,
@@ -555,7 +555,7 @@ class _Media extends State<Media> {
     };
 
     _audioManager!.stop();
-    await _audioManager!.init(MediaType.media, _params);
+    await _audioManager!.init(MediaType.media, params);
   }
 
   /// add a new media item to the end of the queue

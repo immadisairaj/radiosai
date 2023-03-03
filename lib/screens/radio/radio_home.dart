@@ -27,7 +27,7 @@ class RadioHome extends StatefulWidget {
   });
 
   @override
-  _RadioHome createState() => _RadioHome();
+  State<RadioHome> createState() => _RadioHome();
 }
 
 bool _initialUriIsHandled = false;
@@ -83,17 +83,17 @@ class _RadioHome extends State<RadioHome> {
             // Consumers of all the providers to get the stream of data
             Consumer<RadioIndexBloc>(
               // listen to change of radio stream index
-              builder: (context, _radioIndexBloc, child) {
+              builder: (context, radioIndexBloc, child) {
                 return StreamBuilder<int?>(
-                  stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
+                  stream: radioIndexBloc.radioIndexStream as Stream<int?>?,
                   builder: (context, snapshot) {
                     int radioStreamIndex = snapshot.data ?? 0;
 
                     // listen to change of radio player loading state
                     return Consumer<RadioLoadingBloc>(
-                      builder: (context, _radioLoadingBloc, child) {
+                      builder: (context, radioLoadingBloc, child) {
                         return StreamBuilder<bool?>(
-                          stream: _radioLoadingBloc.radioLoadingStream
+                          stream: radioLoadingBloc.radioLoadingStream
                               as Stream<bool?>?,
                           builder: (context, snapshot) {
                             bool loadingState = snapshot.data ?? false;
@@ -128,7 +128,7 @@ class _RadioHome extends State<RadioHome> {
                                       .length;
                                   if (!(radioStreamIndex > -1 &&
                                       radioStreamIndex < length)) {
-                                    _radioIndexBloc.changeRadioIndex.add(0);
+                                    radioIndexBloc.changeRadioIndex.add(0);
                                     return const Text('Please wait!');
                                   }
 
@@ -137,7 +137,7 @@ class _RadioHome extends State<RadioHome> {
                                       radioStreamIndex: radioStreamIndex,
                                       isPlaying: isPlaying,
                                       loadingState: loadingState,
-                                      radioLoadingBloc: _radioLoadingBloc,
+                                      radioLoadingBloc: radioLoadingBloc,
                                       hasInternet: hasInternet);
                                 });
                           },
@@ -253,7 +253,7 @@ class _RadioHome extends State<RadioHome> {
         await MediaHelper.generateMediaItem(name, link, isFileExists);
 
     // passing params to send the source to play
-    Map<String, dynamic> _params = {
+    Map<String, dynamic> params = {
       'id': tempMediaItem.id,
       'album': tempMediaItem.album,
       'title': tempMediaItem.title,
@@ -263,7 +263,7 @@ class _RadioHome extends State<RadioHome> {
     };
 
     _audioManager!.stop();
-    await _audioManager!.init(MediaType.media, _params);
+    await _audioManager!.init(MediaType.media, params);
   }
 
   /// add a new media item to the end of the queue

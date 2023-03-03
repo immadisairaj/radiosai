@@ -30,7 +30,7 @@ class Search extends StatefulWidget {
   final String? initialSearchTitle;
 
   @override
-  _Search createState() => _Search();
+  State<Search> createState() => _Search();
 }
 
 class _Search extends State<Search> {
@@ -373,7 +373,22 @@ class _Search extends State<Search> {
                 child: Card(
                   elevation: 0,
                   color: Theme.of(context).colorScheme.secondaryContainer,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: InkWell(
+                    borderRadius: BorderRadius.circular(8.0),
+                    onTap: () {
+                      if (fids != '') {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Media(fids: fids)));
+                      } else {
+                        getIt<ScaffoldHelper>().showSnackBar(
+                            'No media found!', const Duration(seconds: 1));
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 2, bottom: 2),
                       child: Center(
@@ -406,21 +421,6 @@ class _Search extends State<Search> {
                         ),
                       ),
                     ),
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () {
-                      if (fids != '') {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Media(fids: fids)));
-                      } else {
-                        getIt<ScaffoldHelper>().showSnackBar(
-                            'No media found!', const Duration(seconds: 1));
-                      }
-                    },
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -893,10 +893,10 @@ class _Search extends State<Search> {
                   Flexible(
                     flex: 1,
                     child: ElevatedButton(
+                      onPressed: _submit,
                       child: Icon((Platform.isAndroid)
                           ? Icons.search_outlined
                           : CupertinoIcons.search),
-                      onPressed: _submit,
                     ),
                   ),
                 ],
@@ -974,9 +974,9 @@ class _Search extends State<Search> {
 
   /// select the played on date for iOS
   void _selectDateIOS(BuildContext context) {
-    DateTime? _picked;
+    DateTime? picked;
     if (selectedDate == null) {
-      _picked = now;
+      picked = now;
     }
     showCupertinoModalPopup(
         context: context,
@@ -996,7 +996,7 @@ class _Search extends State<Search> {
                       // Schedule is available for 1 day after current date
                       maximumDate: now,
                       onDateTimeChanged: (picked) {
-                        _picked = picked;
+                        picked = picked;
                       },
                     ),
                   ),
@@ -1005,8 +1005,8 @@ class _Search extends State<Search> {
                     child: CupertinoButton(
                       child: const Text('OK'),
                       onPressed: () {
-                        if (_picked != null) {
-                          selectedDate = _picked;
+                        if (picked != null) {
+                          selectedDate = picked;
                           selectedDateString =
                               DateFormat('MMM dd, yyyy').format(selectedDate!);
                           _dateController.text = selectedDateString;

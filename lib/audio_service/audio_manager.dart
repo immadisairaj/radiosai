@@ -21,7 +21,7 @@ class AudioManager {
   final isLastSongNotifier = ValueNotifier<bool>(true);
   final isShuffleModeEnabledNotifier = ValueNotifier<bool>(false);
 
-  final AudioHandler? _audioHandler = getIt<AudioHandler>();
+  final AudioHandler _audioHandler = getIt<AudioHandler>();
 
   /// if [mediaType] is [MediaType.radio],
   /// pass radioStream map which is located in "MyConstants"
@@ -42,7 +42,7 @@ class AudioManager {
   }
 
   _setMediaType(MediaType mediaType) {
-    _audioHandler!.customAction('setMediaType', {'mediaType': mediaType});
+    _audioHandler.customAction('setMediaType', {'mediaType': mediaType});
   }
 
   /// pass radioStream map which is located in constants
@@ -51,7 +51,8 @@ class AudioManager {
   /// and index of the radio playing as params['index']
   Future<void> _initRadio(Map<String, dynamic> params) async {
     mediaTypeNotifier.value = MediaType.radio;
-    final radio = await _getRadio(params['radioStream'], params['index']);
+    final radio = await _getRadio(
+        params['radioStream'], params['index'], params['artImages']);
     await _loadRadio(radio);
     _listenToChangesInQueue();
     _listenToPlaybackState();
@@ -64,31 +65,33 @@ class AudioManager {
 
   /// pass [radioStream] map which is located in constants
   /// and [index] of the radio playing
-  Future<MediaItem> _getRadio(
-      Map<String, String> radioStream, int index) async {
+  Future<MediaItem> _getRadio(Map<String, String> radioStream, int index,
+      Map<String, String> artLinks) async {
     // Get the path of image for artUri in notification
-    String path = await MediaHelper.getDefaultNotificationImage();
+    // String path = await MediaHelper.getDefaultNotificationImage();
     String key = radioStream.keys.toList()[index];
     String value = radioStream.values.toList()[index];
+    String artUri = artLinks.values.toList()[index];
     return MediaItem(
         id: key,
         title: key,
         album: 'Radio Sai Global Harmony',
         artist: 'Radio Sai',
-        artUri: Uri.parse('file://$path'),
+        artUri: Uri.parse(artUri),
+        // artUri: Uri.parse('file://$path'),
         extras: {'uri': value});
   }
 
   Future<void> _loadRadio(MediaItem radio) async {
-    _audioHandler!.addQueueItem(radio);
+    _audioHandler.addQueueItem(radio);
   }
 
   /// pass [radioIndex] - the index of 'radioStream'
   playRadio(int radioIndex) async {
     // radio title is media Id
     await load();
-    _audioHandler!.skipToQueueItem(radioIndex);
-    _audioHandler!.play();
+    _audioHandler.skipToQueueItem(radioIndex);
+    _audioHandler.play();
   }
 
   Future<void> _initMedia(Map<String, dynamic> params) async {
@@ -122,15 +125,15 @@ class AudioManager {
   }
 
   _loadMediaItem(MediaItem mediaItem) async {
-    _audioHandler!.addQueueItem(mediaItem);
+    _audioHandler.addQueueItem(mediaItem);
     await load();
   }
 
-  get queue => _audioHandler!.queue;
-  get currentMediaItem => _audioHandler!.mediaItem;
+  get queue => _audioHandler.queue;
+  get currentMediaItem => _audioHandler.mediaItem;
 
   void _listenToChangesInQueue() {
-    _audioHandler!.queue.listen((queue) {
+    _audioHandler.queue.listen((queue) {
       if (queue.isEmpty) {
         queueNotifier.value = [];
         currentSongTitleNotifier.value = '';
@@ -143,7 +146,7 @@ class AudioManager {
   }
 
   void _listenToPlaybackState() {
-    _audioHandler!.playbackState.listen((playbackState) {
+    _audioHandler.playbackState.listen((playbackState) {
       final processingState = playbackState.processingState;
       if (processingState == AudioProcessingState.loading ||
           processingState == AudioProcessingState.buffering) {
@@ -158,8 +161,8 @@ class AudioManager {
       } else if (processingState != AudioProcessingState.completed) {
         playButtonNotifier.value = PlayButtonState.playing;
       } else {
-        _audioHandler!.seek(Duration.zero);
-        _audioHandler!.pause();
+        _audioHandler.seek(Duration.zero);
+        _audioHandler.pause();
       }
     });
   }
@@ -176,7 +179,7 @@ class AudioManager {
   }
 
   void _listenToBufferedPosition() {
-    _audioHandler!.playbackState.listen((playbackState) {
+    _audioHandler.playbackState.listen((playbackState) {
       final ProgressBarState oldState = progressNotifier.value;
       progressNotifier.value = ProgressBarState(
         current: oldState.current,
@@ -187,7 +190,7 @@ class AudioManager {
   }
 
   void _listenToTotalDuration() {
-    _audioHandler!.mediaItem.listen((mediaItem) {
+    _audioHandler.mediaItem.listen((mediaItem) {
       final ProgressBarState oldState = progressNotifier.value;
       progressNotifier.value = ProgressBarState(
         current: oldState.current,
@@ -198,15 +201,15 @@ class AudioManager {
   }
 
   void _listenToChangesInSong() {
-    _audioHandler!.mediaItem.listen((mediaItem) {
+    _audioHandler.mediaItem.listen((mediaItem) {
       currentSongTitleNotifier.value = mediaItem?.title ?? '';
       _updateSkipButtons();
     });
   }
 
   void _updateSkipButtons() {
-    final mediaItem = _audioHandler!.mediaItem.value;
-    final playlist = _audioHandler!.queue.value;
+    final mediaItem = _audioHandler.mediaItem.value;
+    final playlist = _audioHandler.queue.value;
     if (playlist.length < 2 || mediaItem == null) {
       isFirstSongNotifier.value = true;
       isLastSongNotifier.value = true;
@@ -216,49 +219,49 @@ class AudioManager {
     }
   }
 
-  get playbackState => _audioHandler!.playbackState;
+  get playbackState => _audioHandler.playbackState;
 
   Future<void> addQueueItem(MediaItem mediaItem) =>
-      _audioHandler!.addQueueItem(mediaItem);
+      _audioHandler.addQueueItem(mediaItem);
 
   Future<void> removeQueueItemWithTitle(String mediaTitle) async {
     final index = queueNotifier.value.indexOf(mediaTitle);
     if (index == -1) return;
-    return _audioHandler!.removeQueueItemAt(index);
+    return _audioHandler.removeQueueItemAt(index);
   }
 
-  void play() => _audioHandler!.play();
-  void pause() => _audioHandler!.pause();
+  void play() => _audioHandler.play();
+  void pause() => _audioHandler.pause();
 
-  void seek(Duration position) => _audioHandler!.seek(position);
+  void seek(Duration position) => _audioHandler.seek(position);
 
   Future<void> skipToQueueItem(int index) =>
-      _audioHandler!.skipToQueueItem(index);
+      _audioHandler.skipToQueueItem(index);
 
-  void previous() => _audioHandler!.skipToPrevious();
-  void next() => _audioHandler!.skipToNext();
+  void previous() => _audioHandler.skipToPrevious();
+  void next() => _audioHandler.skipToNext();
 
   /// Stops the audio.
   Future<void> stop() async {
-    await _audioHandler!.pause();
-    return _audioHandler!.stop();
+    await _audioHandler.pause();
+    return _audioHandler.stop();
   }
 
   /// Clears the audio queue
   Future<void> clear() async {
-    await _audioHandler!.pause();
-    await _audioHandler!.stop();
-    return _audioHandler!.customAction('clear');
+    await _audioHandler.pause();
+    await _audioHandler.stop();
+    return _audioHandler.customAction('clear');
   }
 
   /// Clears and initializes the player for the next set
   /// to play.
   Future<void> initAudioPlayer() {
-    return _audioHandler!.customAction('init');
+    return _audioHandler.customAction('init');
   }
 
   void dispose() {
-    _audioHandler!.customAction('dispose');
+    _audioHandler.customAction('dispose');
   }
 
   void repeat() {
@@ -266,13 +269,13 @@ class AudioManager {
     final RepeatState repeatMode = repeatButtonNotifier.value;
     switch (repeatMode) {
       case RepeatState.off:
-        _audioHandler!.setRepeatMode(AudioServiceRepeatMode.none);
+        _audioHandler.setRepeatMode(AudioServiceRepeatMode.none);
         break;
       case RepeatState.repeatSong:
-        _audioHandler!.setRepeatMode(AudioServiceRepeatMode.one);
+        _audioHandler.setRepeatMode(AudioServiceRepeatMode.one);
         break;
       case RepeatState.repeatQueue:
-        _audioHandler!.setRepeatMode(AudioServiceRepeatMode.all);
+        _audioHandler.setRepeatMode(AudioServiceRepeatMode.all);
         break;
     }
   }
@@ -281,13 +284,13 @@ class AudioManager {
     final enable = !isShuffleModeEnabledNotifier.value;
     isShuffleModeEnabledNotifier.value = enable;
     if (enable) {
-      _audioHandler!.setShuffleMode(AudioServiceShuffleMode.all);
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.all);
     } else {
-      _audioHandler!.setShuffleMode(AudioServiceShuffleMode.none);
+      _audioHandler.setShuffleMode(AudioServiceShuffleMode.none);
     }
   }
 
   Future<void> load() {
-    return _audioHandler!.customAction('load');
+    return _audioHandler.customAction('load');
   }
 }

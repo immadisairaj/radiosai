@@ -16,16 +16,16 @@ class RadioStreamSelect extends StatefulWidget {
   final Radius? radius;
 
   @override
-  _RadioStreamSelect createState() => _RadioStreamSelect();
+  State<RadioStreamSelect> createState() => _RadioStreamSelect();
 }
 
 class _RadioStreamSelect extends State<RadioStreamSelect> {
   @override
   Widget build(BuildContext context) {
     return Consumer<RadioIndexBloc>(
-      builder: (context, _radioIndexBloc, child) {
+      builder: (context, radioIndexBloc, child) {
         return StreamBuilder<int?>(
-          stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
+          stream: radioIndexBloc.radioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int index = snapshot.data ?? 0;
             return GestureDetector(
@@ -41,7 +41,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   children: [
                     const SizedBox(height: 12),
                     const SliderHandle(),
-                    _slide(_radioIndexBloc, index),
+                    _slide(radioIndexBloc, index),
                   ],
                 ),
               ),
@@ -55,7 +55,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
   /// widget for slide widget
   ///
   /// shows the selection of different radio streams
-  Widget _slide(RadioIndexBloc _radioIndexBloc, int radioIndex) {
+  Widget _slide(RadioIndexBloc radioIndexBloc, int radioIndex) {
     double height = MediaQuery.of(context).size.height;
     double width = MediaQuery.of(context).size.width;
     bool isBigScreen = (height * 0.1 >= 50);
@@ -96,7 +96,7 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
                   // update only if the index differes from actual index
                   // to avoid unnecessary update of streams
                   if (!isMatch) {
-                    _radioIndexBloc.changeRadioIndex.add(widgetIndex);
+                    radioIndexBloc.changeRadioIndex.add(widgetIndex);
                     // close the panel if different stream is selected
                     widget.panelController!.close();
                   }

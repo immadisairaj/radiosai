@@ -13,7 +13,7 @@ class AppTheme extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
 
   @override
-  _AppTheme createState() => _AppTheme();
+  State<AppTheme> createState() => _AppTheme();
 }
 
 class _AppTheme extends State<AppTheme> {
@@ -21,9 +21,9 @@ class _AppTheme extends State<AppTheme> {
   Widget build(BuildContext context) {
     return Consumer<AppThemeBloc>(
         // listen to change of app theme
-        builder: (context, _appThemeBloc, child) {
+        builder: (context, appThemeBloc, child) {
       return StreamBuilder<String?>(
-          stream: _appThemeBloc.appThemeStream as Stream<String?>?,
+          stream: appThemeBloc.appThemeStream as Stream<String?>?,
           builder: (context, snapshot) {
             String appTheme =
                 snapshot.data ?? MyConstants.of(context)!.appThemes[2];
@@ -65,7 +65,7 @@ class _AppTheme extends State<AppTheme> {
                                           title: Text(value),
                                           groupValue: appTheme,
                                           onChanged: (dynamic value) {
-                                            _appThemeBloc.changeAppTheme
+                                            appThemeBloc.changeAppTheme
                                                 .add(value);
                                             Navigator.of(context).pop();
                                           });

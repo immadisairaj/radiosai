@@ -16,11 +16,11 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// else, returns a empty (zero container) widget
 class TopMediaPlayer extends StatefulWidget {
   const TopMediaPlayer({
-    key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
-  _TopMediaPlayer createState() => _TopMediaPlayer();
+  State<TopMediaPlayer> createState() => _TopMediaPlayer();
 }
 
 class _TopMediaPlayer extends State<TopMediaPlayer> {

@@ -12,7 +12,7 @@ class RadioSchedule extends StatefulWidget {
   static const String route = 'radioSchedule';
 
   @override
-  _RadioSchedule createState() => _RadioSchedule();
+  State<RadioSchedule> createState() => _RadioSchedule();
 }
 
 class _RadioSchedule extends State<RadioSchedule> {
@@ -21,9 +21,9 @@ class _RadioSchedule extends State<RadioSchedule> {
     // Consumers of all the providers to get the stream of data
     return Consumer<RadioIndexBloc>(
         // listen to change of radio stream index
-        builder: (context, _radioIndexBloc, child) {
+        builder: (context, radioIndexBloc, child) {
       return StreamBuilder<int?>(
-          stream: _radioIndexBloc.radioIndexStream as Stream<int?>?,
+          stream: radioIndexBloc.radioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int radioStreamIndex = snapshot.data ?? -1;
 
@@ -34,16 +34,16 @@ class _RadioSchedule extends State<RadioSchedule> {
 
             return Consumer<TimeZoneBloc>(
               // listen to change of time zone
-              builder: (context, _timeZoneBloc, child) {
+              builder: (context, timeZoneBloc, child) {
                 return StreamBuilder<String?>(
-                  stream: _timeZoneBloc.timeZoneStream as Stream<String?>?,
+                  stream: timeZoneBloc.timeZoneStream as Stream<String?>?,
                   builder: (context, snapshot) {
                     String timeZone = snapshot.data ?? 'INDIA';
 
                     return ScheduleData(
                       radioStreamIndex: radioStreamIndex,
                       timeZone: timeZone,
-                      timeZoneBloc: _timeZoneBloc,
+                      timeZoneBloc: timeZoneBloc,
                     );
                   },
                 );

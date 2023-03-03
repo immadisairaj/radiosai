@@ -28,6 +28,17 @@ class MyConstants extends InheritedWidget {
     'Telugu Stream': 'https://stream.sssmediacentre.org:8443/telugu'
   };
 
+  final Map<String, String> radioStreamImages = const {
+    'Prasanthi Stream':
+        'https://www.immadisairaj.dev/radiosai/images/prasanthiStream.png',
+    'Bhajan Stream':
+        'https://www.immadisairaj.dev/radiosai/images/bhajanStream.png',
+    'Discourse Stream':
+        'https://www.immadisairaj.dev/radiosai/images/discourseStream.png',
+    'Telugu Stream':
+        'https://www.immadisairaj.dev/radiosai/images/teluguStream.png'
+  };
+
   /// The list of items in the top menu bar
   final Map<dynamic, String> menuTitles = const {
     MenuNavigation.schedule: 'Schedule',

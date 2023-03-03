@@ -30,7 +30,7 @@ class MediaPlayer extends StatefulWidget {
   static const String route = 'mediaPlayer';
 
   @override
-  _MediaPlayer createState() => _MediaPlayer();
+  State<MediaPlayer> createState() => _MediaPlayer();
 }
 
 class _MediaPlayer extends State<MediaPlayer> {
@@ -136,7 +136,7 @@ class _MediaPlayer extends State<MediaPlayer> {
                               buffered: value.buffered,
                               timeLabelType: TimeLabelType.remainingTime,
                               timeLabelTextStyle:
-                                  Theme.of(context).textTheme.caption,
+                                  Theme.of(context).textTheme.bodySmall,
                               onSeek: _audioManager!.seek,
                             ),
                           );

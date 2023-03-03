@@ -29,7 +29,7 @@ class RadioPlayer extends StatefulWidget {
   final bool? hasInternet;
 
   @override
-  _RadioPlayer createState() => _RadioPlayer();
+  State<RadioPlayer> createState() => _RadioPlayer();
 }
 
 class _RadioPlayer extends State<RadioPlayer>
@@ -307,7 +307,8 @@ class _RadioPlayer extends State<RadioPlayer>
     // Register the audio service and start playing
     await _audioManager!.init(MediaType.radio, {
       'radioStream': MyConstants.of(context)!.radioStreamHttps,
-      'index': index
+      'index': index,
+      'artImages': MyConstants.of(context)!.radioStreamImages
     });
     _audioManager!.playRadio(index);
     // setting the temporary radio stream index to track the

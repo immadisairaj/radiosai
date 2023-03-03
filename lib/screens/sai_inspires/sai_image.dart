@@ -24,7 +24,7 @@ class SaiImage extends StatefulWidget {
   final String? fileName;
 
   @override
-  _SaiImage createState() => _SaiImage();
+  State<SaiImage> createState() => _SaiImage();
 }
 
 class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {

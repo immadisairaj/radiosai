@@ -11,18 +11,18 @@ import 'package:flutter/material.dart';
 /// [onPressed] - specify the function to do when press retry button
 class NoData extends StatefulWidget {
   const NoData({
-    key,
+    super.key,
     required this.backgroundColor,
     required this.text,
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   final Color backgroundColor;
   final String text;
   final Function onPressed;
 
   @override
-  _NoData createState() => _NoData();
+  State<NoData> createState() => _NoData();
 }
 
 class _NoData extends State<NoData> {
@@ -45,13 +45,13 @@ class _NoData extends State<NoData> {
               ),
             ),
             ElevatedButton(
+              onPressed: widget.onPressed as void Function()?,
               child: const Text(
                 'Retry',
                 style: TextStyle(
                   fontSize: 16,
                 ),
               ),
-              onPressed: widget.onPressed as void Function()?,
             )
           ],
         ),

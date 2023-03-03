@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
   });
 
   @override
-  _Home createState() => _Home();
+  State<Home> createState() => _Home();
 }
 
 class _Home extends State<Home> {

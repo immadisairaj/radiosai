@@ -20,7 +20,7 @@ class TopMenu extends StatefulWidget {
   });
 
   @override
-  _TopMenu createState() => _TopMenu();
+  State<TopMenu> createState() => _TopMenu();
 }
 
 class _TopMenu extends State<TopMenu> {

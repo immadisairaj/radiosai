@@ -15,7 +15,7 @@ class StartingRadioStream extends StatefulWidget {
   final EdgeInsetsGeometry? contentPadding;
 
   @override
-  _StartingRadioStream createState() => _StartingRadioStream();
+  State<StartingRadioStream> createState() => _StartingRadioStream();
 }
 
 class _StartingRadioStream extends State<StartingRadioStream> {
@@ -23,10 +23,10 @@ class _StartingRadioStream extends State<StartingRadioStream> {
   Widget build(BuildContext context) {
     return Consumer<InitialRadioIndexBloc>(
         // listen to change of initial radio stream index
-        builder: (context, _initialRadioIndexBloc, child) {
+        builder: (context, initialRadioIndexBloc, child) {
       return StreamBuilder<int?>(
           stream:
-              _initialRadioIndexBloc.initialRadioIndexStream as Stream<int?>?,
+              initialRadioIndexBloc.initialRadioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int initialRadioStreamIndex = snapshot.data ?? -1;
 
@@ -35,7 +35,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
             final length = MyConstants.of(context)!.radioStreamHttps.length;
             if (!(initialRadioStreamIndex >= -1 &&
                 initialRadioStreamIndex < length)) {
-              _initialRadioIndexBloc.changeInitialRadioIndex.add(-1);
+              initialRadioIndexBloc.changeInitialRadioIndex.add(-1);
               return const Text('Please wait!');
             }
 
@@ -89,7 +89,7 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                                               : const Text(recentlyPlayed),
                                           groupValue: initialRadioStreamIndex,
                                           onChanged: (dynamic value) {
-                                            _initialRadioIndexBloc
+                                            initialRadioIndexBloc
                                                 .changeInitialRadioIndex
                                                 .add(value);
                                             Navigator.of(context).pop();

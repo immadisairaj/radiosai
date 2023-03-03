@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 /// takes in [hasInternet] value (have to input with stream of data false/true)
 class InternetAlert extends StatefulWidget {
   const InternetAlert({
-    key,
+    super.key,
     required this.hasInternet,
-  }) : super(key: key);
+  });
 
   final bool? hasInternet;
 
   @override
-  _InternetAlert createState() => _InternetAlert();
+  State<InternetAlert> createState() => _InternetAlert();
 }
 
 class _InternetAlert extends State<InternetAlert> {

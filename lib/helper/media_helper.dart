@@ -43,7 +43,7 @@ class MediaHelper {
 
     String fileId = await getFileIdFromUri(link!);
 
-    Map<String, dynamic> _extras = {
+    Map<String, dynamic> extras = {
       'uri': link,
     };
 
@@ -59,7 +59,7 @@ class MediaHelper {
       // art of the media
       artUri: Uri.parse('file://$path'),
       // extras['uri'] contain the uri of the media
-      extras: _extras,
+      extras: extras,
     );
 
     return tempMediaItem;

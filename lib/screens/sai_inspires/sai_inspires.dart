@@ -32,7 +32,7 @@ class SaiInspires extends StatefulWidget {
   static const String route = 'saiInspires';
 
   @override
-  _SaiInspires createState() => _SaiInspires();
+  State<SaiInspires> createState() => _SaiInspires();
 }
 
 class _SaiInspires extends State<SaiInspires> {
@@ -464,7 +464,7 @@ class _SaiInspires extends State<SaiInspires> {
         } on Exception catch (_) {
           // do nothing
         }
-        Share.shareFiles([imageFile!.path], text: textData);
+        Share.shareXFiles([XFile(imageFile!.path)], text: textData);
       } else {
         // TODO: change from binary to image before sharing for new links
         // share only text if old api is not working
@@ -603,7 +603,7 @@ class _SaiInspires extends State<SaiInspires> {
         await MediaHelper.generateMediaItem(name, link, isFileExists);
 
     // passing params to send the source to play
-    Map<String, dynamic> _params = {
+    Map<String, dynamic> params = {
       'id': tempMediaItem.id,
       'album': tempMediaItem.album,
       'title': tempMediaItem.title,
@@ -613,7 +613,7 @@ class _SaiInspires extends State<SaiInspires> {
     };
 
     _audioManager!.stop();
-    await _audioManager!.init(MediaType.media, _params);
+    await _audioManager!.init(MediaType.media, params);
   }
 
   /// add a new media item to the end of the queue

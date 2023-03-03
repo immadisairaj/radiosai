@@ -15,7 +15,7 @@ class PlayingQueue extends StatefulWidget {
   static const String route = 'playingQueue';
 
   @override
-  _PlayingQueue createState() => _PlayingQueue();
+  State<PlayingQueue> createState() => _PlayingQueue();
 }
 
 class _PlayingQueue extends State<PlayingQueue> {
@@ -208,7 +208,17 @@ class _PlayingQueue extends State<PlayingQueue> {
         child: Card(
           elevation: 0,
           color: isCurrentItem ? selectedColor : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           child: InkWell(
+            onTap: () {
+              if (isCurrentItem) return;
+              int index =
+                  _audioManager!.queueNotifier.value.indexOf(mediaTitle);
+              _audioManager!.skipToQueueItem(index);
+            },
+            borderRadius: BorderRadius.circular(10.0),
             child: Padding(
               padding: const EdgeInsets.only(top: 5, left: 5, bottom: 5),
               child: ListTile(
@@ -238,16 +248,6 @@ class _PlayingQueue extends State<PlayingQueue> {
                     }),
               ),
             ),
-            onTap: () {
-              if (isCurrentItem) return;
-              int index =
-                  _audioManager!.queueNotifier.value.indexOf(mediaTitle);
-              _audioManager!.skipToQueueItem(index);
-            },
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
           ),
         ),
       ),

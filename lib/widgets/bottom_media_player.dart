@@ -18,7 +18,7 @@ class BottomMediaPlayer extends StatefulWidget {
   });
 
   @override
-  _BottomMediaPlayer createState() => _BottomMediaPlayer();
+  State<BottomMediaPlayer> createState() => _BottomMediaPlayer();
 }
 
 class _BottomMediaPlayer extends State<BottomMediaPlayer> {

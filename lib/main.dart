@@ -99,9 +99,9 @@ class MyApp extends StatelessWidget {
       ],
       child: Consumer<AppThemeBloc>(
           // listen to change of app theme
-          builder: (context, _appThemeBloc, child) {
+          builder: (context, appThemeBloc, child) {
         return StreamBuilder<String?>(
-            stream: _appThemeBloc.appThemeStream as Stream<String?>?,
+            stream: appThemeBloc.appThemeStream as Stream<String?>?,
             builder: (context, snapshot) {
               String appTheme =
                   snapshot.data ?? MyConstants.of(context)!.appThemes[2];

@@ -31,7 +31,7 @@ class ScheduleData extends StatefulWidget {
   final TimeZoneBloc? timeZoneBloc;
 
   @override
-  _ScheduleData createState() => _ScheduleData();
+  State<ScheduleData> createState() => _ScheduleData();
 }
 
 class _ScheduleData extends State<ScheduleData> {
@@ -379,7 +379,22 @@ class _ScheduleData extends State<ScheduleData> {
                 child: Card(
                   color: Theme.of(context).colorScheme.secondaryContainer,
                   elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: InkWell(
+                    borderRadius: BorderRadius.circular(8.0),
+                    onTap: () {
+                      if (fids != '') {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Media(fids: fids)));
+                      } else {
+                        getIt<ScaffoldHelper>().showSnackBar(
+                            'No media found!', const Duration(seconds: 1));
+                      }
+                    },
                     child: Padding(
                       padding: const EdgeInsets.only(top: 4, bottom: 4),
                       child: Center(
@@ -412,21 +427,6 @@ class _ScheduleData extends State<ScheduleData> {
                         ),
                       ),
                     ),
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () {
-                      if (fids != '') {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Media(fids: fids)));
-                      } else {
-                        getIt<ScaffoldHelper>().showSnackBar(
-                            'No media found!', const Duration(seconds: 1));
-                      }
-                    },
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
               ),
@@ -645,7 +645,7 @@ class _ScheduleData extends State<ScheduleData> {
 
   /// select the date and update the url for iOS
   void _selectDateIOS(BuildContext context) {
-    DateTime? _picked;
+    DateTime? picked;
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
@@ -663,7 +663,7 @@ class _ScheduleData extends State<ScheduleData> {
                       // Schedule is available for 1 day after current date
                       maximumDate: now.add(const Duration(days: 1)),
                       onDateTimeChanged: (picked) {
-                        _picked = picked;
+                        picked = picked;
                       },
                     ),
                   ),
@@ -672,10 +672,10 @@ class _ScheduleData extends State<ScheduleData> {
                     child: CupertinoButton(
                       child: const Text('OK'),
                       onPressed: () {
-                        if (_picked != null && _picked != selectedDate) {
+                        if (picked != null && picked != selectedDate) {
                           setState(() {
                             _isLoading = true;
-                            selectedDate = _picked;
+                            selectedDate = picked;
                             _updateURL(selectedDate!);
                           });
                         }

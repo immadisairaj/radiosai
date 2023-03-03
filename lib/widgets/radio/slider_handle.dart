@@ -7,7 +7,7 @@ class SliderHandle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // check if dark theme
-    bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
+    // bool isDarkTheme = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
       height: 5,
