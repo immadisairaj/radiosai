@@ -519,9 +519,12 @@ class _SaiInspires extends State<SaiInspires> {
     final name = mainBody['title'];
     final audioMP3Url = mainBody['actualAudioUrl'];
 
-    bool hasInternet =
-        Provider.of<InternetConnectionStatus>(context, listen: false) ==
-            InternetConnectionStatus.connected;
+    bool hasInternet = false;
+    if (mounted) {
+      hasInternet =
+          Provider.of<InternetConnectionStatus>(context, listen: false) ==
+              InternetConnectionStatus.connected;
+    }
     // No download option. So,
     // everything is considered to use internet
     if (hasInternet) {

@@ -43,8 +43,8 @@ class _Home extends State<Home> {
     return Scaffold(
       // scaffold key for whole app to show snackbar
       key: getIt<ScaffoldHelper>().scaffoldKey,
-      body: Stack(
-        children: const [
+      body: const Stack(
+        children: [
           RadioHome(),
           TopMenu(),
           TopMediaPlayer(),

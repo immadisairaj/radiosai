@@ -483,9 +483,12 @@ class _Search extends State<Search> {
     // checks if the file exists in cache
     FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
-      bool hasInternet =
-          Provider.of<InternetConnectionStatus>(context, listen: false) ==
-              InternetConnectionStatus.connected;
+      bool hasInternet = false;
+      if (mounted) {
+        hasInternet =
+            Provider.of<InternetConnectionStatus>(context, listen: false) ==
+                InternetConnectionStatus.connected;
+      }
       // search works only if there is an internet
       if (hasInternet) {
         // get the data into cache from webview_flutter

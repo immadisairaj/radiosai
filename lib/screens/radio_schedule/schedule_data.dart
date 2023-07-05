@@ -190,10 +190,10 @@ class _ScheduleData extends State<ScheduleData> {
                       AnimatedContainer(
                         height: _showDropDown ? height * 0.035 : 0,
                         duration: const Duration(milliseconds: 200),
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
+                        child: const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
                           child: Row(
-                            children: const [
+                            children: [
                               Flexible(
                                 flex: 1,
                                 child: Center(
@@ -672,7 +672,7 @@ class _ScheduleData extends State<ScheduleData> {
                     child: CupertinoButton(
                       child: const Text('OK'),
                       onPressed: () {
-                        if (picked != null && picked != selectedDate) {
+                        if (picked != selectedDate) {
                           setState(() {
                             _isLoading = true;
                             selectedDate = picked;

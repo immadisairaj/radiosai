@@ -4,12 +4,12 @@ import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/loading_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/radio/radio_loading_bloc.dart';
+import 'package:radiosai/constants/constants.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:radiosai/screens/radio/radio_stream_select.dart';
 import 'package:radiosai/widgets/internet_alert.dart';
 import 'package:radiosai/widgets/radio/slider_handle.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-import 'package:radiosai/constants/constants.dart';
-import 'package:radiosai/screens/radio/radio_stream_select.dart';
 
 class RadioPlayer extends StatefulWidget {
   const RadioPlayer(
@@ -191,8 +191,8 @@ class _RadioPlayer extends State<RadioPlayer>
               topLeft: widget.radius!, topRight: widget.radius!),
           color: Theme.of(context).colorScheme.secondaryContainer,
         ),
-        child: Column(
-          children: const [
+        child: const Column(
+          children: [
             SizedBox(height: 12),
             SliderHandle(),
             SizedBox(height: 12),
