@@ -8,7 +8,6 @@ import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/screens/audio_archive/audio_archive.dart';
 import 'package:radiosai/screens/radio_schedule/radio_schedule.dart';
 import 'package:radiosai/screens/sai_inspires/sai_inspires.dart';
-import 'package:radiosai/screens/search/search.dart';
 import 'package:radiosai/screens/settings/settings.dart';
 
 /// Top Menu - menu bar to show in base page
@@ -40,30 +39,30 @@ class _TopMenu extends State<TopMenu> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Material(
-              color: Colors.transparent,
-              child: IconButton(
-                icon: Icon((Platform.isAndroid)
-                    ? Icons.search_outlined
-                    : CupertinoIcons.search),
-                splashRadius: 24,
-                iconSize: 30,
-                tooltip: 'Search Radio Sai',
-                color: Colors.white,
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, anim1, anim2) => const Search(),
-                        transitionsBuilder: (context, anim1, anim2, child) =>
-                            FadeTransition(opacity: anim1, child: child),
-                        transitionDuration: const Duration(milliseconds: 300),
-                      ));
-                  // Navigator.push(context,
-                  //     MaterialPageRoute(builder: (context) => Search()));
-                },
-              ),
-            ),
+            // Material(
+            //   color: Colors.transparent,
+            //   child: IconButton(
+            //     icon: Icon((Platform.isAndroid)
+            //         ? Icons.search_outlined
+            //         : CupertinoIcons.search),
+            //     splashRadius: 24,
+            //     iconSize: 30,
+            //     tooltip: 'Search Radio Sai',
+            //     color: Colors.white,
+            //     onPressed: () {
+            //       Navigator.push(
+            //           context,
+            //           PageRouteBuilder(
+            //             pageBuilder: (context, anim1, anim2) => const Search(),
+            //             transitionsBuilder: (context, anim1, anim2, child) =>
+            //                 FadeTransition(opacity: anim1, child: child),
+            //             transitionDuration: const Duration(milliseconds: 300),
+            //           ));
+            //       // Navigator.push(context,
+            //       //     MaterialPageRoute(builder: (context) => Search()));
+            //     },
+            //   ),
+            // ),
             ClipRRect(
               borderRadius: BorderRadius.circular(24),
               child: Material(

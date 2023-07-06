@@ -41,9 +41,9 @@ class MyConstants extends InheritedWidget {
 
   /// The list of items in the top menu bar
   final Map<dynamic, String> menuTitles = const {
-    MenuNavigation.schedule: 'Schedule',
+    // MenuNavigation.schedule: 'Schedule',
     MenuNavigation.saiInspires: 'Sai Inspires',
-    MenuNavigation.audio: 'Audio',
+    // MenuNavigation.audio: 'Audio',
     MenuNavigation.settings: 'Settings',
   };
 
