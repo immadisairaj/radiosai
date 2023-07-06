@@ -26,9 +26,7 @@ Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Globa
 _*All the data inside the app is taken from [sssmediacentre.org](https://www.sssmediacentre.org)_
 
 __Radio Streams include:__
-- ~~Asia~~ Prasanthi Stream
-- ~~Africa Stream~~
-- ~~America Stream~~
+- Prasanthi Stream
 - Bhajan Stream
 - Discourse Stream
 - Telugu Stream
@@ -99,9 +97,9 @@ Play State -> Stop in notification (user action) -> Stop State
 
 ## Motivation
 
-I like to listen to various bhajans which made me fond of radio sai. I've installed the app and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
+I like to listen to various bhajans which made me fond of radio sai. I've installed the app (old) and kept listening to the radio that gave me peace. I felt the application UI/UX was not up to the mark. The audio stops in between and doesn't handle audio when I receive a call or play another media. That was the start of the idea to build an app that solves these problems. I started to collect resources from where the radio is broadcasted and finally reached the point to have a public release of the app. I referred to the radio sai app and its functionality while building this app.
 
->I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable
+>I feel this app solves the problems that I (and many others) face and would like to share this with all. It's one's choice to use whichever app is comfortable.
 
 ## Screenshots
 
