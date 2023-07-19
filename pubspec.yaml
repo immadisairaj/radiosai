@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 # versioning style <major>.<feature>.<fixes>+<commits>
-version: 1.2.1+170
+version: 1.2.2+171
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -55,7 +55,7 @@ dependencies:
   shimmer: ^3.0.0
   cached_network_image: ^3.2.3
   audio_video_progress_bar: ^1.0.1
-  webview_flutter: ^3.0.4
+  webview_flutter: ^4.2.2
   # Audio packages
   just_audio: ^0.9.34
   audio_service: ^0.18.10 # when updating, look for changes in .MainActivity

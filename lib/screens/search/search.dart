@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -162,7 +161,8 @@ class _Search extends State<Search> {
     _scrollController = ScrollController();
     _scrollController!.addListener(_scrollListener);
 
-    if (Platform.isAndroid) WebView.platform = AndroidWebView();
+    // TODO: try to implement this with controller instead
+    // if (Platform.isAndroid) WebView.platform = AndroidWebView();
 
     if (widget.initialSearch == null) {
       _textController = TextEditingController();
@@ -1217,51 +1217,54 @@ class _Search extends State<Search> {
   /// third load: changes the page and gets data
   Widget _hiddenWebView() {
     return Positioned.fill(
-      child: WebView(
-        initialUrl: baseUrl,
-        gestureNavigationEnabled: true,
-        onWebViewCreated: (controller) {
-          _webViewController = controller;
-        },
-        javascriptMode: JavascriptMode.unrestricted,
-        onPageFinished: (url) async {
-          if (_isFirstLoading) {
-            await _webViewController.runJavascript(
-                "document.forms[1].description_s.value=\"${globalFormData['description_s']}\";");
-            await _webViewController.runJavascript(
-                "document.forms[1].filesperpage_s.value=${globalFormData['filesperpage_s']};");
-            await _webViewController.runJavascript(
-                "document.forms[1].category_s.value=\"${globalFormData['category_s']}\";");
-            // await _webViewController.runJavascript(
-            //     "document.forms[1].language_s.value=\"${globalFormData['language_s']}\";");
-            await _webViewController.runJavascript(
-                "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
-            await _webViewController.runJavascript(
-                "document.forms[1].page.value=${globalFormData['page']};");
-            await _webViewController.runJavascript('javascript:check()');
-            _isFirstLoading = false;
-          } else if (_isSecondLoading) {
-            await _webViewController
-                .runJavascript('javascript:pager(${globalFormData['page']})');
-            _isSecondLoading = false;
-          } else {
-            String tempResponse =
-                await _webViewController.runJavascriptReturningResult(
-                    'encodeURIComponent(document.documentElement.outerHTML)');
-            tempResponse = Uri.decodeComponent(tempResponse);
+      child: WebViewWidget(
+        controller: _webViewController,
+        // TODO: try to implement this with controller instead
+        // initialUrl: baseUrl,
+        // gestureNavigationEnabled: true,
+        // onWebViewCreated: (controller) {
+        //   _webViewController = controller;
+        // },
+        // javascriptMode: JavascriptMode.unrestricted,
+        // onPageFinished: (url) async {
+        //   if (_isFirstLoading) {
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         "document.forms[1].description_s.value=\"${globalFormData['description_s']}\";");
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         "document.forms[1].filesperpage_s.value=${globalFormData['filesperpage_s']};");
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         "document.forms[1].category_s.value=\"${globalFormData['category_s']}\";");
+        //     // await _webViewController.runJavascript(
+        //     //     "document.forms[1].language_s.value=\"${globalFormData['language_s']}\";");
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         "document.forms[1].pdate_s.value=\"${globalFormData['pdate_s']}\";");
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         "document.forms[1].page.value=${globalFormData['page']};");
+        //     await _webViewController
+        //         .runJavaScriptReturningResult('javascript:check()');
+        //     _isFirstLoading = false;
+        //   } else if (_isSecondLoading) {
+        //     await _webViewController.runJavaScriptReturningResult(
+        //         'javascript:pager(${globalFormData['page']})');
+        //     _isSecondLoading = false;
+        //   } else {
+        //     var tempResponse =
+        //         await _webViewController.runJavaScriptReturningResult(
+        //             'encodeURIComponent(document.documentElement.outerHTML)');
+        //     tempResponse = Uri.decodeComponent(tempResponse.toString());
 
-            // put data into cache after getting from internet
-            List<int> list = tempResponse.codeUnits;
-            Uint8List fileBytes = Uint8List.fromList(list);
-            DefaultCacheManager().putFile(finalUrl, fileBytes);
-            setState(() {
-              _isFirstLoading = true;
-              _isSecondLoading = false;
-              _isGettingData = false;
-            });
-            _parseData(tempResponse);
-          }
-        },
+        //     // put data into cache after getting from internet
+        //     List<int> list = tempResponse.toString().codeUnits;
+        //     Uint8List fileBytes = Uint8List.fromList(list);
+        //     DefaultCacheManager().putFile(finalUrl, fileBytes);
+        //     setState(() {
+        //       _isFirstLoading = true;
+        //       _isSecondLoading = false;
+        //       _isGettingData = false;
+        //     });
+        //     _parseData(tempResponse.toString());
+        //   }
+        // },
       ),
     );
   }

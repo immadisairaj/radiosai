@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.immadisairaj.radiosai">
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -11,7 +11,8 @@
         android:icon="@mipmap/ic_app_icon"
         android:label="Sai Voice"
         android:requestLegacyExternalStorage="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
         <!-- com.ryanheise.audioservice.AudioServiceActivity is implemented inside MainActivity -->
         <!-- launch mode singleInstance is helpful when using uni_links (app links) -->
         <activity

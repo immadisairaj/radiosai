@@ -66,6 +66,7 @@ android {
     lint {
         disable 'InvalidPackage'
     }
+    namespace 'com.immadisairaj.radiosai'
 }
 
 flutter {

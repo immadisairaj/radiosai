@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
-import 'package:radiosai/bloc/radio_schedule/time_zone_bloc.dart';
 import 'package:radiosai/screens/radio_schedule/schedule_data.dart';
 
 class RadioSchedule extends StatefulWidget {
@@ -32,22 +31,8 @@ class _RadioSchedule extends State<RadioSchedule> {
               radioStreamIndex = 0;
             }
 
-            return Consumer<TimeZoneBloc>(
-              // listen to change of time zone
-              builder: (context, timeZoneBloc, child) {
-                return StreamBuilder<String?>(
-                  stream: timeZoneBloc.timeZoneStream as Stream<String?>?,
-                  builder: (context, snapshot) {
-                    String timeZone = snapshot.data ?? 'INDIA';
-
-                    return ScheduleData(
-                      radioStreamIndex: radioStreamIndex,
-                      timeZone: timeZone,
-                      timeZoneBloc: timeZoneBloc,
-                    );
-                  },
-                );
-              },
+            return ScheduleData(
+              radioStreamIndex: radioStreamIndex,
             );
           });
     });
