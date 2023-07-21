@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:radiosai/constants/constants.dart';
@@ -348,7 +349,13 @@ class _ScheduleData extends State<ScheduleData> {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          subtitle: Text(programe),
+                          subtitle: Text.rich(TextSpan(children: [
+                            TextSpan(text: programe),
+                            if (rowData.newFlag)
+                              const TextSpan(
+                                  text: ' - New!',
+                                  style: TextStyle(color: Colors.redAccent)),
+                          ])),
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -500,6 +507,10 @@ class _ScheduleData extends State<ScheduleData> {
       if (clickHere > 0) {
         content = content.substring(0, clickHere);
       }
+
+      // removing the strong or some other tags inside the text
+      var doc = parse(content);
+      content = doc.body!.text;
 
       // add it to final data
       finalData.add(ScheduleEntity(
