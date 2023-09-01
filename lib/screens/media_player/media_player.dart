@@ -608,7 +608,7 @@ class _MediaPlayer extends State<MediaPlayer> {
     String subject = 'Checkout this audio from radiosai!';
     String text = '$fileLink'
         '\n\nShared from Sai Voice App\n'
-        'https://immadisairaj.github.io/radiosai';
+        'https://radiosai.immadisairaj.dev';
     Share.share(text, subject: subject);
   }
 

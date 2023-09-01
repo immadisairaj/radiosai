@@ -4,13 +4,13 @@
 <h1 align=center>Sai Voice</h1>
 <p align=center>A radio player which streams audio from Radio Sai Global Harmony.</p>
 <p align="center">
- <a href="https://immadisairaj.github.io/radiosai">
+ <a href="https://radiosai.immadisairaj.dev">
     <img src="https://img.shields.io/badge/Visit-Website-e91e62" alt="website"></img>
   </a>
   <a href="https://github.com/immadisairaj/radiosai/blob/main/LICENSE.md">
     <img src="https://img.shields.io/badge/License-GPL V2-a32d2a" alt="license">
   </a>
-  <a href="https://immadisairaj.github.io/radiosai/privacy_policy.html">
+  <a href="https://radiosai.immadisairaj.dev/privacy_policy.html">
     <img src="https://img.shields.io/badge/Privacy-Policy-ea4ca0" alt="privacy policy">
   </a>
 </p>
@@ -163,7 +163,7 @@ Thanks to the Open Source community for providing such great libraries and frame
 
 ## Privacy Policy
 
-The Privacy Policy of the app is in the site: [immadisairaj.github.io/radiosai/privacy_policy.html](https://immadisairaj.github.io/radiosai/privacy_policy.html)
+The Privacy Policy of the app is in the site: [radiosai.immadisairaj.dev/privacy_policy.html](https://radiosai.immadisairaj.dev/privacy_policy.html)
 
 ## License
 

@@ -155,9 +155,9 @@ class _Settings extends State<Settings> {
           ListTile(
             contentPadding: _contentPadding,
             title: const Text('Website'),
-            subtitle: const Text('https://immadisairaj.github.io/radiosai'),
+            subtitle: const Text('https://radiosai.immadisairaj.dev'),
             onTap: () {
-              _urlLaunch('https://immadisairaj.github.io/radiosai');
+              _urlLaunch('https://radiosai.immadisairaj.dev');
             },
           ),
           ListTile(
@@ -172,7 +172,7 @@ class _Settings extends State<Settings> {
             title: const Text('Privacy Policy'),
             onTap: () {
               _urlLaunch(
-                  'https://immadisairaj.github.io/radiosai/privacy_policy.html');
+                  'https://radiosai.immadisairaj.dev/privacy_policy.html');
             },
           ),
           const Divider(),

@@ -139,11 +139,11 @@ class _Search extends State<Search> {
   bool _showDropDown = true;
   bool _isScrollingDown = false;
 
-  /// used to know if the web page is loading first time
-  bool _isFirstLoading = true;
+  // /// used to know if the web page is loading first time
+  // bool _isFirstLoading = true;
 
-  /// used to know if the web page is loading second time
-  bool _isSecondLoading = false;
+  // /// used to know if the web page is loading second time
+  // bool _isSecondLoading = false;
 
   /// focus node attached to TextFormField of Search
   final FocusNode _textFocusNode = FocusNode();
@@ -682,7 +682,7 @@ class _Search extends State<Search> {
       setState(() {
         _isLoading = true;
         _isChangingPage = false;
-        _isSecondLoading = false;
+        // _isSecondLoading = false;
         _updateURL();
       });
     }
@@ -1103,7 +1103,7 @@ class _Search extends State<Search> {
                             setState(() {
                               currentPage = index + 1;
                               _isChangingPage = true;
-                              _isSecondLoading = true;
+                              // _isSecondLoading = true;
                               _isLoading = true;
                               _updateURL();
                             });

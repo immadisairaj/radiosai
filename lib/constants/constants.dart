@@ -20,13 +20,12 @@ class MyConstants extends InheritedWidget {
 
   final Map<String, String> radioStreamImages = const {
     'Prasanthi Stream':
-        'https://www.immadisairaj.dev/radiosai/images/prasanthiStream.png',
+        'https://radiosai.immadisairaj.dev/images/prasanthiStream.png',
     'Bhajan Stream':
-        'https://www.immadisairaj.dev/radiosai/images/bhajanStream.png',
+        'https://radiosai.immadisairaj.dev/images/bhajanStream.png',
     'Discourse Stream':
-        'https://www.immadisairaj.dev/radiosai/images/discourseStream.png',
-    'Telugu Stream':
-        'https://www.immadisairaj.dev/radiosai/images/teluguStream.png'
+        'https://radiosai.immadisairaj.dev/images/discourseStream.png',
+    'Telugu Stream': 'https://radiosai.immadisairaj.dev/images/teluguStream.png'
   };
 
   /// The list of items in the top menu bar
