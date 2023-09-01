@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.2.3+173
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.1.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -29,42 +29,42 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.5
+  cupertino_icons: ^1.0.6
   # shared preferences to store long persisting data
-  shared_preferences: ^2.2.0
+  shared_preferences: ^2.2.1
   # path packages
-  path_provider: ^2.0.15
+  path_provider: ^2.1.1
   # packages
   internet_connection_checker: ^1.0.0+1
-  url_launcher: ^6.1.11
+  url_launcher: ^6.1.14
   html: ^0.15.4
   http: ^1.1.0
-  permission_handler: ^10.4.1
+  permission_handler: ^10.4.3
   gallery_saver: ^2.3.2
   flutter_cache_manager: ^3.3.1
   # flutter_downloader: ^1.6.1
-  share_plus: ^7.0.2
-  package_info_plus: ^4.0.2
+  share_plus: ^7.1.0
+  package_info_plus: ^4.1.0
   intl: ^0.18.1
   rxdart: ^0.27.7
   provider: ^6.0.5
-  get_it: ^7.6.0
+  get_it: ^7.6.2
   uni_links: ^0.5.1
   # widgets
   sliding_up_panel: ^2.0.0+1
   shimmer: ^3.0.0
   cached_network_image: ^3.2.3
-  audio_video_progress_bar: ^1.0.1
-  webview_flutter: ^4.2.2
+  audio_video_progress_bar: ^2.0.0
+  webview_flutter: ^4.2.4
   # Audio packages
   just_audio: ^0.9.34
-  audio_service: ^0.18.10 # when updating, look for changes in .MainActivity
+  audio_service: ^0.18.11 # when updating, look for changes in .MainActivity
 
 dependency_overrides:
   http: ^1.1.0 # because gallery_saver uses old version
 
 dev_dependencies:
-  flutter_lints: ^2.0.1
+  flutter_lints: ^2.0.3
   flutter_test:
     sdk: flutter
 
