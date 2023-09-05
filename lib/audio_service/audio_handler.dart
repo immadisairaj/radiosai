@@ -90,10 +90,11 @@ class MyAudioHandler extends BaseAudioHandler {
       return playbackState.value.copyWith(
         controls: [
           (playing) ? MediaControl.pause : MediaControl.play,
-          MediaControl.stop
         ],
-        systemActions: const {},
-        androidCompactActionIndices: const [0, 1],
+        systemActions: {
+          MediaAction.playPause,
+        },
+        androidCompactActionIndices: const [0],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
