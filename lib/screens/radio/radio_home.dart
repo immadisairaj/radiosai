@@ -2,10 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
@@ -133,12 +133,13 @@ class _RadioHome extends State<RadioHome> {
                                   }
 
                                   return RadioPlayer(
-                                      radius: radius,
-                                      radioStreamIndex: radioStreamIndex,
-                                      isPlaying: isPlaying,
-                                      loadingState: loadingState,
-                                      radioLoadingBloc: radioLoadingBloc,
-                                      hasInternet: hasInternet);
+                                    radius: radius,
+                                    radioStreamIndex: radioStreamIndex,
+                                    isPlaying: isPlaying,
+                                    loadingState: loadingState,
+                                    radioLoadingBloc: radioLoadingBloc,
+                                    hasInternet: hasInternet,
+                                  );
                                 });
                           },
                         );

@@ -71,7 +71,7 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   @override
-  void dispose() async {
+  void dispose() {
     _audioManager!.stop();
     _pausePlayController.dispose();
     super.dispose();
@@ -264,7 +264,7 @@ class _RadioPlayer extends State<RadioPlayer>
                       icon: AnimatedIcons.play_pause,
                       progress: _pausePlayController,
                     ),
-                    onPressed: () async {
+                    onPressed: () {
                       if (streamIndex != null) {
                         _handleOnPressed(streamIndex, isPlaying!, hasInternet);
                       }
@@ -303,7 +303,7 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   /// initial the radio service to start playing
-  Future<void> initRadioService(int index) async {
+  initRadioService(int index) async {
     // Register the audio service and start playing
     await _audioManager!.init(MediaType.radio, {
       'radioStream': MyConstants.of(context)!.radioStreamHttps,
@@ -329,7 +329,7 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   /// handle the player when pause/play button is pressed
-  void _handleOnPressed(int index, bool isPlaying, bool? hasInternet) async {
+  void _handleOnPressed(int index, bool isPlaying, bool? hasInternet) {
     if (!isPlaying) {
       if (_audioManager!.mediaTypeNotifier.value == MediaType.media) {
         // stop if media player is loaded
