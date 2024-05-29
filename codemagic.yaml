@@ -30,6 +30,7 @@ workflows:
         PACKAGE_NAME: "com.immadisairaj.radiosai"
         GOOGLE_PLAY_TRACK: "internal"
       flutter: stable
+      java: 17
     triggering:
       events:
         - push
