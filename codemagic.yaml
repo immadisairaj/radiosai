@@ -42,10 +42,7 @@ workflows:
       - *shorebird_install   
       - name: Build with Shorebird
         script: |
-          BUILD_NUMBER=$(($(google-play get-latest-build-number --package-name "$PACKAGE_NAME" --tracks="$GOOGLE_PLAY_TRACK") + 1))   
-          shorebird release android -- \
-          --build-name=$BUILD_NUMBER \
-          --build-number=$BUILD_NUMBER
+          shorebird release android
     artifacts:
       - build/**/outputs/**/*.aab
       - build/**/outputs/**/mapping.txt
@@ -63,8 +60,14 @@ workflows:
       app_store_connect: Codemagic Connect
     environment:
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.immadisairaj.saivoice
+        # distribution_type: app_store
+        # bundle_identifier: com.immadisairaj.saivoice
+        provisioning_profiles:
+          - profile: profile_reference
+            environment_variable: SAI_VOICE_PROVISIONAL_CERTIFICATE
+        certificates:
+          - certificate: certificate_reference
+            environment_variable: APPLE_APP_DISTRIBUTION
       groups:
         - shorebird
       flutter: stable
@@ -81,11 +84,7 @@ workflows:
         script: xcode-project use-profiles
       - name: Build with Shorebird
         script: | 
-          BUILD_NUMBER=$(($(app-store-connect get-latest-app-store-build-number "$APP_STORE_APPLE_ID") + 1))
-          shorebird release ios -- \
-          --build-name=$BUILD_NUMBER \
-          --build-number=$BUILD_NUMBER
-          --export-options-plist=/Users/builder/export_options.plist
+          shorebird release ios
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
