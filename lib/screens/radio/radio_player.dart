@@ -100,16 +100,24 @@ class _RadioPlayer extends State<RadioPlayer>
     bool isBigScreen = (height * 0.1 >= 50); // 3/4 screen
     bool isBiggerScreen = (height * 0.1 >= 70); // full screen
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
-    return WillPopScope(
-      onWillPop: () {
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (_) async {
+        bool toPop = false;
         if (_panelController.isPanelOpen) {
-          return _panelController.close().then((value) => value as bool);
+          toPop = await _panelController.close().then((value) => value as bool);
+        } else {
+          // sends the app to background when backpress on home screen
+          // achieved by adding a method in MainActivity.kt to support send app to background
+          toPop =
+              await const MethodChannel('com.immadisairaj/android_app_retain')
+                  .invokeMethod('sendToBackground')
+                  .then((value) => value as bool);
         }
-        // sends the app to background when backpress on home screen
-        // achieved by adding a method in MainActivity.kt to support send app to background
-        return const MethodChannel('com.immadisairaj/android_app_retain')
-            .invokeMethod('sendToBackground')
-            .then((value) => value as bool);
+
+        if (toPop && context.mounted) {
+          Navigator.maybePop(context);
+        }
       },
       child: Scaffold(
         backgroundColor: Colors.transparent,

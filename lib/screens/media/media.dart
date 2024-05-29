@@ -150,7 +150,7 @@ class _Media extends State<Media> {
               // show when no data is retrieved
               if (_finalMediaData[0] == 'null')
                 NoData(
-                  backgroundColor: Theme.of(context).colorScheme.background,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   text: 'No Data Available,\ncheck your internet and try again',
                   onPressed: () {
                     setState(() {
@@ -162,7 +162,7 @@ class _Media extends State<Media> {
               // show when no data is retrieved and timeout
               if (_finalMediaData[0] == 'timeout')
                 NoData(
-                  backgroundColor: Theme.of(context).colorScheme.background,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
                   text:
                       'No Data Available,\nURL timeout, try again after some time',
                   onPressed: () {

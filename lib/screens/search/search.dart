@@ -298,7 +298,7 @@ class _Search extends State<Search> {
                       if (_finalTableData[0][0] == 'null')
                         NoData(
                           backgroundColor:
-                              Theme.of(context).colorScheme.background,
+                              Theme.of(context).colorScheme.surface,
                           text:
                               'No Data Available,\ncheck your internet and try again',
                           onPressed: () {
@@ -312,7 +312,7 @@ class _Search extends State<Search> {
                       if (_finalTableData[0][0] == 'timeout')
                         NoData(
                           backgroundColor:
-                              Theme.of(context).colorScheme.background,
+                              Theme.of(context).colorScheme.surface,
                           text:
                               'No Data Available,\nURL timeout, try again after some time',
                           onPressed: () {
@@ -333,7 +333,7 @@ class _Search extends State<Search> {
                     // Shown but hidden when loading the data
                     if (_isGettingData) _hiddenWebView(),
                     Container(
-                      color: Theme.of(context).colorScheme.background,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Center(
                         child: _showLoading(),
                       ),
@@ -984,7 +984,7 @@ class _Search extends State<Search> {
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               height: 200,
               child: Column(
                 children: [
@@ -1067,7 +1067,7 @@ class _Search extends State<Search> {
         ),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 6, right: 6),

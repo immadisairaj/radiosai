@@ -201,7 +201,7 @@ class _SaiInspires extends State<SaiInspires> {
                 // show when no data is retrieved
                 if (_contentText == 'null')
                   NoData(
-                    backgroundColor: Theme.of(context).colorScheme.background,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
                     text:
                         'No Data Available,\ncheck your internet and try again',
                     onPressed: () {
@@ -214,7 +214,7 @@ class _SaiInspires extends State<SaiInspires> {
                 // show when no data is retrieved and timeout
                 if (_contentText == 'timeout')
                   NoData(
-                    backgroundColor: Theme.of(context).colorScheme.background,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
                     text:
                         'No Data Available,\nURL timeout, try again after some time',
                     onPressed: () {
@@ -399,7 +399,7 @@ class _SaiInspires extends State<SaiInspires> {
     showCupertinoModalPopup(
       context: context,
       builder: (_) => Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         height: 200,
         child: Column(
           children: [
@@ -520,7 +520,7 @@ class _SaiInspires extends State<SaiInspires> {
     final audioMP3Url = mainBody['actualAudioUrl'];
 
     bool hasInternet = false;
-    if (mounted) {
+    if (context.mounted) {
       hasInternet =
           Provider.of<InternetConnectionStatus>(context, listen: false) ==
               InternetConnectionStatus.connected;

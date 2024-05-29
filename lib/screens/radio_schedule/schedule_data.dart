@@ -253,7 +253,7 @@ class _ScheduleData extends State<ScheduleData> {
                       if (_finalData.isEmpty)
                         NoData(
                           backgroundColor:
-                              Theme.of(context).colorScheme.background,
+                              Theme.of(context).colorScheme.surface,
                           text:
                               'No Data Available,\ncheck your internet or try again',
                           onPressed: () {
@@ -402,10 +402,10 @@ class _ScheduleData extends State<ScheduleData> {
         DateFormat('yyyy-MM-dd').format(date.add(const Duration(days: 1)));
 
     // unique url for putting data into cache and getting it
-    String url = '$baseUrl/data/$streamId-$formattedDate.txt';
+    String url = '$baseUrl/data/d$streamId-$formattedDate.txt';
     finalUrl = url;
-    String previousUrl = '$baseUrl/data/$streamId-$previousFormattedDate.txt';
-    String nextUrl = '$baseUrl/data/$streamId-$nextFormattedDate.txt';
+    String previousUrl = '$baseUrl/data/d$streamId-$previousFormattedDate.txt';
+    String nextUrl = '$baseUrl/data/d$streamId-$nextFormattedDate.txt';
     _getData(previousUrl, nextUrl, date);
   }
 
@@ -659,7 +659,7 @@ class _ScheduleData extends State<ScheduleData> {
     showCupertinoModalPopup(
         context: context,
         builder: (_) => Container(
-              color: Theme.of(context).colorScheme.background,
+              color: Theme.of(context).colorScheme.surface,
               height: 200,
               child: Column(
                 children: [

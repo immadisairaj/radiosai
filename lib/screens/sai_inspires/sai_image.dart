@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -194,12 +195,29 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   /// returns if the app has permission to save in external storage
   Future<bool> _canSave() async {
-    var status = await Permission.storage.request();
-    if (status.isGranted || status.isLimited) {
-      return true;
-    } else {
-      return false;
+    var status = PermissionStatus.denied;
+    bool havePermission = false;
+    if (Platform.isIOS) {
+      status = await Permission.storage.request();
+      havePermission = status.isGranted || status.isLimited;
+    } else if (Platform.isAndroid) {
+      final DeviceInfoPlugin info = DeviceInfoPlugin();
+      final AndroidDeviceInfo androidInfo = await info.androidInfo;
+      final int androidVersion = int.parse(androidInfo.version.release);
+
+      if (androidVersion < 13) {
+        status = await Permission.storage.request();
+        havePermission = status.isGranted || status.isLimited;
+      } else if (androidVersion >= 13) {
+        final request = await [
+          Permission.photos,
+        ].request();
+
+        havePermission = request.values
+            .every((status) => status == PermissionStatus.granted);
+      }
     }
+    return havePermission;
   }
 
   // Below are toggling full screen methods
