@@ -53,68 +53,50 @@ workflows:
         track: $GOOGLE_PLAY_TRACK
         submit_as_draft: true
   
-  release-ios-workflow:
-    name: Release iOS Workflow
-    instance_type: mac_mini_m1
-    integrations:
-      app_store_connect: Codemagic Connect
-    environment:
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.immadisairaj.saivoice
-        # provisioning_profiles:
-        #   - profile: SAI_VOICE_PROVISIONAL_CERTIFICATE
-        # certificates:
-        #   - certificate: APPLE_APP_DISTRIBUTION
-      groups:
-        - shorebird
-      flutter: stable
-    triggering:
-      events:
-        - push
-      branch_patterns:
-        - pattern: release
-    scripts:
-      - *flutter_analyze
-      - *setup_local_properties
-      - *shorebird_install
-      - name: Set up code signing settings on Xcode project
-        script: xcode-project use-profiles
-      - name: Build with Shorebird
-        script: | 
-          shorebird release ios --no-codesign
-    artifacts:
-      - build/ios/ipa/*.ipa
-      - /tmp/xcodebuild_logs/*.log
-      - flutter_drive.log
-    publishing:
-      app_store_connect:
-        auth: integration
-        submit_to_testflight: true
-        expire_build_submitted_for_review: true
-        beta_groups:
-          - Sai Voice Test Group
-        submit_to_app_store: false
-
-  # patch-android-workflow:
-  #   name: Patch Android Workflow
+  # !Note: Codemagic for iOS and shorebird won't work so commenting for now
+  # Download xcode archive from shorebird into /Library/Developer/XCode/Archive/<date>/
+  # go to Xcode > Window > Organizer
+  # Custom upload the build archive to App Store Connect (uncheck manage version)
+  
+  # release-ios-workflow:
+  #   name: Release iOS Workflow
+  #   instance_type: mac_mini_m1
+  #   integrations:
+  #     app_store_connect: Codemagic Connect
   #   environment:
-  #     android_signing:
-  #       - codemagic
+  #     ios_signing:
+  #       distribution_type: app_store
+  #       bundle_identifier: com.immadisairaj.saivoice
+  #       # provisioning_profiles:
+  #       #   - profile: SAI_VOICE_PROVISIONAL_CERTIFICATE
+  #       # certificates:
+  #       #   - certificate: APPLE_APP_DISTRIBUTION
   #     groups:
-  #       - shorebird_credentials
-  #     flutter: 3.10.4
-  #     xcode: 14.3.1
+  #       - shorebird
+  #     flutter: stable
   #   triggering:
   #     events:
   #       - push
   #     branch_patterns:
-  #       - pattern: patch
+  #       - pattern: release
   #   scripts:
   #     - *flutter_analyze
   #     - *setup_local_properties
-  #     - *shorebird_install 
-  #     - name: Patch Android app with Shorebird
-  #       script: shorebird patch android  
+  #     - *shorebird_install
+  #     - name: Set up code signing settings on Xcode project
+  #       script: xcode-project use-profiles
+  #     - name: Build with Shorebird
+  #       script: | 
+  #         shorebird release ios --no-codesign
   #   artifacts:
-  #     - build/**/outputs/**/*.aab
+  #     - build/ios/ipa/*.ipa
+  #     - /tmp/xcodebuild_logs/*.log
+  #     - flutter_drive.log
+  #   publishing:
+  #     app_store_connect:
+  #       auth: integration
+  #       submit_to_testflight: true
+  #       expire_build_submitted_for_review: true
+  #       beta_groups:
+  #         - Sai Voice Test Group
+  #       submit_to_app_store: false
