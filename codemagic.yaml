@@ -59,7 +59,7 @@ workflows:
     name: Release iOS Workflow
     instance_type: mac_mini_m1
     integrations:
-      app_store_connect: APPLE_APP_DISTRIBUTION
+      app_store_connect: Codemagic Connect
     environment:
       ios_signing:
         distribution_type: app_store
