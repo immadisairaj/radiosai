@@ -68,7 +68,6 @@ workflows:
       groups:
         - shorebird
       flutter: stable
-      xcode: 14.3.1
     triggering:
       events:
         - push
@@ -96,6 +95,9 @@ workflows:
         auth: integration
         submit_to_testflight: true
         expire_build_submitted_for_review: true
+        beta_groups:
+          - Sai Voice Test Group
+        submit_to_app_store: false
 
   # patch-android-workflow:
   #   name: Patch Android Workflow
