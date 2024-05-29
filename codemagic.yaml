@@ -82,7 +82,7 @@ workflows:
         script: xcode-project use-profiles
       - name: Build with Shorebird
         script: | 
-          shorebird release ios
+          shorebird release ios --no-codesign
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
