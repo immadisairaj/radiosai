@@ -63,11 +63,9 @@ workflows:
         # distribution_type: app_store
         # bundle_identifier: com.immadisairaj.saivoice
         provisioning_profiles:
-          - profile: profile_reference
-            environment_variable: SAI_VOICE_PROVISIONAL_CERTIFICATE
+          - profile: SAI_VOICE_PROVISIONAL_CERTIFICATE
         certificates:
-          - certificate: certificate_reference
-            environment_variable: APPLE_APP_DISTRIBUTION
+          - certificate: APPLE_APP_DISTRIBUTION
       groups:
         - shorebird
       flutter: stable
