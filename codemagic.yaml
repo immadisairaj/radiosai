@@ -58,45 +58,45 @@ workflows:
   # go to Xcode > Window > Organizer
   # Custom upload the build archive to App Store Connect (uncheck manage version)
   
-  # release-ios-workflow:
-  #   name: Release iOS Workflow
-  #   instance_type: mac_mini_m1
-  #   integrations:
-  #     app_store_connect: Codemagic Connect
-  #   environment:
-  #     ios_signing:
-  #       distribution_type: app_store
-  #       bundle_identifier: com.immadisairaj.saivoice
-  #       # provisioning_profiles:
-  #       #   - profile: SAI_VOICE_PROVISIONAL_CERTIFICATE
-  #       # certificates:
-  #       #   - certificate: APPLE_APP_DISTRIBUTION
-  #     groups:
-  #       - shorebird
-  #     flutter: stable
-  #   triggering:
-  #     events:
-  #       - push
-  #     branch_patterns:
-  #       - pattern: release
-  #   scripts:
-  #     - *flutter_analyze
-  #     - *setup_local_properties
-  #     - *shorebird_install
-  #     - name: Set up code signing settings on Xcode project
-  #       script: xcode-project use-profiles
-  #     - name: Build with Shorebird
-  #       script: | 
-  #         shorebird release ios --no-codesign
-  #   artifacts:
-  #     - build/ios/ipa/*.ipa
-  #     - /tmp/xcodebuild_logs/*.log
-  #     - flutter_drive.log
-  #   publishing:
-  #     app_store_connect:
-  #       auth: integration
-  #       submit_to_testflight: true
-  #       expire_build_submitted_for_review: true
-  #       beta_groups:
-  #         - Sai Voice Test Group
-  #       submit_to_app_store: false
+  release-ios-workflow:
+    name: Release iOS Workflow
+    instance_type: mac_mini_m1
+    integrations:
+      app_store_connect: Codemagic Connect
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.immadisairaj.saivoice
+        # provisioning_profiles:
+        #   - profile: SAI_VOICE_PROVISIONAL_CERTIFICATE
+        # certificates:
+        #   - certificate: APPLE_APP_DISTRIBUTION
+      groups:
+        - shorebird
+      flutter: stable
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: release
+    scripts:
+      - *flutter_analyze
+      - *setup_local_properties
+      - *shorebird_install
+      - name: Set up code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Build with Shorebird
+        script: | 
+          shorebird release ios --no-codesign --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        expire_build_submitted_for_review: true
+        beta_groups:
+          - Sai Voice Test Group
+        submit_to_app_store: false
