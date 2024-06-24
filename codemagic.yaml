@@ -88,7 +88,7 @@ workflows:
       - name: Build with Shorebird
         script: | 
           /usr/libexec/PlistBuddy -c 'Add :manageAppVersionAndBuildNumber bool false' /Users/builder/export_options.plist || \
-          shorebird release ios --no-codesign --export-options-plist=/Users/builder/export_options.plist
+          yes | shorebird release ios --no-codesign --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
