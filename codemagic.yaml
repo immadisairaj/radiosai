@@ -81,14 +81,13 @@ workflows:
         - pattern: release
     scripts:
       - *flutter_analyze
-      - *setup_local_properties
       - *shorebird_install
       - name: Set up code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Build with Shorebird
         script: | 
           /usr/libexec/PlistBuddy -c 'Add :manageAppVersionAndBuildNumber bool false' /Users/builder/export_options.plist
-          yes | shorebird release ios --no-codesign --export-options-plist=/Users/builder/export_options.plist
+          yes | shorebird release ios --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
