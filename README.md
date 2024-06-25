@@ -20,6 +20,8 @@ Om Sri Sai Ram :pray:
 
 Sai Voice is an audio app that streams audio data broadcasted by Radio Sai Global Harmony.
 
+Download Links: [Google Play Store](https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai) | [Apple Test Flight](https://testflight.apple.com/join/KuSOycYv)
+
 | :warning: Internet is needed for the app to function properly. |
 |-|
 
