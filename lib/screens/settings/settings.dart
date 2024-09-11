@@ -63,6 +63,7 @@ class _Settings extends State<Settings> {
                   _generalSection(),
                   _storageSection(),
                   _aboutSection(),
+                  _downloadLinksSection(),
                   _moreDetailsSection(),
                 ],
               ),
@@ -140,6 +141,32 @@ class _Settings extends State<Settings> {
             title: const Text('Version'),
             subtitle: Text('v${_packageInfo.version}'),
             onTap: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// download links section
+  Widget _downloadLinksSection() {
+    return SettingsSection(
+      title: 'Download links',
+      child: Column(
+        children: [
+          ListTile(
+            contentPadding: _contentPadding,
+            title: const Text('Google Play Store'),
+            onTap: () {
+              _urlLaunch(
+                  'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai');
+            },
+          ),
+          ListTile(
+            contentPadding: _contentPadding,
+            title: const Text('Apple Test Flight'),
+            onTap: () {
+              _urlLaunch('https://testflight.apple.com/join/KuSOycYv');
+            },
           ),
         ],
       ),
