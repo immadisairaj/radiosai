@@ -15,7 +15,7 @@
         android:requestLegacyExternalStorage="true"
         android:usesCleartextTraffic="true"
         android:enableOnBackInvokedCallback="true"
-        tools:targetApi="m">
+        tools:targetApi="tiramisu">
         <!-- com.ryanheise.audioservice.AudioServiceActivity is implemented inside MainActivity -->
         <!-- launch mode singleInstance is helpful when using uni_links (app links) -->
         <activity
