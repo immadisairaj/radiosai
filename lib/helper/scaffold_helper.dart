@@ -8,7 +8,7 @@ class ScaffoldHelper {
 
   /// shows the snack bar using the global scaffold key
   ///
-  /// Use getIt<ScaffoldHelper>().showSnackBar
+  /// Use `getIt<ScaffoldHelper>().showSnackBar`
   ///
   /// pass [text] to display and
   /// [duration] for how much time to display
