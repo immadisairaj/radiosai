@@ -8,7 +8,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -215,10 +215,9 @@ class _Media extends State<Media> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(8.0),
                     onTap: () async {
-                      bool hasInternet = Provider.of<InternetConnectionStatus>(
-                              context,
-                              listen: false) ==
-                          InternetConnectionStatus.connected;
+                      bool hasInternet =
+                          Provider.of<InternetStatus>(context, listen: false) ==
+                              InternetStatus.connected;
                       // No download option. So,
                       // everything is considered to use internet
                       if (hasInternet) {
@@ -256,10 +255,9 @@ class _Media extends State<Media> {
                                 onPressed: () async {
                                   // Change in radio_home.dart if changed here
                                   bool hasInternet =
-                                      Provider.of<InternetConnectionStatus>(
-                                              context,
+                                      Provider.of<InternetStatus>(context,
                                               listen: false) ==
-                                          InternetConnectionStatus.connected;
+                                          InternetStatus.connected;
                                   // No download option. So,
                                   // everything is considered to use internet
                                   if (hasInternet) {
@@ -431,7 +429,7 @@ class _Media extends State<Media> {
   //   );
   //   if (_downloadTasks.contains(task)) return;
   //   var connectionStatus = await InternetConnectionChecker().connectionStatus;
-  //   if (connectionStatus == InternetConnectionStatus.disconnected) {
+  //   if (connectionStatus == InternetStatus.disconnected) {
   //     getIt<ScaffoldHelper>()
   //         .showSnackBar('no internet', const Duration(seconds: 1));
   //     return;

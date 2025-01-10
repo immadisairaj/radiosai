@@ -7,7 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/loading_notifier.dart';
@@ -216,8 +216,8 @@ class _MediaPlayer extends State<MediaPlayer> {
                                         case RepeatState.repeatSong:
                                           repeatModeInt = 2;
                                           break;
-                                        default:
-                                          repeatModeInt = 0;
+                                        // default:
+                                        //   repeatModeInt = 0;
                                       }
                                       IconData repeatModeIcon =
                                           (repeatModeInt == 2)
@@ -580,8 +580,8 @@ class _MediaPlayer extends State<MediaPlayer> {
       link: fileLink,
     );
     if (_downloadTasks.contains(task)) return;
-    var connectionStatus = await InternetConnectionChecker().connectionStatus;
-    if (connectionStatus == InternetConnectionStatus.disconnected) {
+    var connectionStatus = await InternetConnection().internetStatus;
+    if (connectionStatus == InternetStatus.disconnected) {
       getIt<ScaffoldHelper>()
           .showSnackBar('no internet', const Duration(seconds: 1));
       return;

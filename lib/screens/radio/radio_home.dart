@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 // import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
 import 'package:radiosai/audio_service/notifiers/play_button_notifier.dart';
@@ -117,9 +117,8 @@ class _RadioHome extends State<RadioHome> {
                                   // get the data of the internet
                                   // connectivity change
                                   bool hasInternet =
-                                      Provider.of<InternetConnectionStatus>(
-                                              context) ==
-                                          InternetConnectionStatus.connected;
+                                      Provider.of<InternetStatus>(context) ==
+                                          InternetStatus.connected;
 
                                   // default to prasanthi stream if the index
                                   // is out of length
@@ -162,9 +161,8 @@ class _RadioHome extends State<RadioHome> {
     // if it contains, no need to navigate again
 
     // This is the same code from media.dart (on tap a media item)
-    bool hasInternet =
-        Provider.of<InternetConnectionStatus>(context, listen: false) ==
-            InternetConnectionStatus.connected;
+    bool hasInternet = Provider.of<InternetStatus>(context, listen: false) ==
+        InternetStatus.connected;
     // No download option. So,
     // everything is considered to use internet
     if (hasInternet) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart'
+    as iccp;
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/bloc/internet_status.dart';
@@ -65,8 +66,8 @@ class MyApp extends StatelessWidget {
               radioLoadingBloc.dispose(),
         ),
         // stream for internet connectivity status
-        StreamProvider<InternetConnectionStatus>(
-          initialData: InternetConnectionStatus.connected,
+        StreamProvider<iccp.InternetStatus>(
+          initialData: iccp.InternetStatus.connected,
           create: (context) {
             return InternetStatus().internetStatusStreamController.stream;
           },

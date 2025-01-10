@@ -42,7 +42,8 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         '$(inherited)',
-        'AUDIO_SESSION_MICROPHONE=0'
+        'AUDIO_SESSION_MICROPHONE=0',
+        'PERMISSION_PHOTOS=1'
       ]
     end
   end

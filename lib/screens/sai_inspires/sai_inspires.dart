@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
-import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/audio_manager.dart';
@@ -521,9 +521,8 @@ class _SaiInspires extends State<SaiInspires> {
 
     bool hasInternet = false;
     if (context.mounted) {
-      hasInternet =
-          Provider.of<InternetConnectionStatus>(context, listen: false) ==
-              InternetConnectionStatus.connected;
+      hasInternet = Provider.of<InternetStatus>(context, listen: false) ==
+          InternetStatus.connected;
     }
     // No download option. So,
     // everything is considered to use internet

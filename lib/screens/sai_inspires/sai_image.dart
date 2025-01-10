@@ -1,12 +1,11 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:gallery_saver/gallery_saver.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
@@ -150,7 +149,7 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     if (!_isCopying) {
       _isCopying = true;
       final publicDirectoryPath = await _getPublicPath();
-      const albumName = 'Sai Voice';
+      const albumName = 'Sai_Voice';
       final imageDirectoryPath = '$publicDirectoryPath/$albumName';
       var permission = await _canSave();
       if (!permission) {
@@ -171,10 +170,14 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       // }
       var cacheFile = await _getCachedFile();
       imageFile.writeAsBytesSync(cacheFile.readAsBytesSync());
+
+      final imageName = '${albumName}_${widget.fileName}';
       // save to gallery after saved to external file
-      GallerySaver.saveImage(imageFilePath, albumName: albumName)
-          .then((isSave) {
-        if (isSave!) {
+      ImageGallerySaverPlus.saveFile(
+        imageFilePath,
+        name: imageName,
+      ).then((isSave) {
+        if (isSave['isSuccess']) {
           getIt<ScaffoldHelper>()
               .showSnackBar('Saved to gallery', const Duration(seconds: 1));
         }
@@ -198,24 +201,11 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
     var status = PermissionStatus.denied;
     bool havePermission = false;
     if (Platform.isIOS) {
-      status = await Permission.storage.request();
+      status = await Permission.photos.request();
       havePermission = status.isGranted || status.isLimited;
     } else if (Platform.isAndroid) {
-      final DeviceInfoPlugin info = DeviceInfoPlugin();
-      final AndroidDeviceInfo androidInfo = await info.androidInfo;
-      final int androidVersion = int.parse(androidInfo.version.release);
-
-      if (androidVersion < 13) {
-        status = await Permission.storage.request();
-        havePermission = status.isGranted || status.isLimited;
-      } else if (androidVersion >= 13) {
-        final request = await [
-          Permission.photos,
-        ].request();
-
-        havePermission = request.values
-            .every((status) => status == PermissionStatus.granted);
-      }
+      // For android, no permission is needed
+      havePermission = true;
     }
     return havePermission;
   }
