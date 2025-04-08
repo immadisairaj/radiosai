@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -19,12 +20,9 @@ import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/screens/media_player/playing_queue.dart';
 import 'package:radiosai/screens/radio/radio_player.dart';
-import 'package:uni_links/uni_links.dart';
 
 class RadioHome extends StatefulWidget {
-  const RadioHome({
-    super.key,
-  });
+  const RadioHome({super.key});
 
   @override
   State<RadioHome> createState() => _RadioHome();
@@ -77,9 +75,7 @@ class _RadioHome extends State<RadioHome> {
               ),
             ),
             // Container to reduce the brightness of background pic
-            Container(
-              color: const Color(0X2F000000),
-            ),
+            Container(color: const Color(0X2F000000)),
             // Consumers of all the providers to get the stream of data
             Consumer<RadioIndexBloc>(
               // listen to change of radio stream index
@@ -93,53 +89,56 @@ class _RadioHome extends State<RadioHome> {
                     return Consumer<RadioLoadingBloc>(
                       builder: (context, radioLoadingBloc, child) {
                         return StreamBuilder<bool?>(
-                          stream: radioLoadingBloc.radioLoadingStream
-                              as Stream<bool?>?,
+                          stream:
+                              radioLoadingBloc.radioLoadingStream
+                                  as Stream<bool?>?,
                           builder: (context, snapshot) {
                             bool loadingState = snapshot.data ?? false;
 
                             // listen to change of playing state
                             // from audio service
                             return ValueListenableBuilder<PlayButtonState>(
-                                valueListenable:
-                                    _audioManager!.playButtonNotifier,
-                                builder: (context, playButtonState, snapshot) {
-                                  bool isPlaying = playButtonState ==
-                                      PlayButtonState.playing;
+                              valueListenable:
+                                  _audioManager!.playButtonNotifier,
+                              builder: (context, playButtonState, snapshot) {
+                                bool isPlaying =
+                                    playButtonState == PlayButtonState.playing;
 
-                                  // change the playing state only when radio
-                                  // player is playing
-                                  if (_audioManager!.mediaTypeNotifier.value ==
-                                      MediaType.media) {
-                                    isPlaying = false;
-                                  }
+                                // change the playing state only when radio
+                                // player is playing
+                                if (_audioManager!.mediaTypeNotifier.value ==
+                                    MediaType.media) {
+                                  isPlaying = false;
+                                }
 
-                                  // get the data of the internet
-                                  // connectivity change
-                                  bool hasInternet =
-                                      Provider.of<InternetStatus>(context) ==
-                                          InternetStatus.connected;
+                                // get the data of the internet
+                                // connectivity change
+                                bool hasInternet =
+                                    Provider.of<InternetStatus>(context) ==
+                                    InternetStatus.connected;
 
-                                  // default to prasanthi stream if the index
-                                  // is out of length
-                                  final length = MyConstants.of(context)!
-                                      .radioStreamHttps
-                                      .length;
-                                  if (!(radioStreamIndex > -1 &&
-                                      radioStreamIndex < length)) {
-                                    radioIndexBloc.changeRadioIndex.add(0);
-                                    return const Text('Please wait!');
-                                  }
+                                // default to prasanthi stream if the index
+                                // is out of length
+                                final length =
+                                    MyConstants.of(
+                                      context,
+                                    )!.radioStreamHttps.length;
+                                if (!(radioStreamIndex > -1 &&
+                                    radioStreamIndex < length)) {
+                                  radioIndexBloc.changeRadioIndex.add(0);
+                                  return const Text('Please wait!');
+                                }
 
-                                  return RadioPlayer(
-                                    radius: radius,
-                                    radioStreamIndex: radioStreamIndex,
-                                    isPlaying: isPlaying,
-                                    loadingState: loadingState,
-                                    radioLoadingBloc: radioLoadingBloc,
-                                    hasInternet: hasInternet,
-                                  );
-                                });
+                                return RadioPlayer(
+                                  radius: radius,
+                                  radioStreamIndex: radioStreamIndex,
+                                  isPlaying: isPlaying,
+                                  loadingState: loadingState,
+                                  radioLoadingBloc: radioLoadingBloc,
+                                  hasInternet: hasInternet,
+                                );
+                              },
+                            );
                           },
                         );
                       },
@@ -161,22 +160,27 @@ class _RadioHome extends State<RadioHome> {
     // if it contains, no need to navigate again
 
     // This is the same code from media.dart (on tap a media item)
-    bool hasInternet = Provider.of<InternetStatus>(context, listen: false) ==
+    bool hasInternet =
+        Provider.of<InternetStatus>(context, listen: false) ==
         InternetStatus.connected;
     // No download option. So,
     // everything is considered to use internet
     if (hasInternet) {
       final response = await http.head(uri!);
       if (response.statusCode != 200) {
-        getIt<ScaffoldHelper>()
-            .showSnackBar('Link is not valid', const Duration(seconds: 1));
+        getIt<ScaffoldHelper>().showSnackBar(
+          'Link is not valid',
+          const Duration(seconds: 1),
+        );
         return;
       }
       // treated as file is absent
       startPlayer(name, receivedLink, false);
     } else {
       getIt<ScaffoldHelper>().showSnackBar(
-          'Connect to the Internet and try again', const Duration(seconds: 2));
+        'Connect to the Internet and try again',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -211,7 +215,9 @@ class _RadioHome extends State<RadioHome> {
             _audioManager!.play();
           }
           getIt<ScaffoldHelper>().showSnackBar(
-              'This is same as currently playing', const Duration(seconds: 2));
+            'This is same as currently playing',
+            const Duration(seconds: 2),
+          );
           getIt<NavigationService>().navigateTo(MediaPlayer.route);
           return;
         }
@@ -235,21 +241,33 @@ class _RadioHome extends State<RadioHome> {
       } else {
         // if radio player is running, stop and play media
         _audioManager!.stop();
-        await initMediaService(name, link, isFileExists)
-            .then((value) => _openMediaPlayer());
+        await initMediaService(
+          name,
+          link,
+          isFileExists,
+        ).then((value) => _openMediaPlayer());
       }
     } else {
       // initialize the media service
-      initMediaService(name, link, isFileExists)
-          .then((value) => _openMediaPlayer());
+      initMediaService(
+        name,
+        link,
+        isFileExists,
+      ).then((value) => _openMediaPlayer());
     }
   }
 
   /// initialize the media player when no player is playing
   Future<void> initMediaService(
-      String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    String name,
+    String link,
+    bool isFileExists,
+  ) async {
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
 
     // passing params to send the source to play
     Map<String, dynamic> params = {
@@ -271,8 +289,11 @@ class _RadioHome extends State<RadioHome> {
   ///
   /// else, adds to the queue and returns true
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
     if (_audioManager!.queueNotifier.value.contains(tempMediaItem.title)) {
       return false;
     } else {
@@ -286,8 +307,11 @@ class _RadioHome extends State<RadioHome> {
   /// Note: check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (_audioManager!.queueNotifier.value.length > 1) {
-      final tempMediaItem =
-          await MediaHelper.generateMediaItem(name, link, isFileExists);
+      final tempMediaItem = await MediaHelper.generateMediaItem(
+        name,
+        link,
+        isFileExists,
+      );
       await _audioManager!.removeQueueItemWithTitle(tempMediaItem.title);
       return _audioManager!.addQueueItem(tempMediaItem);
     }
@@ -315,27 +339,30 @@ class _RadioHome extends State<RadioHome> {
   void _handleIncomingLinks() {
     // It will handle app links while the app is already started - be it in
     // the foreground or in the background.
-    uriLinkStream.listen((Uri? uri) {
-      // _sub = uriLinkStream.listen((Uri uri) {
-      if (!mounted) return;
-      // print('got uri: $uri');
-      _validateAndPlayMedia(uri);
-      // setState(() {
-      //   _latestUri = uri;
-      //   _err = null;
-      // });
-    }, onError: (Object err) {
-      if (!mounted) return;
-      // error has recieved and no need to send anything
-      // setState(() {
-      //   _latestUri = null;
-      //   if (err is FormatException) {
-      //     _err = err;
-      //   } else {
-      //     _err = null;
-      //   }
-      // });
-    });
+    AppLinks().uriLinkStream.listen(
+      (Uri? uri) {
+        // _sub = uriLinkStream.listen((Uri uri) {
+        if (!mounted) return;
+        // print('got uri: $uri');
+        _validateAndPlayMedia(uri);
+        // setState(() {
+        //   _latestUri = uri;
+        //   _err = null;
+        // });
+      },
+      onError: (Object err) {
+        if (!mounted) return;
+        // error has recieved and no need to send anything
+        // setState(() {
+        //   _latestUri = null;
+        //   if (err is FormatException) {
+        //     _err = err;
+        //   } else {
+        //     _err = null;
+        //   }
+        // });
+      },
+    );
   }
 
   /// Handle the initial Uri - the one the app was started with
@@ -353,7 +380,7 @@ class _RadioHome extends State<RadioHome> {
       _initialUriIsHandled = true;
       // print('_handleInitialUri called');
       try {
-        final uri = await getInitialUri();
+        final uri = await AppLinks().getInitialLink();
         if (uri == null) {
           // No uri is returned. Do nothing
         } else {
