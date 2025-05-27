@@ -7,9 +7,7 @@ import 'package:radiosai/widgets/settings/settings_section.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Settings extends StatefulWidget {
-  const Settings({
-    super.key,
-  });
+  const Settings({super.key});
 
   static const String route = 'settings';
 
@@ -45,16 +43,15 @@ class _Settings extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
+      appBar: AppBar(title: const Text('Settings')),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: Scrollbar(
           radius: const Radius.circular(8),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics()),
+              parent: AlwaysScrollableScrollPhysics(),
+            ),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Column(
@@ -80,12 +77,8 @@ class _Settings extends State<Settings> {
       title: 'General Settings',
       child: Column(
         children: [
-          StartingRadioStream(
-            contentPadding: _contentPadding,
-          ),
-          AppTheme(
-            contentPadding: _contentPadding,
-          ),
+          StartingRadioStream(contentPadding: _contentPadding),
+          AppTheme(contentPadding: _contentPadding),
         ],
       ),
     );
@@ -102,11 +95,13 @@ class _Settings extends State<Settings> {
             title: const Text('Clear cache'),
             onTap: () {
               DefaultCacheManager().emptyCache();
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Cleared cache'),
-                behavior: SnackBarBehavior.floating,
-                duration: Duration(seconds: 1),
-              ));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Cleared cache'),
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 1),
+                ),
+              );
             },
           ),
         ],
@@ -158,7 +153,8 @@ class _Settings extends State<Settings> {
             title: const Text('Google Play Store'),
             onTap: () {
               _urlLaunch(
-                  'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai');
+                'https://play.google.com/store/apps/details?id=com.immadisairaj.radiosai',
+              );
             },
           ),
           ListTile(
@@ -191,7 +187,7 @@ class _Settings extends State<Settings> {
             contentPadding: _contentPadding,
             title: const Text('Contact'),
             onTap: () {
-              _urlLaunch('mailto:immadirajendra.sai@gmail.com');
+              _urlLaunch('mailto:mail@immadisairaj.dev');
             },
           ),
           ListTile(
@@ -199,7 +195,8 @@ class _Settings extends State<Settings> {
             title: const Text('Privacy Policy'),
             onTap: () {
               _urlLaunch(
-                  'https://radiosai.immadisairaj.dev/privacy_policy.html');
+                'https://radiosai.immadisairaj.dev/privacy_policy.html',
+              );
             },
           ),
           const Divider(),
