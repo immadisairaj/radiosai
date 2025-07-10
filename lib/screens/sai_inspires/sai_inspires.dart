@@ -25,9 +25,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shimmer/shimmer.dart';
 
 class SaiInspires extends StatefulWidget {
-  const SaiInspires({
-    super.key,
-  });
+  const SaiInspires({super.key});
 
   static const String route = 'saiInspires';
 
@@ -92,17 +90,21 @@ class _SaiInspires extends State<SaiInspires> {
         title: const Text('Sai Inspires'),
         actions: <Widget>[
           IconButton(
-            icon: Icon((Platform.isAndroid)
-                ? Icons.share_outlined
-                : CupertinoIcons.share),
+            icon: Icon(
+              (Platform.isAndroid)
+                  ? Icons.share_outlined
+                  : CupertinoIcons.share,
+            ),
             tooltip: 'Share Sai Inspires',
             splashRadius: 24,
             onPressed: () => _share(context),
           ),
           IconButton(
-            icon: Icon((Platform.isAndroid)
-                ? Icons.date_range_outlined
-                : CupertinoIcons.calendar),
+            icon: Icon(
+              (Platform.isAndroid)
+                  ? Icons.date_range_outlined
+                  : CupertinoIcons.calendar,
+            ),
             tooltip: 'Select date',
             splashRadius: 24,
             onPressed: () => (Platform.isAndroid)
@@ -114,8 +116,9 @@ class _SaiInspires extends State<SaiInspires> {
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         child: AnimatedCrossFade(
-          crossFadeState:
-              _isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          crossFadeState: _isLoading
+              ? CrossFadeState.showSecond
+              : CrossFadeState.showFirst,
           duration: const Duration(seconds: 1),
           firstChild: SizedBox(
             height: MediaQuery.of(context).size.height,
@@ -144,24 +147,27 @@ class _SaiInspires extends State<SaiInspires> {
                                           // shimmer place holder for loading
                                           placeholder: (context, placeholder) =>
                                               Shimmer.fromColors(
-                                            baseColor: Theme.of(context)
-                                                .colorScheme
-                                                .secondaryContainer,
-                                            highlightColor: Theme.of(context)
-                                                .colorScheme
-                                                .onSecondaryContainer,
-                                            enabled: true,
-                                            child: SizedBox(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.5,
-                                              height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.4,
-                                            ),
-                                          ),
+                                                baseColor: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondaryContainer,
+                                                highlightColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .onSecondaryContainer,
+                                                enabled: true,
+                                                child: SizedBox(
+                                                  width:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.width *
+                                                      0.5,
+                                                  height:
+                                                      MediaQuery.of(
+                                                        context,
+                                                      ).size.height *
+                                                      0.4,
+                                                ),
+                                              ),
                                         ),
                                       ),
                                       onTap: () => _viewImage(),
@@ -177,11 +183,10 @@ class _SaiInspires extends State<SaiInspires> {
                                 child: ElevatedButton(
                                   onPressed: () => _playAudio(context),
                                   child: const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 8.0),
-                                    child: Text(
-                                      'Play Audio',
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 8.0,
                                     ),
+                                    child: Text('Play Audio'),
                                   ),
                                 ),
                               )
@@ -190,7 +195,10 @@ class _SaiInspires extends State<SaiInspires> {
                           width: MediaQuery.of(context).size.width,
                           child: Padding(
                             padding: const EdgeInsets.only(
-                                left: 20, right: 20, top: 8),
+                              left: 20,
+                              right: 20,
+                              top: 8,
+                            ),
                             child: _content(),
                           ),
                         ),
@@ -228,9 +236,7 @@ class _SaiInspires extends State<SaiInspires> {
             ),
           ),
           // Shown second child it is loading
-          secondChild: Center(
-            child: _showLoading(),
-          ),
+          secondChild: Center(child: _showLoading()),
         ),
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
@@ -238,7 +244,7 @@ class _SaiInspires extends State<SaiInspires> {
   }
 
   /// navigate to new page to view full image
-  _viewImage() {
+  void _viewImage() {
     String fileName = 'SI_${DateFormat('yyyyMMdd').format(selectedDate!)}';
     Navigator.push(
       context,
@@ -259,7 +265,7 @@ class _SaiInspires extends State<SaiInspires> {
   /// takes in [date] as input
   ///
   /// continues the process by retrieving the data
-  _updateURL(DateTime date) async {
+  Future<void> _updateURL(DateTime date) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     finalUrl = '$baseUrl?publishDate=$formattedDate';
     _getData();
@@ -270,7 +276,7 @@ class _SaiInspires extends State<SaiInspires> {
   /// retrieve the data from finalUrl and set the image url
   ///
   /// parses the data too
-  _getData() async {
+  Future<void> _getData() async {
     File file;
     try {
       file = await DefaultCacheManager()
@@ -443,7 +449,8 @@ class _SaiInspires extends State<SaiInspires> {
     if (_contentText != 'null') {
       // if data is visible, share the data
       String textData;
-      textData = '$_dateText\n\n$_thoughtOfTheDay\n'
+      textData =
+          '$_dateText\n\n$_thoughtOfTheDay\n'
           '\n$_contentText\n\n$_byBaba\n\n$_quote';
       textData = 'Sai Inspires - $textData';
       // currently downloading image from old api and sharing it
@@ -473,12 +480,14 @@ class _SaiInspires extends State<SaiInspires> {
     } else {
       // if there is no data, show snackbar that no data is available
       getIt<ScaffoldHelper>().showSnackBar(
-          'No data available to share', const Duration(seconds: 1));
+        'No data available to share',
+        const Duration(seconds: 1),
+      );
     }
   }
 
   /// play the audio of Sai Inspires if the url is present
-  _playAudio(BuildContext context) async {
+  Future<void> _playAudio(BuildContext context) async {
     File file;
     try {
       file = await DefaultCacheManager()
@@ -508,8 +517,9 @@ class _SaiInspires extends State<SaiInspires> {
       DefaultCacheManager().removeFile(finalUrl);
       setState(() {
         getIt<ScaffoldHelper>().showSnackBar(
-            'Failed getting the file, please try again',
-            const Duration(seconds: 2));
+          'Failed getting the file, please try again',
+          const Duration(seconds: 2),
+        );
       });
       return;
     }
@@ -521,7 +531,8 @@ class _SaiInspires extends State<SaiInspires> {
 
     bool hasInternet = false;
     if (context.mounted) {
-      hasInternet = Provider.of<InternetStatus>(context, listen: false) ==
+      hasInternet =
+          Provider.of<InternetStatus>(context, listen: false) ==
           InternetStatus.connected;
     }
     // No download option. So,
@@ -530,7 +541,9 @@ class _SaiInspires extends State<SaiInspires> {
       await startPlayer(name, audioMP3Url, false);
     } else {
       getIt<ScaffoldHelper>().showSnackBar(
-          'Connect to the Internet and try again', const Duration(seconds: 2));
+        'Connect to the Internet and try again',
+        const Duration(seconds: 2),
+      );
     }
   }
 
@@ -564,7 +577,9 @@ class _SaiInspires extends State<SaiInspires> {
             _audioManager!.play();
           }
           getIt<ScaffoldHelper>().showSnackBar(
-              'This is same as currently playing', const Duration(seconds: 2));
+            'This is same as currently playing',
+            const Duration(seconds: 2),
+          );
           getIt<NavigationService>().navigateTo(MediaPlayer.route);
           return;
         }
@@ -588,21 +603,29 @@ class _SaiInspires extends State<SaiInspires> {
       } else {
         // if radio player is running, stop and play media
         _audioManager!.stop();
-        await initMediaService(name, link, isFileExists).then((value) =>
-            getIt<NavigationService>().navigateTo(MediaPlayer.route));
+        await initMediaService(name, link, isFileExists).then(
+          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
+        );
       }
     } else {
       // initialize the media service
       initMediaService(name, link, isFileExists).then(
-          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route));
+        (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
+      );
     }
   }
 
   /// initialize the media player when no player is playing
   Future<void> initMediaService(
-      String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    String name,
+    String link,
+    bool isFileExists,
+  ) async {
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
 
     // passing params to send the source to play
     Map<String, dynamic> params = {
@@ -624,8 +647,11 @@ class _SaiInspires extends State<SaiInspires> {
   ///
   /// else, adds to the queue and returns true
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
     if (_audioManager!.queueNotifier.value.contains(tempMediaItem.title)) {
       return false;
     } else {
@@ -639,8 +665,11 @@ class _SaiInspires extends State<SaiInspires> {
   /// Note: check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (_audioManager!.queueNotifier.value.length > 1) {
-      final tempMediaItem =
-          await MediaHelper.generateMediaItem(name, link, isFileExists);
+      final tempMediaItem = await MediaHelper.generateMediaItem(
+        name,
+        link,
+        isFileExists,
+      );
       await _audioManager!.removeQueueItemWithTitle(tempMediaItem.title);
       return _audioManager!.addQueueItem(tempMediaItem);
     }
@@ -655,9 +684,7 @@ class _SaiInspires extends State<SaiInspires> {
           alignment: const Alignment(1, 0),
           child: SelectableText(
             _dateText,
-            style: const TextStyle(
-              fontSize: 14,
-            ),
+            style: const TextStyle(fontSize: 14),
           ),
         ),
         Padding(
@@ -675,10 +702,7 @@ class _SaiInspires extends State<SaiInspires> {
         SelectableText(
           _contentText,
           textAlign: TextAlign.justify,
-          style: const TextStyle(
-            fontSize: 17,
-            height: 1.3,
-          ),
+          style: const TextStyle(fontSize: 17, height: 1.3),
         ),
         Padding(
           padding: const EdgeInsets.only(top: 8.0),
@@ -686,9 +710,7 @@ class _SaiInspires extends State<SaiInspires> {
             alignment: const Alignment(1, 0),
             child: SelectableText(
               _byBaba,
-              style: const TextStyle(
-                fontSize: 15,
-              ),
+              style: const TextStyle(fontSize: 15),
             ),
           ),
         ),
@@ -738,11 +760,7 @@ class _SaiInspires extends State<SaiInspires> {
   Widget _shimmerLine() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Container(
-        width: double.infinity,
-        height: 8,
-        color: Colors.white,
-      ),
+      child: Container(width: double.infinity, height: 8, color: Colors.white),
     );
   }
 }

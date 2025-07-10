@@ -17,10 +17,7 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class ScheduleData extends StatefulWidget {
-  const ScheduleData({
-    super.key,
-    this.radioStreamIndex,
-  });
+  const ScheduleData({super.key, this.radioStreamIndex});
 
   final int? radioStreamIndex;
 
@@ -107,15 +104,17 @@ class _ScheduleData extends State<ScheduleData> {
         title: const Text('Schedule'),
         actions: <Widget>[
           IconButton(
-            icon: Icon((Platform.isAndroid)
-                ? Icons.date_range_outlined
-                : CupertinoIcons.calendar),
+            icon: Icon(
+              (Platform.isAndroid)
+                  ? Icons.date_range_outlined
+                  : CupertinoIcons.calendar,
+            ),
             tooltip: 'Select date',
             splashRadius: 24,
             onPressed: () => (Platform.isAndroid)
                 ? _selectDate(context)
                 : _selectDateIOS(context),
-          )
+          ),
         ],
       ),
       body: SizedBox(
@@ -150,9 +149,9 @@ class _ScheduleData extends State<ScheduleData> {
                                 'Date: ${DateFormat('MMMM dd, yyyy').format(selectedDate!)}',
                                 style: TextStyle(
                                   fontSize: 19,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onPrimaryContainer,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onPrimaryContainer,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -167,7 +166,10 @@ class _ScheduleData extends State<ScheduleData> {
                         duration: const Duration(milliseconds: 200),
                         child: Padding(
                           padding: const EdgeInsets.only(
-                              bottom: 8, left: 8, right: 8),
+                            bottom: 8,
+                            left: 8,
+                            right: 8,
+                          ),
                           child: Row(
                             children: [
                               const Align(
@@ -176,9 +178,7 @@ class _ScheduleData extends State<ScheduleData> {
                                   fit: BoxFit.fitHeight,
                                   child: Text(
                                     'Select Stream:',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                    ),
+                                    style: TextStyle(fontSize: 18),
                                   ),
                                 ),
                               ),
@@ -203,9 +203,7 @@ class _ScheduleData extends State<ScheduleData> {
                     : CrossFadeState.showFirst,
                 duration: const Duration(seconds: 1),
                 firstChild: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxHeight: height,
-                  ),
+                  constraints: BoxConstraints(maxHeight: height),
                   child: Stack(
                     children: [
                       if (_finalData.isNotEmpty)
@@ -217,30 +215,34 @@ class _ScheduleData extends State<ScheduleData> {
                             child: CustomScrollView(
                               controller: _scrollController,
                               physics: const BouncingScrollPhysics(
-                                  parent: AlwaysScrollableScrollPhysics()),
+                                parent: AlwaysScrollableScrollPhysics(),
+                              ),
                               slivers: [
                                 SliverToBoxAdapter(
                                   child: Padding(
                                     padding: EdgeInsets.only(
-                                        left: 10,
-                                        right: 10,
-                                        bottom: (MediaQuery.of(context)
-                                                    .viewPadding
-                                                    .bottom >
-                                                0)
-                                            ? MediaQuery.of(context)
-                                                .viewPadding
-                                                .bottom
-                                            : 20),
+                                      left: 10,
+                                      right: 10,
+                                      bottom:
+                                          (MediaQuery.of(
+                                                context,
+                                              ).viewPadding.bottom >
+                                              0)
+                                          ? MediaQuery.of(
+                                              context,
+                                            ).viewPadding.bottom
+                                          : 20,
+                                    ),
                                     child: Card(
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(10)),
+                                          Radius.circular(10),
+                                        ),
                                       ),
                                       elevation: 1,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.secondaryContainer,
                                       child: _scheduleItems(),
                                     ),
                                   ),
@@ -252,8 +254,9 @@ class _ScheduleData extends State<ScheduleData> {
                       // show when no data is retrieved
                       if (_finalData.isEmpty)
                         NoData(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surface,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surface,
                           text:
                               'No Data Available,\ncheck your internet or try again',
                           onPressed: () {
@@ -282,9 +285,7 @@ class _ScheduleData extends State<ScheduleData> {
                   ),
                 ),
                 // Shown second child it is loading
-                secondChild: Center(
-                  child: _showLoading(),
-                ),
+                secondChild: Center(child: _showLoading()),
               ),
             ),
           ],
@@ -299,94 +300,97 @@ class _ScheduleData extends State<ScheduleData> {
   /// showed after getting data
   Widget _scheduleItems() {
     return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        padding: const EdgeInsets.only(top: 2, bottom: 2),
-        itemCount: _finalData.length,
-        itemBuilder: (context, index) {
-          ScheduleEntity rowData = _finalData[index];
-          bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
-          // TODO: add 'vvv' in date format later and remove timeZoneName
-          String localTime =
-              '${DateFormat(is24HoursFormat ? 'HH:mm' : 'hh:mm a').format(rowData.dateTime)} ${rowData.dateTime.timeZoneName}';
-          // String gmtTime = '${rowData[2]} GMT';
-          String duration = '${rowData.durationMin} min';
-          String category = rowData.category;
-          String programe = rowData.content;
-          // String fids = mainRowData[2].substring(1, mainRowData[2].length - 1);
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 4, right: 4),
-                child: Card(
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () {
-                      // TODO: implement this later
-                      // if (fids != '') {
-                      //   Navigator.push(
-                      //       context,
-                      //       MaterialPageRoute(
-                      //           builder: (context) => Media(fids: fids)));
-                      // } else {
-                      //   getIt<ScaffoldHelper>().showSnackBar(
-                      //       'No media found!', const Duration(seconds: 1));
-                      // }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 4),
-                      child: Center(
-                        child: ListTile(
-                          title: Text(
-                            category,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
+      shrinkWrap: true,
+      primary: false,
+      padding: const EdgeInsets.only(top: 2, bottom: 2),
+      itemCount: _finalData.length,
+      itemBuilder: (context, index) {
+        ScheduleEntity rowData = _finalData[index];
+        bool is24HoursFormat = MediaQuery.of(context).alwaysUse24HourFormat;
+        // TODO: add 'vvv' in date format later and remove timeZoneName
+        String localTime =
+            '${DateFormat(is24HoursFormat ? 'HH:mm' : 'hh:mm a').format(rowData.dateTime)} ${rowData.dateTime.timeZoneName}';
+        // String gmtTime = '${rowData[2]} GMT';
+        String duration = '${rowData.durationMin} min';
+        String category = rowData.category;
+        String programe = rowData.content;
+        // String fids = mainRowData[2].substring(1, mainRowData[2].length - 1);
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 4),
+              child: Card(
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8.0),
+                  onTap: () {
+                    // TODO: implement this later
+                    // if (fids != '') {
+                    //   Navigator.push(
+                    //       context,
+                    //       MaterialPageRoute(
+                    //           builder: (context) => Media(fids: fids)));
+                    // } else {
+                    //   getIt<ScaffoldHelper>().showSnackBar(
+                    //       'No media found!', const Duration(seconds: 1));
+                    // }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 4),
+                    child: Center(
+                      child: ListTile(
+                        title: Text(
+                          category,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
                           ),
-                          subtitle: Text.rich(TextSpan(children: [
-                            TextSpan(text: programe),
-                            if (rowData.newFlag)
-                              const TextSpan(
-                                  text: ' - New!',
-                                  style: TextStyle(color: Colors.redAccent)),
-                          ])),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        ),
+                        subtitle: Text.rich(
+                          TextSpan(
                             children: [
-                              Text(
-                                localTime,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
+                              TextSpan(text: programe),
+                              if (rowData.newFlag)
+                                const TextSpan(
+                                  text: ' - New!',
+                                  style: TextStyle(color: Colors.redAccent),
                                 ),
-                              ),
-                              Text(
-                                duration,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                              ),
                             ],
                           ),
+                        ),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              localTime,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                            ),
+                            Text(
+                              duration,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              if (index != _finalData.length - 1)
-                const Divider(
-                  height: 2,
-                  thickness: 1.5,
-                ),
-            ],
-          );
-        });
+            ),
+            if (index != _finalData.length - 1)
+              const Divider(height: 2, thickness: 1.5),
+          ],
+        );
+      },
+    );
   }
 
   /// sets the [finalUrl]
@@ -394,12 +398,14 @@ class _ScheduleData extends State<ScheduleData> {
   /// takes in [date] as input
   ///
   /// continues the process by retrieving the data
-  _updateURL(DateTime date) {
+  void _updateURL(DateTime date) {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-    String previousFormattedDate =
-        DateFormat('yyyy-MM-dd').format(date.subtract(const Duration(days: 1)));
-    String nextFormattedDate =
-        DateFormat('yyyy-MM-dd').format(date.add(const Duration(days: 1)));
+    String previousFormattedDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(date.subtract(const Duration(days: 1)));
+    String nextFormattedDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(date.add(const Duration(days: 1)));
 
     // unique url for putting data into cache and getting it
     String url = '$baseUrl/data/d$streamId-$formattedDate.txt';
@@ -415,7 +421,11 @@ class _ScheduleData extends State<ScheduleData> {
   /// if the data is retrieved
   ///
   /// send previous date url, next date url and current date
-  _getData(String previousUrl, String nextUrl, DateTime date) async {
+  Future<void> _getData(
+    String previousUrl,
+    String nextUrl,
+    DateTime date,
+  ) async {
     String tempResponse = '';
     // checks if the file exists in cache
     FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
@@ -455,8 +465,10 @@ class _ScheduleData extends State<ScheduleData> {
       tempResponse = '[';
       bool firstFlag = false;
       if (previousResponse.statusCode == 200) {
-        tempResponse += previousResponse.body
-            .substring(1, previousResponse.body.length - 1);
+        tempResponse += previousResponse.body.substring(
+          1,
+          previousResponse.body.length - 1,
+        );
         firstFlag = true;
       }
       bool secondFlag = false;
@@ -467,8 +479,10 @@ class _ScheduleData extends State<ScheduleData> {
       }
       if (nextResponse.statusCode == 200) {
         tempResponse += secondFlag ? ',' : '';
-        tempResponse +=
-            nextResponse.body.substring(1, nextResponse.body.length - 1);
+        tempResponse += nextResponse.body.substring(
+          1,
+          nextResponse.body.length - 1,
+        );
       }
       tempResponse += ']';
 
@@ -487,17 +501,20 @@ class _ScheduleData extends State<ScheduleData> {
   /// sets the final data to display
   ///
   /// need date (selected date) to be passed
-  _parseData(String response, DateTime date) {
+  void _parseData(String response, DateTime date) {
     final data = jsonDecode(response);
     List<ScheduleEntity> finalData = [];
     for (var row in data) {
       // get date time and convert it to local
 
-      DateTime dateTime =
-          DateFormat('yyyy-MM-dd hh:mm').parse(row[1], true).toLocal();
-      int difference = DateTime(dateTime.year, dateTime.month, dateTime.day)
-          .difference(DateTime(date.year, date.month, date.day))
-          .inDays;
+      DateTime dateTime = DateFormat(
+        'yyyy-MM-dd hh:mm',
+      ).parse(row[1], true).toLocal();
+      int difference = DateTime(
+        dateTime.year,
+        dateTime.month,
+        dateTime.day,
+      ).difference(DateTime(date.year, date.month, date.day)).inDays;
       // add data only if it's today after converting
       if (difference != 0) continue;
 
@@ -513,15 +530,17 @@ class _ScheduleData extends State<ScheduleData> {
       content = doc.body!.text;
 
       // add it to final data
-      finalData.add(ScheduleEntity(
-        dateTime: dateTime,
-        category: row[2],
-        content: content,
-        durationMin: int.parse(row[4]),
-        relatedLink: row[5],
-        newFlag: row[6] == '1',
-        firstBroadcastOn: row[7],
-      ));
+      finalData.add(
+        ScheduleEntity(
+          dateTime: dateTime,
+          category: row[2],
+          content: content,
+          durationMin: int.parse(row[4]),
+          relatedLink: row[5],
+          newFlag: row[6] == '1',
+          firstBroadcastOn: row[7],
+        ),
+      );
     }
 
     // var document = parse(response);
@@ -657,46 +676,47 @@ class _ScheduleData extends State<ScheduleData> {
   void _selectDateIOS(BuildContext context) {
     DateTime? picked;
     showCupertinoModalPopup(
-        context: context,
-        builder: (_) => Container(
-              color: Theme.of(context).colorScheme.surface,
-              height: 200,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 120,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: selectedDate,
-                      // Schedule started on 8th Nov 2019
-                      // data available from 19th Mar, 2023
-                      minimumDate: DateTime(2023, 03, 19),
-                      // Schedule is available for 1 day after current date
-                      maximumDate: now.add(const Duration(days: 1)),
-                      onDateTimeChanged: (pickedDateTime) {
-                        picked = pickedDateTime;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 70,
-                    child: CupertinoButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        if (picked != null && picked != selectedDate) {
-                          setState(() {
-                            _isLoading = true;
-                            selectedDate = picked;
-                            _updateURL(selectedDate!);
-                          });
-                        }
-                        Navigator.of(context).maybePop();
-                      },
-                    ),
-                  ),
-                ],
+      context: context,
+      builder: (_) => Container(
+        color: Theme.of(context).colorScheme.surface,
+        height: 200,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 120,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: selectedDate,
+                // Schedule started on 8th Nov 2019
+                // data available from 19th Mar, 2023
+                minimumDate: DateTime(2023, 03, 19),
+                // Schedule is available for 1 day after current date
+                maximumDate: now.add(const Duration(days: 1)),
+                onDateTimeChanged: (pickedDateTime) {
+                  picked = pickedDateTime;
+                },
               ),
-            ));
+            ),
+            SizedBox(
+              height: 70,
+              child: CupertinoButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  if (picked != null && picked != selectedDate) {
+                    setState(() {
+                      _isLoading = true;
+                      selectedDate = picked;
+                      _updateURL(selectedDate!);
+                    });
+                  }
+                  Navigator.of(context).maybePop();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// refresh the data
@@ -725,8 +745,9 @@ class _ScheduleData extends State<ScheduleData> {
   void _handleStreamName() {
     if (streamId == '') return;
     int index = firstStreamMap.indexOf(int.parse(streamId));
-    selectedStream =
-        MyConstants.of(context)!.radioStreamHttps.keys.toList()[index];
+    selectedStream = MyConstants.of(
+      context,
+    )!.radioStreamHttps.keys.toList()[index];
   }
 
   /// scroll listener to show/hide the selecting widget
@@ -844,11 +865,7 @@ class _ScheduleData extends State<ScheduleData> {
                     height: 8,
                     color: Colors.white,
                   ),
-                  Container(
-                    width: width * 0.6,
-                    height: 8,
-                    color: Colors.white,
-                  ),
+                  Container(width: width * 0.6, height: 8, color: Colors.white),
                 ],
               ),
               Column(
@@ -860,11 +877,7 @@ class _ScheduleData extends State<ScheduleData> {
                     height: 8,
                     color: Colors.white,
                   ),
-                  Container(
-                    width: width * 0.2,
-                    height: 8,
-                    color: Colors.white,
-                  ),
+                  Container(width: width * 0.2, height: 8, color: Colors.white),
                 ],
               ),
             ],

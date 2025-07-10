@@ -12,13 +12,14 @@ class InternetStatus {
   /// Initialize the stream of data if the device is connected to the internet
   /// from internet_connection_checker
   InternetStatus() {
-    listener =
-        iccp.InternetConnection().onStatusChange.listen((internetStatus) {
+    listener = iccp.InternetConnection().onStatusChange.listen((
+      internetStatus,
+    ) {
       internetStatusStreamController.add(internetStatus);
     });
   }
 
-  cancelListener() {
+  void cancelListener() {
     listener.cancel();
   }
 }

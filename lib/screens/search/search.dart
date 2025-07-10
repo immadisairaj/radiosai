@@ -19,11 +19,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 /// If using [initialSearch], it is recommended to use [initialSearchTItle] also
 class Search extends StatefulWidget {
-  const Search({
-    super.key,
-    this.initialSearch,
-    this.initialSearchTitle,
-  });
+  const Search({super.key, this.initialSearch, this.initialSearchTitle});
 
   final String? initialSearch;
   final String? initialSearchTitle;
@@ -125,7 +121,7 @@ class _Search extends State<Search> {
   /// [4] Language [5] Duration(min)
   /// [6] Download-fids
   List<List<String?>> _finalTableData = [
-    ['start']
+    ['start'],
   ];
 
   /// form key used to validate search key
@@ -197,11 +193,13 @@ class _Search extends State<Search> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.initialSearch == null
-            ? 'Search'
-            : ((widget.initialSearchTitle != null)
-                ? widget.initialSearchTitle!
-                : widget.initialSearch!)),
+        title: Text(
+          widget.initialSearch == null
+              ? 'Search'
+              : ((widget.initialSearchTitle != null)
+                    ? widget.initialSearchTitle!
+                    : widget.initialSearch!),
+        ),
       ),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
@@ -243,32 +241,36 @@ class _Search extends State<Search> {
                             child: CustomScrollView(
                               controller: _scrollController,
                               physics: const BouncingScrollPhysics(
-                                  parent: AlwaysScrollableScrollPhysics()),
+                                parent: AlwaysScrollableScrollPhysics(),
+                              ),
                               slivers: [
                                 SliverToBoxAdapter(
                                   child: Padding(
                                     padding: EdgeInsets.only(
-                                        left: 10,
-                                        right: 10,
-                                        bottom: MediaQuery.of(context)
-                                                .viewPadding
-                                                .bottom +
-                                            20 +
-                                            ((lastPage > 1)
-                                                ? MediaQuery.of(context)
-                                                        .size
-                                                        .height *
+                                      left: 10,
+                                      right: 10,
+                                      bottom:
+                                          MediaQuery.of(
+                                            context,
+                                          ).viewPadding.bottom +
+                                          20 +
+                                          ((lastPage > 1)
+                                              ? MediaQuery.of(
+                                                      context,
+                                                    ).size.height *
                                                     0.08
-                                                : 0)),
+                                              : 0),
+                                    ),
                                     child: Card(
                                       shape: const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.all(
-                                            Radius.circular(10)),
+                                          Radius.circular(10),
+                                        ),
                                       ),
                                       elevation: 1,
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .secondaryContainer,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.secondaryContainer,
                                       child: _searchItems(),
                                     ),
                                   ),
@@ -282,8 +284,9 @@ class _Search extends State<Search> {
                         const Center(
                           child: Padding(
                             padding: EdgeInsets.all(20),
-                            child:
-                                Text('No Data Available for the search values'),
+                            child: Text(
+                              'No Data Available for the search values',
+                            ),
                           ),
                         ),
                       // show the below when at start
@@ -297,8 +300,9 @@ class _Search extends State<Search> {
                       // show when no data is retrieved
                       if (_finalTableData[0][0] == 'null')
                         NoData(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surface,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surface,
                           text:
                               'No Data Available,\ncheck your internet and try again',
                           onPressed: () {
@@ -311,8 +315,9 @@ class _Search extends State<Search> {
                       // show when no data is retrieved and timeout
                       if (_finalTableData[0][0] == 'timeout')
                         NoData(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surface,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surface,
                           text:
                               'No Data Available,\nURL timeout, try again after some time',
                           onPressed: () {
@@ -334,9 +339,7 @@ class _Search extends State<Search> {
                     if (_isGettingData) _hiddenWebView(),
                     Container(
                       color: Theme.of(context).colorScheme.surface,
-                      child: Center(
-                        child: _showLoading(),
-                      ),
+                      child: Center(child: _showLoading()),
                     ),
                   ],
                 ),
@@ -354,90 +357,92 @@ class _Search extends State<Search> {
   /// showed after getting data
   Widget _searchItems() {
     return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        padding: const EdgeInsets.only(top: 4, bottom: 4),
-        itemCount: _finalTableData.length,
-        itemBuilder: (context, index) {
-          List<String?> rowData = _finalTableData[index];
+      shrinkWrap: true,
+      primary: false,
+      padding: const EdgeInsets.only(top: 4, bottom: 4),
+      itemCount: _finalTableData.length,
+      itemBuilder: (context, index) {
+        List<String?> rowData = _finalTableData[index];
 
-          String category = rowData[1]!;
-          String programe = rowData[3]!;
-          String language = rowData[4]!;
-          String duration = '${rowData[5]} min';
-          String? fids = rowData[6];
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 4, right: 4),
-                child: Card(
-                  elevation: 0,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () {
-                      if (fids != '') {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => Media(fids: fids)));
-                      } else {
-                        getIt<ScaffoldHelper>().showSnackBar(
-                            'No media found!', const Duration(seconds: 1));
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 2, bottom: 2),
-                      child: Center(
-                        child: ListTile(
-                          title: Text(
-                            category,
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w600,
+        String category = rowData[1]!;
+        String programe = rowData[3]!;
+        String language = rowData[4]!;
+        String duration = '${rowData[5]} min';
+        String? fids = rowData[6];
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4, right: 4),
+              child: Card(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8.0),
+                  onTap: () {
+                    if (fids != '') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Media(fids: fids),
+                        ),
+                      );
+                    } else {
+                      getIt<ScaffoldHelper>().showSnackBar(
+                        'No media found!',
+                        const Duration(seconds: 1),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 2, bottom: 2),
+                    child: Center(
+                      child: ListTile(
+                        title: Text(
+                          category,
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        subtitle: Text(programe),
+                        trailing: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text(
+                              language,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
+                              ),
                             ),
-                          ),
-                          subtitle: Text(programe),
-                          trailing: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(
-                                language,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
+                            Text(
+                              duration,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary,
                               ),
-                              Text(
-                                duration,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.tertiary,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              if (index != _finalTableData.length - 1)
-                const Divider(
-                  height: 2,
-                  thickness: 1.5,
-                ),
-            ],
-          );
-        });
+            ),
+            if (index != _finalTableData.length - 1)
+              const Divider(height: 2, thickness: 1.5),
+          ],
+        );
+      },
+    );
   }
 
   /// sets the [finalUrl]
   ///
   /// continues the process by retrieving the data
-  _updateURL() async {
+  Future<void> _updateURL() async {
     String formattedDate;
     if (selectedDate == null) {
       formattedDate = '';
@@ -460,7 +465,8 @@ class _Search extends State<Search> {
     data['page'] = '$currentPage';
 
     // unique url for putting data into cache and getting it
-    String url = '$baseUrl?form=${data['form']}'
+    String url =
+        '$baseUrl?form=${data['form']}'
         '&filesperpage_s=${data['filesperpage_s']}'
         '&description_s=${data['description_s']}'
         '&category_s=${data['category_s']}'
@@ -478,14 +484,15 @@ class _Search extends State<Search> {
   ///
   /// else continues the process by sending it to parse
   /// if the data is retrieved
-  _getData(Map<String, String?> formData) async {
+  Future<void> _getData(Map<String, String?> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
     FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
     if (fileInfo == null) {
       bool hasInternet = false;
       if (mounted) {
-        hasInternet = Provider.of<InternetStatus>(context, listen: false) ==
+        hasInternet =
+            Provider.of<InternetStatus>(context, listen: false) ==
             InternetStatus.connected;
       }
       // search works only if there is an internet
@@ -512,7 +519,7 @@ class _Search extends State<Search> {
 
   /// parses the data retrieved from url.
   /// sets the final data to display
-  _parseData(String response) {
+  void _parseData(String response) {
     var document = parse(response);
 
     if (!_isChangingPage) {
@@ -550,7 +557,7 @@ class _Search extends State<Search> {
     int dataLength = table.getElementsByTagName('tr').length;
     if (dataLength == 0) {
       tableData = [
-        ['null']
+        ['null'],
       ];
       setState(() {
         // set the data
@@ -564,7 +571,7 @@ class _Search extends State<Search> {
     } else if (dataLength == 2 &&
         table.getElementsByTagName('td').length == 1) {
       tableData = [
-        ['wrong']
+        ['wrong'],
       ];
       setState(() {
         // set the data
@@ -578,8 +585,9 @@ class _Search extends State<Search> {
     }
     for (int i = 1; i < dataLength; i++) {
       List<String?> tempList = [];
-      var rowData =
-          table.getElementsByTagName('tr')[i].getElementsByTagName('td');
+      var rowData = table
+          .getElementsByTagName('tr')[i]
+          .getElementsByTagName('td');
       // do not add if there are any suggestions
       if (rowData.length == 1) continue;
 
@@ -606,7 +614,8 @@ class _Search extends State<Search> {
           if (clickHere > 0) {
             int clickHereEnd = tempText.indexOf('-', clickHere + 2);
             if (clickHereEnd > 0) {
-              tempText = tempText.substring(0, clickHere) +
+              tempText =
+                  tempText.substring(0, clickHere) +
                   tempText.substring(clickHereEnd);
             }
           }
@@ -622,8 +631,9 @@ class _Search extends State<Search> {
 
           String? fids = '';
           if (rowData[j].getElementsByTagName('input').isNotEmpty) {
-            fids =
-                rowData[j].getElementsByTagName('input')[0].attributes['value'];
+            fids = rowData[j]
+                .getElementsByTagName('input')[0]
+                .attributes['value'];
           }
           tempList.add(fids);
         }
@@ -640,7 +650,7 @@ class _Search extends State<Search> {
 
     if (tableData.isEmpty) {
       tableData = [
-        ['wrong']
+        ['wrong'],
       ];
     }
 
@@ -740,8 +750,10 @@ class _Search extends State<Search> {
                     controller: _textController,
                     decoration: InputDecoration(
                       hintText: 'Search \'Manasa Bhajare\'',
-                      contentPadding:
-                          const EdgeInsets.only(left: 20, right: 20),
+                      contentPadding: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -787,21 +799,22 @@ class _Search extends State<Search> {
                               child: Row(
                                 children: [
                                   const Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 10, right: 10),
+                                    padding: EdgeInsets.only(
+                                      left: 10,
+                                      right: 10,
+                                    ),
                                     child: Center(
                                       child: Text(
                                         'Category:',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
+                                        style: TextStyle(fontSize: 18),
                                       ),
                                     ),
                                   ),
                                   Center(
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 5),
+                                        horizontal: 5,
+                                      ),
                                       child: _categoryDropDown(),
                                     ),
                                   ),
@@ -817,14 +830,14 @@ class _Search extends State<Search> {
                               child: Row(
                                 children: [
                                   const Padding(
-                                    padding:
-                                        EdgeInsets.only(left: 10, right: 10),
+                                    padding: EdgeInsets.only(
+                                      left: 10,
+                                      right: 10,
+                                    ),
                                     child: Center(
                                       child: Text(
                                         'Played on:',
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                        ),
+                                        style: TextStyle(fontSize: 18),
                                       ),
                                     ),
                                   ),
@@ -835,7 +848,8 @@ class _Search extends State<Search> {
                                     child: Center(
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 5),
+                                          horizontal: 5,
+                                        ),
                                         child: TextField(
                                           autofocus: false,
                                           textAlign: TextAlign.center,
@@ -847,15 +861,15 @@ class _Search extends State<Search> {
                                             ),
                                             suffixIcon:
                                                 (selectedDateString == '')
-                                                    ? Icon(
-                                                        (Platform.isAndroid)
-                                                            ? Icons
-                                                                .date_range_outlined
-                                                            : CupertinoIcons
-                                                                .calendar,
-                                                        size: 20,
-                                                      )
-                                                    : null,
+                                                ? Icon(
+                                                    (Platform.isAndroid)
+                                                        ? Icons
+                                                              .date_range_outlined
+                                                        : CupertinoIcons
+                                                              .calendar,
+                                                    size: 20,
+                                                  )
+                                                : null,
                                             contentPadding:
                                                 const EdgeInsets.all(0),
                                             border: const OutlineInputBorder(
@@ -864,8 +878,9 @@ class _Search extends State<Search> {
                                           ),
                                           onTap: () {
                                             // Below lines stop keyboard from appearing
-                                            FocusScope.of(context)
-                                                .requestFocus(FocusNode());
+                                            FocusScope.of(
+                                              context,
+                                            ).requestFocus(FocusNode());
 
                                             // Show Date Picker
                                             (Platform.isAndroid)
@@ -879,7 +894,8 @@ class _Search extends State<Search> {
                                   if (selectedDateString != '')
                                     IconButton(
                                       icon: const Icon(
-                                          CupertinoIcons.clear_circled),
+                                        CupertinoIcons.clear_circled,
+                                      ),
                                       splashRadius: 24,
                                       iconSize: 20,
                                       onPressed: _clearDate,
@@ -896,9 +912,11 @@ class _Search extends State<Search> {
                     flex: 1,
                     child: ElevatedButton(
                       onPressed: _submit,
-                      child: Icon((Platform.isAndroid)
-                          ? Icons.search_outlined
-                          : CupertinoIcons.search),
+                      child: Icon(
+                        (Platform.isAndroid)
+                            ? Icons.search_outlined
+                            : CupertinoIcons.search,
+                      ),
                     ),
                   ),
                 ],
@@ -981,54 +999,55 @@ class _Search extends State<Search> {
       picked = now;
     }
     showCupertinoModalPopup(
-        context: context,
-        builder: (_) => Container(
-              color: Theme.of(context).colorScheme.surface,
-              height: 200,
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: 120,
-                    child: CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime:
-                          (selectedDate == null) ? now : selectedDate,
-                      // Schedule started on 8th Nov 2019
-                      minimumDate: DateTime(2019, 11, 8),
-                      // Schedule is available for 1 day after current date
-                      maximumDate: now,
-                      onDateTimeChanged: (picked) {
-                        picked = picked;
-                      },
-                    ),
-                  ),
-                  SizedBox(
-                    height: 70,
-                    child: CupertinoButton(
-                      child: const Text('OK'),
-                      onPressed: () {
-                        if (picked != null) {
-                          selectedDate = picked;
-                          selectedDateString =
-                              DateFormat('MMM dd, yyyy').format(selectedDate!);
-                          _dateController.text = selectedDateString;
-
-                          setState(() {
-                            // if the category is changed and text is present, then search
-                            if (_textControllerClear) _submit();
-                          });
-                        }
-                        Navigator.of(context).maybePop();
-                      },
-                    ),
-                  ),
-                ],
+      context: context,
+      builder: (_) => Container(
+        color: Theme.of(context).colorScheme.surface,
+        height: 200,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 120,
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date,
+                initialDateTime: (selectedDate == null) ? now : selectedDate,
+                // Schedule started on 8th Nov 2019
+                minimumDate: DateTime(2019, 11, 8),
+                // Schedule is available for 1 day after current date
+                maximumDate: now,
+                onDateTimeChanged: (picked) {
+                  picked = picked;
+                },
               ),
-            ));
+            ),
+            SizedBox(
+              height: 70,
+              child: CupertinoButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  if (picked != null) {
+                    selectedDate = picked;
+                    selectedDateString = DateFormat(
+                      'MMM dd, yyyy',
+                    ).format(selectedDate!);
+                    _dateController.text = selectedDateString;
+
+                    setState(() {
+                      // if the category is changed and text is present, then search
+                      if (_textControllerClear) _submit();
+                    });
+                  }
+                  Navigator.of(context).maybePop();
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   /// clear the selected date
-  _clearDate() {
+  void _clearDate() {
     setState(() {
       selectedDate = null;
       selectedDateString = '';
@@ -1043,10 +1062,7 @@ class _Search extends State<Search> {
   /// shows the scroll of pages to navigate
   Widget _pagination() {
     if (lastPage <= 1) {
-      return const SizedBox(
-        height: 0,
-        width: 0,
-      );
+      return const SizedBox(height: 0, width: 0);
     }
 
     // because we have 2 scroll bar's in the screen
@@ -1075,8 +1091,12 @@ class _Search extends State<Search> {
             thumbVisibility: true,
             controller: scrollController,
             child: ListView.builder(
-              padding:
-                  const EdgeInsets.only(left: 4, right: 4, top: 2, bottom: 2),
+              padding: const EdgeInsets.only(
+                left: 4,
+                right: 4,
+                top: 2,
+                bottom: 2,
+              ),
               shrinkWrap: true,
               physics: const BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
@@ -1094,9 +1114,7 @@ class _Search extends State<Search> {
                           ? Theme.of(context).colorScheme.primaryContainer
                           : null,
                       child: InkWell(
-                        child: Center(
-                          child: Text('${index + 1}'),
-                        ),
+                        child: Center(child: Text('${index + 1}')),
                         onTap: () {
                           if (!isSelectedPage) {
                             setState(() {
@@ -1171,11 +1189,7 @@ class _Search extends State<Search> {
                     height: 8,
                     color: Colors.white,
                   ),
-                  Container(
-                    width: width * 0.6,
-                    height: 8,
-                    color: Colors.white,
-                  ),
+                  Container(width: width * 0.6, height: 8, color: Colors.white),
                 ],
               ),
               Column(
@@ -1187,11 +1201,7 @@ class _Search extends State<Search> {
                     height: 8,
                     color: Colors.white,
                   ),
-                  Container(
-                    width: width * 0.2,
-                    height: 8,
-                    color: Colors.white,
-                  ),
+                  Container(width: width * 0.2, height: 8, color: Colors.white),
                 ],
               ),
             ],

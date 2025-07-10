@@ -119,10 +119,9 @@ class _RadioHome extends State<RadioHome> {
 
                                 // default to prasanthi stream if the index
                                 // is out of length
-                                final length =
-                                    MyConstants.of(
-                                      context,
-                                    )!.radioStreamHttps.length;
+                                final length = MyConstants.of(
+                                  context,
+                                )!.radioStreamHttps.length;
                                 if (!(radioStreamIndex > -1 &&
                                     radioStreamIndex < length)) {
                                   radioIndexBloc.changeRadioIndex.add(0);
@@ -153,7 +152,7 @@ class _RadioHome extends State<RadioHome> {
     );
   }
 
-  _validateAndPlayMedia(Uri? uri) async {
+  Future<void> _validateAndPlayMedia(Uri? uri) async {
     String receivedLink = uri.toString();
     String name = MediaHelper.getNameFromLink(receivedLink);
     // TODO: check if the navigator already contains mediaplayer
@@ -319,7 +318,7 @@ class _RadioHome extends State<RadioHome> {
   }
 
   /// Navigates to Media Player Screen - if it's in stack or no
-  _openMediaPlayer() {
+  void _openMediaPlayer() {
     // Copied this code from audio_handler.dart from notifications listen
     // if audio is media, then open media player
     if (!getIt<NavigationService>().isCurrentRoute(MediaPlayer.route)) {

@@ -34,7 +34,7 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   /// listens to notification click event of audio_service
-  _listenToNotificationClickEvent() {
+  void _listenToNotificationClickEvent() {
     // notification click when audio playing
     AudioService.notificationClicked.listen((clicked) {
       if (clicked && _mediaType == MediaType.media) {
@@ -58,7 +58,7 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   // initialized before playing
-  _initAudioHandler() {
+  void _initAudioHandler() {
     _loadEmptyPlaylist();
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenForDurationChanges();
@@ -66,7 +66,7 @@ class MyAudioHandler extends BaseAudioHandler {
     _listenForSequenceStateChanges();
   }
 
-  _setMediaType(MediaType? mediaType) {
+  void _setMediaType(MediaType? mediaType) {
     _mediaType = mediaType;
   }
 
@@ -88,12 +88,8 @@ class MyAudioHandler extends BaseAudioHandler {
   PlaybackState? __getPlaybackState(PlaybackEvent event, bool playing) {
     if (_mediaType == MediaType.radio) {
       return playbackState.value.copyWith(
-        controls: [
-          (playing) ? MediaControl.pause : MediaControl.play,
-        ],
-        systemActions: {
-          MediaAction.playPause,
-        },
+        controls: [(playing) ? MediaControl.pause : MediaControl.play],
+        systemActions: {MediaAction.playPause},
         androidCompactActionIndices: const [0],
         processingState: const {
           ProcessingState.idle: AudioProcessingState.idle,
@@ -151,11 +147,12 @@ class MyAudioHandler extends BaseAudioHandler {
       final List<MediaItem?> newQueue = queue.value;
       if (index == null || newQueue.isEmpty) return;
       if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices![index];
+        index = _player.shuffleIndices[index];
       }
       final oldMediaItem = newQueue[index]!;
-      final MediaItem newMediaItem =
-          oldMediaItem.copyWith(duration: duration ?? Duration.zero);
+      final MediaItem newMediaItem = oldMediaItem.copyWith(
+        duration: duration ?? Duration.zero,
+      );
       newQueue[index] = newMediaItem;
       queue.add(newQueue as List<MediaItem>);
       mediaItem.add(newMediaItem);
@@ -167,7 +164,7 @@ class MyAudioHandler extends BaseAudioHandler {
       final playlist = queue.value;
       if (index == null || playlist.isEmpty) return;
       if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices![index];
+        index = _player.shuffleIndices[index];
       }
       try {
         mediaItem.add(playlist[index]);
@@ -210,10 +207,7 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   UriAudioSource _createAudioSource(MediaItem mediaItem) {
-    return AudioSource.uri(
-      Uri.parse(mediaItem.extras!['uri']),
-      tag: mediaItem,
-    );
+    return AudioSource.uri(Uri.parse(mediaItem.extras!['uri']), tag: mediaItem);
   }
 
   @override
@@ -266,7 +260,7 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= queue.value.length) return;
     if (_player.shuffleModeEnabled) {
-      index = _player.shuffleIndices![index];
+      index = _player.shuffleIndices[index];
     }
     _player.seek(Duration.zero, index: index);
   }

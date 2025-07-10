@@ -12,14 +12,15 @@ import 'package:radiosai/widgets/radio/slider_handle.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class RadioPlayer extends StatefulWidget {
-  const RadioPlayer(
-      {super.key,
-      this.radius,
-      this.radioStreamIndex,
-      this.isPlaying,
-      this.loadingState,
-      this.radioLoadingBloc,
-      this.hasInternet});
+  const RadioPlayer({
+    super.key,
+    this.radius,
+    this.radioStreamIndex,
+    this.isPlaying,
+    this.loadingState,
+    this.radioLoadingBloc,
+    this.hasInternet,
+  });
 
   final Radius? radius;
   final int? radioStreamIndex;
@@ -58,7 +59,9 @@ class _RadioPlayer extends State<RadioPlayer>
     _audioManager = getIt<AudioManager>();
     // initialize the pause play controller
     _pausePlayController = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 300));
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
 
     // true when the widgets are building
     initialBuild = true;
@@ -90,7 +93,10 @@ class _RadioPlayer extends State<RadioPlayer>
     _handlePlayingState(widget.isPlaying!);
     // handle the stream change when it is changed
     _handleRadioStreamChange(
-        widget.radioStreamIndex, widget.isPlaying, widget.radioLoadingBloc);
+      widget.radioStreamIndex,
+      widget.isPlaying,
+      widget.radioLoadingBloc,
+    );
     // handle the display of loading progressing widget
     _handleLoadingState(widget.radioLoadingBloc);
 
@@ -109,10 +115,9 @@ class _RadioPlayer extends State<RadioPlayer>
         } else {
           // sends the app to background when backpress on home screen
           // achieved by adding a method in MainActivity.kt to support send app to background
-          toPop =
-              await const MethodChannel('com.immadisairaj/android_app_retain')
-                  .invokeMethod('sendToBackground')
-                  .then((value) => value as bool);
+          toPop = await const MethodChannel(
+            'com.immadisairaj/android_app_retain',
+          ).invokeMethod('sendToBackground').then((value) => value as bool);
         }
 
         if (toPop && context.mounted) {
@@ -130,8 +135,9 @@ class _RadioPlayer extends State<RadioPlayer>
               controller: _panelController,
               minHeight: height * 0.1,
               // remove the collapsed widget if the height is small (below 2 lines)
-              collapsed:
-                  isBigScreen ? _slidingPanelCollapsed(widget.radius) : null,
+              collapsed: isBigScreen
+                  ? _slidingPanelCollapsed(widget.radius)
+                  : null,
               renderPanelSheet: false,
               // handle the height of the panel for different sizes
               // it was 0.54 for bigger, 0.57 for big small, 0.6 for mid - 6 str
@@ -167,11 +173,12 @@ class _RadioPlayer extends State<RadioPlayer>
                       child: Container(
                         color: Colors.black54,
                         child: _playerDisplay(
-                            widget.radioStreamIndex,
-                            widget.isPlaying,
-                            widget.loadingState!,
-                            widget.radioLoadingBloc,
-                            widget.hasInternet),
+                          widget.radioStreamIndex,
+                          widget.isPlaying,
+                          widget.loadingState!,
+                          widget.radioLoadingBloc,
+                          widget.hasInternet,
+                        ),
                       ),
                     ),
                   ),
@@ -196,7 +203,9 @@ class _RadioPlayer extends State<RadioPlayer>
         margin: const EdgeInsets.only(left: 10, right: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.only(
-              topLeft: widget.radius!, topRight: widget.radius!),
+            topLeft: widget.radius!,
+            topRight: widget.radius!,
+          ),
           color: Theme.of(context).colorScheme.secondaryContainer,
         ),
         child: const Column(
@@ -208,10 +217,7 @@ class _RadioPlayer extends State<RadioPlayer>
               fit: BoxFit.fitHeight,
               child: Text(
                 'Select Stream',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             ),
           ],
@@ -223,17 +229,21 @@ class _RadioPlayer extends State<RadioPlayer>
   /// widget for player display
   ///
   /// shows the stream and play/pause button
-  Widget _playerDisplay(int? streamIndex, bool? isPlaying, bool loadingState,
-      RadioLoadingBloc? radioLoadingBloc, bool? hasInternet) {
+  Widget _playerDisplay(
+    int? streamIndex,
+    bool? isPlaying,
+    bool loadingState,
+    RadioLoadingBloc? radioLoadingBloc,
+    bool? hasInternet,
+  ) {
     double height = MediaQuery.of(context).size.height;
     bool isBigScreen = (height * 0.1 >= 50);
     bool isSmallerScreen = (height * 0.1 < 30);
     double iconSize = isBigScreen ? 40 : 30;
 
-    String playingRadioStreamName = MyConstants.of(context)!
-        .radioStreamHttps
-        .keys
-        .toList()[streamIndex ?? 0];
+    String playingRadioStreamName = MyConstants.of(
+      context,
+    )!.radioStreamHttps.keys.toList()[streamIndex ?? 0];
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -245,10 +255,7 @@ class _RadioPlayer extends State<RadioPlayer>
               padding: const EdgeInsets.only(left: 8.0),
               child: Text(
                 playingRadioStreamName,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             Padding(
@@ -311,12 +318,12 @@ class _RadioPlayer extends State<RadioPlayer>
   }
 
   /// initial the radio service to start playing
-  initRadioService(int index) async {
+  Future<void> initRadioService(int index) async {
     // Register the audio service and start playing
     await _audioManager!.init(MediaType.radio, {
       'radioStream': MyConstants.of(context)!.radioStreamHttps,
       'index': index,
-      'artImages': MyConstants.of(context)!.radioStreamImages
+      'artImages': MyConstants.of(context)!.radioStreamImages,
     });
     _audioManager!.playRadio(index);
     // setting the temporary radio stream index to track the
@@ -367,15 +374,17 @@ class _RadioPlayer extends State<RadioPlayer>
       if (_isSnackBarActive == false) {
         _isSnackBarActive = true;
         ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(
-              content: Text('Try to play after connecting to the Internet'),
-              behavior: SnackBarBehavior.floating,
-              duration: Duration(milliseconds: 1500),
-            ))
+            .showSnackBar(
+              const SnackBar(
+                content: Text('Try to play after connecting to the Internet'),
+                behavior: SnackBarBehavior.floating,
+                duration: Duration(milliseconds: 1500),
+              ),
+            )
             .closed
             .then((value) {
-          _isSnackBarActive = false;
-        });
+              _isSnackBarActive = false;
+            });
       } // do nothing in else
     }
   }
@@ -393,14 +402,18 @@ class _RadioPlayer extends State<RadioPlayer>
   void _handleLoadingState(RadioLoadingBloc? loadingStreamBloc) {
     // change state only when radio player is playing
     if (_audioManager!.mediaTypeNotifier.value == MediaType.radio) {
-      loadingStreamBloc!.changeLoadingState
-          .add(_audioManager!.loadingNotifier.value == LoadingState.loading);
+      loadingStreamBloc!.changeLoadingState.add(
+        _audioManager!.loadingNotifier.value == LoadingState.loading,
+      );
     }
   }
 
   /// handle the player when radio stream changes
-  void _handleRadioStreamChange(int? radioStreamIndex, bool? isPlaying,
-      RadioLoadingBloc? loadingStreamBloc) async {
+  void _handleRadioStreamChange(
+    int? radioStreamIndex,
+    bool? isPlaying,
+    RadioLoadingBloc? loadingStreamBloc,
+  ) async {
     // if the the index is changed, stop the radio service
     if (_tempRadioStreamIndex != radioStreamIndex) {
       widget.radioLoadingBloc!.changeLoadingState.add(false);

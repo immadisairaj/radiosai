@@ -25,11 +25,7 @@ import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Media extends StatefulWidget {
-  const Media({
-    super.key,
-    required this.fids,
-    this.title,
-  });
+  const Media({super.key, required this.fids, this.title});
 
   final String? fids;
   final String? title;
@@ -90,12 +86,14 @@ class _Media extends State<Media> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            (widget.title == null) ? const Text('Media') : Text(widget.title!),
+        title: (widget.title == null)
+            ? const Text('Media')
+            : Text(widget.title!),
       ),
       body: AnimatedCrossFade(
-        crossFadeState:
-            _isLoading ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+        crossFadeState: _isLoading
+            ? CrossFadeState.showSecond
+            : CrossFadeState.showFirst,
         duration: const Duration(seconds: 1),
         firstChild: ConstrainedBox(
           constraints: BoxConstraints(
@@ -109,38 +107,43 @@ class _Media extends State<Media> {
                   radius: const Radius.circular(8),
                   child: CustomScrollView(
                     physics: const BouncingScrollPhysics(
-                        parent: AlwaysScrollableScrollPhysics()),
+                      parent: AlwaysScrollableScrollPhysics(),
+                    ),
                     slivers: [
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: EdgeInsets.only(
-                              top: 10,
-                              left: 10,
-                              right: 10,
-                              bottom:
-                                  MediaQuery.of(context).viewPadding.bottom),
+                            top: 10,
+                            left: 10,
+                            right: 10,
+                            bottom: MediaQuery.of(context).viewPadding.bottom,
+                          ),
                           child: Card(
                             shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(10)),
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
                             ),
                             elevation: 1,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .secondaryContainer,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.secondaryContainer,
 
                             // updates the media screen based on download state
-                            child: Consumer<MediaScreenBloc>(builder:
-                                (context, mediaScreenStateBloc, child) {
-                              return StreamBuilder<bool?>(
-                                  stream: mediaScreenStateBloc.mediaScreenStream
-                                      as Stream<bool?>?,
+                            child: Consumer<MediaScreenBloc>(
+                              builder: (context, mediaScreenStateBloc, child) {
+                                return StreamBuilder<bool?>(
+                                  stream:
+                                      mediaScreenStateBloc.mediaScreenStream
+                                          as Stream<bool?>?,
                                   builder: (context, snapshot) {
                                     // can use the below commented line to know if updated
                                     // bool screenUpdate = snapshot.data ?? false;
                                     return _mediaItems();
-                                  });
-                            }),
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -176,9 +179,7 @@ class _Media extends State<Media> {
           ),
         ),
         // Shown second child it is loading
-        secondChild: Center(
-          child: _showLoading(),
-        ),
+        secondChild: Center(child: _showLoading()),
       ),
       bottomNavigationBar: const BottomMediaPlayer(),
     );
@@ -189,125 +190,135 @@ class _Media extends State<Media> {
   /// showed after getting data
   Widget _mediaItems() {
     return ListView.builder(
-        shrinkWrap: true,
-        primary: false,
-        padding: const EdgeInsets.only(top: 2, bottom: 2),
-        itemCount: _finalMediaData.length,
-        itemBuilder: (context, index) {
-          String mediaFileName =
-              '${_finalMediaData[index]}${MediaHelper.mediaFileType}';
-          // replace '_' to ' ' in the text and retain it's original name
-          String mediaName = _finalMediaData[index];
-          mediaName = mediaName.replaceAll('_', ' ');
-          var mediaFilePath = '$_mediaDirectory/$mediaFileName';
-          var mediaFile = File(mediaFilePath);
-          var isFileExists = mediaFile.existsSync();
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8, right: 4),
-                child: Card(
-                  elevation: 0,
-                  color: Theme.of(context).colorScheme.secondaryContainer,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(8.0),
-                    onTap: () async {
-                      bool hasInternet =
-                          Provider.of<InternetStatus>(context, listen: false) ==
-                              InternetStatus.connected;
-                      // No download option. So,
-                      // everything is considered to use internet
-                      if (hasInternet) {
-                        await startPlayer(
-                            mediaName, _finalMediaLinks[index], isFileExists);
-                      } else {
-                        getIt<ScaffoldHelper>().showSnackBar(
-                            'Connect to the Internet and try again',
-                            const Duration(seconds: 2));
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 4, bottom: 4),
-                      child: Center(
-                        child: ListTile(
-                          title: Text(mediaName),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              // TODO: fix download and then uncomment below lines
-                              // Visibility(
-                              //   visible: !isFileExists,
-                              //   child: IconButton(
-                              //     icon: Icon(Icons.download_outlined),
-                              //     splashRadius: 24,
-                              //     onPressed: () {
-                              //       _downloadMediaFile(_finalMediaLinks[index]);
-                              //     },
-                              //   ),
-                              // ),
-                              IconButton(
-                                icon: const Icon(CupertinoIcons.add_circled),
-                                splashRadius: 24,
-                                tooltip: 'Add to playing queue',
-                                onPressed: () async {
-                                  // Change in radio_home.dart if changed here
-                                  bool hasInternet =
-                                      Provider.of<InternetStatus>(context,
-                                              listen: false) ==
-                                          InternetStatus.connected;
-                                  // No download option. So,
-                                  // everything is considered to use internet
-                                  if (hasInternet) {
-                                    if (!(_audioManager!
-                                            .queueNotifier.value.isNotEmpty &&
-                                        _audioManager!
-                                                .mediaTypeNotifier.value ==
-                                            MediaType.media)) {
-                                      startPlayer(
-                                          mediaName,
-                                          _finalMediaLinks[index],
-                                          isFileExists);
-                                    } else {
-                                      bool added = await addToQueue(
-                                          mediaName,
-                                          _finalMediaLinks[index],
-                                          isFileExists);
-                                      if (added) {
-                                        getIt<ScaffoldHelper>().showSnackBar(
-                                            'Added to queue',
-                                            const Duration(seconds: 1));
-                                      } else {
-                                        getIt<ScaffoldHelper>().showSnackBar(
-                                            'Already in queue',
-                                            const Duration(seconds: 1));
-                                      }
-                                    }
+      shrinkWrap: true,
+      primary: false,
+      padding: const EdgeInsets.only(top: 2, bottom: 2),
+      itemCount: _finalMediaData.length,
+      itemBuilder: (context, index) {
+        String mediaFileName =
+            '${_finalMediaData[index]}${MediaHelper.mediaFileType}';
+        // replace '_' to ' ' in the text and retain it's original name
+        String mediaName = _finalMediaData[index];
+        mediaName = mediaName.replaceAll('_', ' ');
+        var mediaFilePath = '$_mediaDirectory/$mediaFileName';
+        var mediaFile = File(mediaFilePath);
+        var isFileExists = mediaFile.existsSync();
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 8, right: 4),
+              child: Card(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.secondaryContainer,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(8.0),
+                  onTap: () async {
+                    bool hasInternet =
+                        Provider.of<InternetStatus>(context, listen: false) ==
+                        InternetStatus.connected;
+                    // No download option. So,
+                    // everything is considered to use internet
+                    if (hasInternet) {
+                      await startPlayer(
+                        mediaName,
+                        _finalMediaLinks[index],
+                        isFileExists,
+                      );
+                    } else {
+                      getIt<ScaffoldHelper>().showSnackBar(
+                        'Connect to the Internet and try again',
+                        const Duration(seconds: 2),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 4),
+                    child: Center(
+                      child: ListTile(
+                        title: Text(mediaName),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // TODO: fix download and then uncomment below lines
+                            // Visibility(
+                            //   visible: !isFileExists,
+                            //   child: IconButton(
+                            //     icon: Icon(Icons.download_outlined),
+                            //     splashRadius: 24,
+                            //     onPressed: () {
+                            //       _downloadMediaFile(_finalMediaLinks[index]);
+                            //     },
+                            //   ),
+                            // ),
+                            IconButton(
+                              icon: const Icon(CupertinoIcons.add_circled),
+                              splashRadius: 24,
+                              tooltip: 'Add to playing queue',
+                              onPressed: () async {
+                                // Change in radio_home.dart if changed here
+                                bool hasInternet =
+                                    Provider.of<InternetStatus>(
+                                      context,
+                                      listen: false,
+                                    ) ==
+                                    InternetStatus.connected;
+                                // No download option. So,
+                                // everything is considered to use internet
+                                if (hasInternet) {
+                                  if (!(_audioManager!
+                                          .queueNotifier
+                                          .value
+                                          .isNotEmpty &&
+                                      _audioManager!.mediaTypeNotifier.value ==
+                                          MediaType.media)) {
+                                    startPlayer(
+                                      mediaName,
+                                      _finalMediaLinks[index],
+                                      isFileExists,
+                                    );
                                   } else {
-                                    getIt<ScaffoldHelper>().showSnackBar(
-                                        'Connect to the Internet and try again',
-                                        const Duration(seconds: 2));
+                                    bool added = await addToQueue(
+                                      mediaName,
+                                      _finalMediaLinks[index],
+                                      isFileExists,
+                                    );
+                                    if (added) {
+                                      getIt<ScaffoldHelper>().showSnackBar(
+                                        'Added to queue',
+                                        const Duration(seconds: 1),
+                                      );
+                                    } else {
+                                      getIt<ScaffoldHelper>().showSnackBar(
+                                        'Already in queue',
+                                        const Duration(seconds: 1),
+                                      );
+                                    }
                                   }
-                                },
-                              ),
-                            ],
-                          ),
+                                } else {
+                                  getIt<ScaffoldHelper>().showSnackBar(
+                                    'Connect to the Internet and try again',
+                                    const Duration(seconds: 2),
+                                  );
+                                }
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-              if (index != _finalMediaData.length - 1)
-                const Divider(
-                  height: 2,
-                  thickness: 1.5,
-                ),
-            ],
-          );
-        });
+            ),
+            if (index != _finalMediaData.length - 1)
+              const Divider(height: 2, thickness: 1.5),
+          ],
+        );
+      },
+    );
   }
 
   // ****************** //
@@ -319,7 +330,7 @@ class _Media extends State<Media> {
   /// called when initState
   ///
   /// continues the process by retrieving the data
-  _updateURL() {
+  void _updateURL() {
     var data = <String, dynamic>{};
     data['allfids'] = widget.fids;
 
@@ -332,7 +343,7 @@ class _Media extends State<Media> {
   ///
   /// continues the process by sending it to parse
   /// if the data is retrieved
-  _getData(Map<String, dynamic> formData) async {
+  Future<void> _getData(Map<String, dynamic> formData) async {
     String tempResponse = '';
     // checks if the file exists in cache
     FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
@@ -375,7 +386,7 @@ class _Media extends State<Media> {
 
   /// parses the data retrieved from url.
   /// sets the final data to display
-  _parseData(String response) async {
+  Future<void> _parseData(String response) async {
     var document = parse(response);
     var mediaTags = document.getElementsByTagName('a');
 
@@ -390,7 +401,8 @@ class _Media extends State<Media> {
 
       // append string to get media link
       mediaLinks.add(
-          '${MediaHelper.mediaBaseUrl}${mediaFiles[i]}${MediaHelper.mediaFileType}');
+        '${MediaHelper.mediaBaseUrl}${mediaFiles[i]}${MediaHelper.mediaFileType}',
+      );
     }
 
     setState(() {
@@ -452,7 +464,7 @@ class _Media extends State<Media> {
   /// sets the path for directory
   ///
   /// doesn't care if the directory is created or not
-  _getDirectoryPath() async {
+  Future<void> _getDirectoryPath() async {
     final mediaDirectoryPath = await MediaHelper.getDirectoryPath();
     setState(() {
       // update the media directory
@@ -502,7 +514,9 @@ class _Media extends State<Media> {
             _audioManager!.play();
           }
           getIt<ScaffoldHelper>().showSnackBar(
-              'This is same as currently playing', const Duration(seconds: 2));
+            'This is same as currently playing',
+            const Duration(seconds: 2),
+          );
           getIt<NavigationService>().navigateTo(MediaPlayer.route);
           return;
         }
@@ -526,21 +540,29 @@ class _Media extends State<Media> {
       } else {
         // if radio player is running, stop and play media
         _audioManager!.stop();
-        await initMediaService(name, link, isFileExists).then((value) =>
-            getIt<NavigationService>().navigateTo(MediaPlayer.route));
+        await initMediaService(name, link, isFileExists).then(
+          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
+        );
       }
     } else {
       // initialize the media service
       initMediaService(name, link, isFileExists).then(
-          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route));
+        (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
+      );
     }
   }
 
   /// initialize the media player when no player is playing
   Future<void> initMediaService(
-      String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    String name,
+    String link,
+    bool isFileExists,
+  ) async {
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
 
     // passing params to send the source to play
     Map<String, dynamic> params = {
@@ -562,8 +584,11 @@ class _Media extends State<Media> {
   ///
   /// else, adds to the queue and returns true
   Future<bool> addToQueue(String name, String link, bool isFileExists) async {
-    final tempMediaItem =
-        await MediaHelper.generateMediaItem(name, link, isFileExists);
+    final tempMediaItem = await MediaHelper.generateMediaItem(
+      name,
+      link,
+      isFileExists,
+    );
     if (_audioManager!.queueNotifier.value.contains(tempMediaItem.title)) {
       return false;
     } else {
@@ -577,8 +602,11 @@ class _Media extends State<Media> {
   /// Note: check if the item is already in queue before calling
   Future<void> moveToLast(String name, String link, bool isFileExists) async {
     if (_audioManager!.queueNotifier.value.length > 1) {
-      final tempMediaItem =
-          await MediaHelper.generateMediaItem(name, link, isFileExists);
+      final tempMediaItem = await MediaHelper.generateMediaItem(
+        name,
+        link,
+        isFileExists,
+      );
       await _audioManager!.removeQueueItemWithTitle(tempMediaItem.title);
       return _audioManager!.addQueueItem(tempMediaItem);
     }

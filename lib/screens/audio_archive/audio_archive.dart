@@ -6,9 +6,7 @@ import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AudioArchive extends StatefulWidget {
-  const AudioArchive({
-    super.key,
-  });
+  const AudioArchive({super.key});
 
   static const String route = 'audioArchive';
 
@@ -20,9 +18,7 @@ class _AudioArchive extends State<AudioArchive> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Audio Archive'),
-      ),
+      appBar: AppBar(title: const Text('Audio Archive')),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -35,10 +31,12 @@ class _AudioArchive extends State<AudioArchive> {
   Widget _audioArchiveGrid() {
     return Scrollbar(
       child: GridView(
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewPadding.bottom,
+        ),
         physics: const BouncingScrollPhysics(
-            parent: AlwaysScrollableScrollPhysics()),
+          parent: AlwaysScrollableScrollPhysics(),
+        ),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
@@ -53,7 +51,8 @@ class _AudioArchive extends State<AudioArchive> {
                 child: InkWell(
                   onTap: () {
                     _navigateAudioArchive(
-                        MyConstants.of(context)!.audioArchive[imageAsset]);
+                      MyConstants.of(context)!.audioArchive[imageAsset],
+                    );
                   },
                   child: Ink(
                     decoration: BoxDecoration(
@@ -77,38 +76,45 @@ class _AudioArchive extends State<AudioArchive> {
     if (isMedia) {
       // if contains media, navigate to media screen
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Media(
-                    fids: MyConstants.of(context)!.audioArchiveFids[title!],
-                    title: title,
-                  )));
+        context,
+        MaterialPageRoute(
+          builder: (context) => Media(
+            fids: MyConstants.of(context)!.audioArchiveFids[title!],
+            title: title,
+          ),
+        ),
+      );
     } else {
-      bool isLink =
-          MyConstants.of(context)!.audioArchiveLink.containsKey(title);
+      bool isLink = MyConstants.of(
+        context,
+      )!.audioArchiveLink.containsKey(title);
       if (isLink) {
         // if contains link, launch the url
         _urlLaunch(MyConstants.of(context)!.audioArchiveLink[title!]);
       } else {
-        bool isSearch =
-            MyConstants.of(context)!.audioArchiveSearch.containsKey(title);
+        bool isSearch = MyConstants.of(
+          context,
+        )!.audioArchiveSearch.containsKey(title);
         if (isSearch) {
           // ic contains search, navigate to search screen
           Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Search(
-                        initialSearch:
-                            MyConstants.of(context)!.audioArchiveSearch[title!],
-                        initialSearchTitle: title,
-                      )));
+            context,
+            MaterialPageRoute(
+              builder: (context) => Search(
+                initialSearch: MyConstants.of(
+                  context,
+                )!.audioArchiveSearch[title!],
+                initialSearchTitle: title,
+              ),
+            ),
+          );
         }
       }
     }
   }
 
   /// launch the url from url_launcher
-  _urlLaunch(urlString) async {
+  Future<void> _urlLaunch(urlString) async {
     try {
       if (await canLaunchUrl(Uri.parse(urlString))) {
         await launchUrl(Uri.parse(urlString));

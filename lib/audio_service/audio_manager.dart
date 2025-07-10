@@ -7,6 +7,7 @@ import 'package:radiosai/audio_service/notifiers/progress_notifier.dart';
 import 'package:radiosai/audio_service/notifiers/repeat_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/media_helper.dart';
+import 'package:rxdart/src/streams/value_stream.dart';
 
 class AudioManager {
   // Listeners: Updates going to the UI
@@ -41,7 +42,7 @@ class AudioManager {
         : await _initMedia(params);
   }
 
-  _setMediaType(MediaType mediaType) {
+  void _setMediaType(MediaType mediaType) {
     _audioHandler.customAction('setMediaType', {'mediaType': mediaType});
   }
 
@@ -52,7 +53,10 @@ class AudioManager {
   Future<void> _initRadio(Map<String, dynamic> params) async {
     mediaTypeNotifier.value = MediaType.radio;
     final radio = await _getRadio(
-        params['radioStream'], params['index'], params['artImages']);
+      params['radioStream'],
+      params['index'],
+      params['artImages'],
+    );
     await _loadRadio(radio);
     _listenToChangesInQueue();
     _listenToPlaybackState();
@@ -65,21 +69,25 @@ class AudioManager {
 
   /// pass [radioStream] map which is located in constants
   /// and [index] of the radio playing
-  Future<MediaItem> _getRadio(Map<String, String> radioStream, int index,
-      Map<String, String> artLinks) async {
+  Future<MediaItem> _getRadio(
+    Map<String, String> radioStream,
+    int index,
+    Map<String, String> artLinks,
+  ) async {
     // Get the path of image for artUri in notification
     // String path = await MediaHelper.getDefaultNotificationImage();
     String key = radioStream.keys.toList()[index];
     String value = radioStream.values.toList()[index];
     String artUri = artLinks.values.toList()[index];
     return MediaItem(
-        id: key,
-        title: key,
-        album: 'Radio Sai Global Harmony',
-        artist: 'Radio Sai',
-        artUri: Uri.parse(artUri),
-        // artUri: Uri.parse('file://$path'),
-        extras: {'uri': value});
+      id: key,
+      title: key,
+      album: 'Radio Sai Global Harmony',
+      artist: 'Radio Sai',
+      artUri: Uri.parse(artUri),
+      // artUri: Uri.parse('file://$path'),
+      extras: {'uri': value},
+    );
   }
 
   Future<void> _loadRadio(MediaItem radio) async {
@@ -87,7 +95,7 @@ class AudioManager {
   }
 
   /// pass [radioIndex] - the index of 'radioStream'
-  playRadio(int radioIndex) async {
+  Future<void> playRadio(int radioIndex) async {
     // radio title is media Id
     await load();
     _audioHandler.skipToQueueItem(radioIndex);
@@ -124,13 +132,13 @@ class AudioManager {
     );
   }
 
-  _loadMediaItem(MediaItem mediaItem) async {
+  Future<void> _loadMediaItem(MediaItem mediaItem) async {
     _audioHandler.addQueueItem(mediaItem);
     await load();
   }
 
-  get queue => _audioHandler.queue;
-  get currentMediaItem => _audioHandler.mediaItem;
+  ValueStream<List<MediaItem>> get queue => _audioHandler.queue;
+  ValueStream<MediaItem?> get currentMediaItem => _audioHandler.mediaItem;
 
   void _listenToChangesInQueue() {
     _audioHandler.queue.listen((queue) {
@@ -219,7 +227,7 @@ class AudioManager {
     }
   }
 
-  get playbackState => _audioHandler.playbackState;
+  ValueStream<PlaybackState> get playbackState => _audioHandler.playbackState;
 
   Future<void> addQueueItem(MediaItem mediaItem) =>
       _audioHandler.addQueueItem(mediaItem);
