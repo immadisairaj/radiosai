@@ -108,7 +108,7 @@ class _RadioPlayer extends State<RadioPlayer>
     bool isSmallerScreen = (height * 0.1 < 30); // 1/4 screen
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (_, __) async {
+      onPopInvokedWithResult: (_, _) async {
         bool toPop = false;
         if (_panelController.isPanelOpen) {
           toPop = await _panelController.close().then((value) => value as bool);

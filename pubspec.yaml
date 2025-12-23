@@ -17,10 +17,10 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 
 # versioning style <major>.<feature>.<fixes>+<commits>
-version: 1.4.7+218
+version: 1.4.8+219
 
 environment:
-  sdk: '>=3.9.0 <4.0.0'
+  sdk: '>=3.10.0 <4.0.0'
 
 dependencies:
   flutter:
@@ -40,17 +40,17 @@ dependencies:
   html: ^0.15.6
   http: ^1.4.0
   permission_handler: ^12.0.0+1
-  device_info_plus: ^11.5.0
+  device_info_plus: ^12.3.0
   image_gallery_saver_plus: ^4.0.1
   flutter_cache_manager: ^3.4.1
   # flutter_downloader: ^1.6.1
-  share_plus: ^11.0.0
-  package_info_plus: ^8.3.0
+  share_plus: ^12.0.1
+  package_info_plus: ^9.0.0
   intl: ^0.20.2
   rxdart: ^0.28.0
   provider: ^6.1.5
-  get_it: ^8.0.3
-  app_links: ^6.4.0
+  get_it: ^9.2.0
+  app_links: ^7.0.0
   # widgets
   sliding_up_panel: ^2.0.0+1
   shimmer: ^3.0.0
@@ -62,7 +62,7 @@ dependencies:
   audio_service: ^0.18.18 # when updating, look for changes in .MainActivity
 
 dependency_overrides:
-  http: ^1.4.0
+  http: ^1.6.0
 
 dev_dependencies:
   flutter_lints: ^6.0.0
