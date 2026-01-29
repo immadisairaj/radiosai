@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -74,6 +75,7 @@ class _SaiInspires extends State<SaiInspires> {
   String _quote = '';
 
   AudioManager? _audioManager;
+  MediaItem? _cachedSaiInspireItem;
 
   @override
   void initState() {
@@ -543,6 +545,14 @@ class _SaiInspires extends State<SaiInspires> {
 
     finalAudioName = mainBody['title'];
     finalAudioMp3Url = mainBody['actualAudioUrl'];
+
+    if (finalAudioMp3Url != null) {
+      _cachedSaiInspireItem = await MediaHelper.generateMediaItem(
+        finalAudioName!,
+        finalAudioMp3Url!,
+        false, // No local file check needed here usually
+      );
+    }
   }
 
   /// play the audio of Sai Inspires if the url is present
@@ -586,81 +596,62 @@ class _SaiInspires extends State<SaiInspires> {
   /// [link] - media link (url);
   /// [isFileExists] - if whether file exists in external storage
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
-    // checks if the audio service is running
-    if (_audioManager!.playButtonNotifier.value == PlayButtonState.playing ||
-        _audioManager!.mediaTypeNotifier.value == MediaType.media) {
-      // check if radio is running / media is running
-      if (_audioManager!.mediaTypeNotifier.value == MediaType.media) {
-        // if trying to add the current playing media
-        if (_audioManager!.currentSongTitleNotifier.value == name) {
-          // if the current playing media is paused, play else navigate
-          if (_audioManager!.playButtonNotifier.value !=
-              PlayButtonState.playing) {
-            _audioManager!.play();
-          }
-          getIt<ScaffoldHelper>().showSnackBar(
-            'This is same as currently playing',
-            const Duration(seconds: 2),
-          );
-          getIt<NavigationService>().navigateTo(MediaPlayer.route);
-          return;
-        }
+    final am = _audioManager!;
 
-        _audioManager!.pause();
-
-        // doesn't add to queue if already exists
-        bool isAdded = await addToQueue(name, link, isFileExists);
-        if (!isAdded) {
-          // if already exists, move to last
-          await moveToLast(name, link, isFileExists);
-        }
-
-        // play the media
-        int index = _audioManager!.queueNotifier.value.indexOf(name);
-        await _audioManager!.load();
-        await _audioManager!.skipToQueueItem(index);
-        // navigate to media player
-        getIt<NavigationService>().navigateTo(MediaPlayer.route);
-        _audioManager!.play();
-      } else {
-        // if radio player is running, stop and play media
-        _audioManager!.stop();
-        await initMediaService(name, link, isFileExists).then(
-          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
-        );
-      }
-    } else {
-      // initialize the media service
-      initMediaService(name, link, isFileExists).then(
-        (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
-      );
+    // 1. Is it already playing?
+    if (am.currentSongTitleNotifier.value == name &&
+        am.mediaTypeNotifier.value == MediaType.media) {
+      if (am.playButtonNotifier.value != PlayButtonState.playing) am.play();
+      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+      return;
     }
+
+    // 2. Use Cached Item or generate (fallback)
+    final item =
+        _cachedSaiInspireItem ??
+        await MediaHelper.generateMediaItem(name, link, isFileExists);
+
+    // 3. Handle Radio or Empty Queue
+    if (am.mediaTypeNotifier.value == MediaType.radio ||
+        am.queue.value.isEmpty) {
+      await initMediaService(item); // Pass the MediaItem directly
+      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+      am.play();
+      return;
+    }
+
+    // 4. Handle existing Media Queue
+    am.pause();
+    bool alreadyInQueue = am.queue.value.any((i) => i.id == item.id);
+
+    if (!alreadyInQueue) {
+      await am.addQueueItem(item);
+    } else {
+      // If it's in the queue, just move it to the end so it's "next up"
+      await moveToLast(name, link, isFileExists);
+    }
+
+    // 5. Play
+    int index = am.queue.value.indexWhere((i) => i.id == item.id);
+    await am.load();
+    await am.skipToQueueItem(index);
+    getIt<NavigationService>().navigateTo(MediaPlayer.route);
+    am.play();
   }
 
   /// initialize the media player when no player is playing
-  Future<void> initMediaService(
-    String name,
-    String link,
-    bool isFileExists,
-  ) async {
-    final tempMediaItem = await MediaHelper.generateMediaItem(
-      name,
-      link,
-      isFileExists,
-    );
-
-    // passing params to send the source to play
+  Future<void> initMediaService(MediaItem item) async {
     Map<String, dynamic> params = {
-      'id': tempMediaItem.id,
-      'album': tempMediaItem.album,
-      'title': tempMediaItem.title,
-      'artist': tempMediaItem.artist,
-      'duration': tempMediaItem.duration,
-      'artUri': tempMediaItem.artUri.toString(),
-      'extrasUri': tempMediaItem.extras!['uri'],
+      'id': item.id,
+      'album': item.album,
+      'title': item.title,
+      'artist': item.artist,
+      'duration': item.duration,
+      'artUri': item.artUri.toString(),
+      'extrasUri': item.extras!['uri'],
     };
 
-    _audioManager!.stop();
+    await _audioManager!.stop();
     await _audioManager!.init(MediaType.media, params);
   }
 

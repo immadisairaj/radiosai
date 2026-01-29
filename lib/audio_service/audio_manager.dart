@@ -237,6 +237,10 @@ class AudioManager {
     return _audioHandler.removeQueueItemAt(index);
   }
 
+  Future<void> removeQueueItemAt(int index) {
+    return _audioHandler.removeQueueItemAt(index);
+  }
+
   void play() => _audioHandler.play();
   void pause() => _audioHandler.pause();
 

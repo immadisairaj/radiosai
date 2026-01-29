@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:mp3_info/mp3_info.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,39 +37,40 @@ class MediaHelper {
     String? link,
     bool isFileExists,
   ) async {
-    // Get the path of image for artUri in notification
-    String path = await getDefaultNotificationImage();
-
+    String finalUri = link ?? '';
     Duration? duration;
 
-    // if file exists, then add file uri
+    // 1. Handle manually downloaded files first
     if (isFileExists) {
-      link = await changeLinkToFileUri(link!);
-    } else if (link != null) {
-      duration = await estimateDuration(link);
+      finalUri = await changeLinkToFileUri(finalUri);
+    }
+    // 2. Check the Default Cache Manager
+    else if (link != null) {
+      FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(link);
+
+      if (fileInfo != null) {
+        // If cached, use the local file path for instant loading
+        finalUri = fileInfo.file.path;
+      } else {
+        // If not cached, use the URL.
+        // The player will cache it during playback if you use LockCachingAudioSource.
+        finalUri = link;
+      }
+
+      // This is still the bottleneck if the file isn't cached yet.
+      // If it is cached, estimateDuration(localPath) is near 0ms.
+      duration = await estimateDuration(finalUri);
     }
 
-    String fileId = await getFileIdFromUri(link!);
-
-    Map<String, dynamic> extras = {'uri': link};
-
-    // Set media item to tell the clients what is playing
-    // extras['uri'] contains the audio source
-    final tempMediaItem = MediaItem(
-      // the file name which includes '_' and file extension is id
-      id: fileId,
+    return MediaItem(
+      id: await getFileIdFromUri(finalUri),
       album: 'Radio Sai Global Harmony',
-      // name of the file without '_' or extensions
       title: name,
       artist: 'Radio Sai',
       duration: duration,
-      // art of the media
-      artUri: Uri.parse('file://$path'),
-      // extras['uri'] contain the uri of the media
-      extras: extras,
+      artUri: Uri.parse('file://${await getDefaultNotificationImage()}'),
+      extras: {'uri': finalUri},
     );
-
-    return tempMediaItem;
   }
 
   static Future<Duration?> estimateDuration(String url) async {

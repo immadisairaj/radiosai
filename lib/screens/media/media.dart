@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:audio_service/audio_service.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
@@ -112,32 +113,44 @@ class _Media extends State<Media> {
                             right: 10,
                             bottom: MediaQuery.of(context).viewPadding.bottom,
                           ),
-                          child: Card(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(10),
+                          child: Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: ElevatedButton.icon(
+                                  icon: const Icon(CupertinoIcons.play_circle),
+                                  label: Text('Play All'),
+                                  onPressed: playAllClick,
+                                ),
                               ),
-                            ),
-                            elevation: 1,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.secondaryContainer,
+                              Card(
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(10),
+                                  ),
+                                ),
+                                elevation: 1,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.secondaryContainer,
 
-                            // updates the media screen based on download state
-                            child: Consumer<MediaScreenBloc>(
-                              builder: (context, mediaScreenStateBloc, child) {
-                                return StreamBuilder<bool?>(
-                                  stream:
-                                      mediaScreenStateBloc.mediaScreenStream
-                                          as Stream<bool?>?,
-                                  builder: (context, snapshot) {
-                                    // can use the below commented line to know if updated
-                                    // bool screenUpdate = snapshot.data ?? false;
-                                    return _mediaItems();
+                                // updates the media screen based on download state
+                                child: Consumer<MediaScreenBloc>(
+                                  builder: (context, mediaScreenStateBloc, child) {
+                                    return StreamBuilder<bool?>(
+                                      stream:
+                                          mediaScreenStateBloc.mediaScreenStream
+                                              as Stream<bool?>?,
+                                      builder: (context, snapshot) {
+                                        // can use the below commented line to know if updated
+                                        // bool screenUpdate = snapshot.data ?? false;
+                                        return _mediaItems();
+                                      },
+                                    );
                                   },
-                                );
-                              },
-                            ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -250,67 +263,104 @@ class _Media extends State<Media> {
     );
   }
 
-  void mediaPlusClick(
-    String mediaName,
-    String mediaLink,
-    bool isFileExists,
-  ) async {
-    // Change in radio_home.dart if changed here
-    bool hasInternet =
-        Provider.of<InternetStatus>(context, listen: false) ==
-        InternetStatus.connected;
-    // No download option. So,
-    // everything is considered to use internet
-    if (hasInternet) {
-      if (!(_audioManager!.queueNotifier.value.isNotEmpty &&
-          _audioManager!.mediaTypeNotifier.value == MediaType.media)) {
-        startPlayer(mediaName, mediaLink, isFileExists);
-      } else {
-        bool added = await addToQueue(mediaName, mediaLink, isFileExists);
-        if (added) {
-          getIt<ScaffoldHelper>().showSnackBar(
-            'Added to queue',
-            const Duration(seconds: 1),
-          );
-        } else {
-          getIt<ScaffoldHelper>().showSnackBar(
-            'Already in queue',
-            const Duration(seconds: 1),
-          );
-        }
-      }
-    } else {
-      getIt<ScaffoldHelper>().showSnackBar(
-        'Connect to the Internet and try again',
-        const Duration(seconds: 2),
-      );
+  void playAllClick() async {
+    if (_preCachedMediaItems.isEmpty) return;
+
+    await _audioManager!.stop();
+    await _audioManager!.clear();
+
+    // Initialize with the first pre-cached item
+    await initMediaService(_preCachedMediaItems[0]);
+
+    getIt<NavigationService>().navigateTo(MediaPlayer.route);
+    _audioManager!.play();
+
+    // Add the rest of the pre-cached items immediately
+    if (_preCachedMediaItems.length > 1) {
+      await _audioManager!.addQueueItems(_preCachedMediaItems.sublist(1));
     }
   }
 
+  void mediaPlusClick(String name, String link, bool isFileExists) async {
+    bool hasInternet =
+        Provider.of<InternetStatus>(context, listen: false) ==
+        InternetStatus.connected;
+    if (!hasInternet) {
+      getIt<ScaffoldHelper>().showSnackBar(
+        'Connect to the Internet',
+        const Duration(seconds: 2),
+      );
+      return;
+    }
+
+    // Find the cached item
+    MediaItem? item;
+    try {
+      item = _preCachedMediaItems.firstWhere((i) => i.title == name);
+    } catch (e) {
+      item = await MediaHelper.generateMediaItem(name, link, isFileExists);
+    }
+
+    if (_audioManager!.queue.value.isEmpty ||
+        _audioManager!.mediaTypeNotifier.value == MediaType.radio) {
+      // If player is idle, just start it
+      startPlayer(name, link, isFileExists);
+    } else {
+      // Check if ID is already in the active queue
+      if (_audioManager!.queue.value.any((i) => i.id == item!.id)) {
+        getIt<ScaffoldHelper>().showSnackBar(
+          'Already in queue',
+          const Duration(seconds: 1),
+        );
+      } else {
+        await _audioManager!.addQueueItem(item);
+        getIt<ScaffoldHelper>().showSnackBar(
+          'Added to queue',
+          const Duration(seconds: 1),
+        );
+      }
+    }
+  }
+
+  List<MediaItem> _preCachedMediaItems = [];
+
   /// parses the data retrieved from schedule.
   /// sets the final data to display
+  // Add this variable to your State class
+
   Future<void> _parseData() async {
     List<String> mediaFiles = [];
     List<String> mediaLinks = [];
+    List<Future<MediaItem>> cacheTasks = [];
 
     for (var media in widget.mediaFiles!) {
-      var temp = media;
-      // remove the mp3 tags (add later when playing)
-      temp = temp.replaceAll('.mp3', '');
+      var temp = media.replaceAll('.mp3', '');
       mediaFiles.add(temp);
 
-      // append string to get media link
-      mediaLinks.add(
-        '${MediaHelper.mediaBaseUrl}/$temp${MediaHelper.mediaFileType}',
+      String link =
+          '${MediaHelper.mediaBaseUrl}/$temp${MediaHelper.mediaFileType}';
+      mediaLinks.add(link);
+
+      // Start generating the item immediately in the background
+      String mediaName = temp.replaceAll('_', ' ');
+      bool isFileExists = File(
+        '$_mediaDirectory/$temp${MediaHelper.mediaFileType}',
+      ).existsSync();
+
+      cacheTasks.add(
+        MediaHelper.generateMediaItem(mediaName, link, isFileExists),
       );
     }
 
     setState(() {
-      // set the data
       _finalMediaData = mediaFiles;
       _finalMediaLinks = mediaLinks;
+    });
 
-      // loading is done
+    // Wait for all items to be ready in the background
+    _preCachedMediaItems = await Future.wait(cacheTasks);
+
+    setState(() {
       _isLoading = false;
     });
   }
@@ -401,81 +451,66 @@ class _Media extends State<Media> {
   /// [link] - media link (url);
   /// [isFileExists] - if whether file exists in external storage
   Future<void> startPlayer(String name, String link, bool isFileExists) async {
-    // checks if the audio service is running
-    if (_audioManager!.playButtonNotifier.value == PlayButtonState.playing ||
-        _audioManager!.mediaTypeNotifier.value == MediaType.media) {
-      // check if radio is running / media is running
-      if (_audioManager!.mediaTypeNotifier.value == MediaType.media) {
-        // if trying to add the current playing media
-        if (_audioManager!.currentSongTitleNotifier.value == name) {
-          // if the current playing media is paused, play else navigate
-          if (_audioManager!.playButtonNotifier.value !=
-              PlayButtonState.playing) {
-            _audioManager!.play();
-          }
-          getIt<ScaffoldHelper>().showSnackBar(
-            'This is same as currently playing',
-            const Duration(seconds: 2),
-          );
-          getIt<NavigationService>().navigateTo(MediaPlayer.route);
-          return;
-        }
+    final am = _audioManager!;
 
-        _audioManager!.pause();
-
-        // doesn't add to queue if already exists
-        bool isAdded = await addToQueue(name, link, isFileExists);
-        if (!isAdded) {
-          // if already exists, move to last
-          await moveToLast(name, link, isFileExists);
-        }
-
-        // play the media
-        int index = _audioManager!.queueNotifier.value.indexOf(name);
-        await _audioManager!.load();
-        await _audioManager!.skipToQueueItem(index);
-        // navigate to media player
-        getIt<NavigationService>().navigateTo(MediaPlayer.route);
-        _audioManager!.play();
-      } else {
-        // if radio player is running, stop and play media
-        _audioManager!.stop();
-        await initMediaService(name, link, isFileExists).then(
-          (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
-        );
-      }
-    } else {
-      // initialize the media service
-      initMediaService(name, link, isFileExists).then(
-        (value) => getIt<NavigationService>().navigateTo(MediaPlayer.route),
-      );
+    // 1. Quick check: Is it already playing?
+    if (am.currentSongTitleNotifier.value == name &&
+        am.mediaTypeNotifier.value == MediaType.media) {
+      if (am.playButtonNotifier.value != PlayButtonState.playing) am.play();
+      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+      return;
     }
+
+    // 2. USE CACHED CONTENT: Find the item in our pre-cached list
+    MediaItem? item;
+    try {
+      item = _preCachedMediaItems.firstWhere((i) => i.title == name);
+    } catch (e) {
+      // Fallback if not in cache (safety net)
+      item = await MediaHelper.generateMediaItem(name, link, isFileExists);
+    }
+
+    // 3. Handle Radio-to-Media or Empty Player switch
+    if (am.mediaTypeNotifier.value == MediaType.radio ||
+        am.queue.value.isEmpty) {
+      await initMediaService(item);
+      getIt<NavigationService>().navigateTo(MediaPlayer.route);
+      am.play(); // Added play here to ensure it starts immediately
+      return;
+    }
+
+    // 4. Already in Media Mode: Manage Queue
+    am.pause();
+
+    final existingIndex = am.queue.value.indexWhere((i) => i.id == item!.id);
+    if (existingIndex != -1) {
+      await am.removeQueueItemAt(existingIndex);
+    }
+
+    await am.addQueueItem(item);
+
+    // 5. Play the item
+    final newIndex = am.queue.value.length - 1;
+    await am.load();
+    await am.skipToQueueItem(newIndex);
+
+    getIt<NavigationService>().navigateTo(MediaPlayer.route);
+    am.play();
   }
 
   /// initialize the media player when no player is playing
-  Future<void> initMediaService(
-    String name,
-    String link,
-    bool isFileExists,
-  ) async {
-    final tempMediaItem = await MediaHelper.generateMediaItem(
-      name,
-      link,
-      isFileExists,
-    );
-
-    // passing params to send the source to play
+  Future<void> initMediaService(MediaItem item) async {
     Map<String, dynamic> params = {
-      'id': tempMediaItem.id,
-      'album': tempMediaItem.album,
-      'title': tempMediaItem.title,
-      'artist': tempMediaItem.artist,
-      'duration': tempMediaItem.duration,
-      'artUri': tempMediaItem.artUri.toString(),
-      'extrasUri': tempMediaItem.extras!['uri'],
+      'id': item.id,
+      'album': item.album,
+      'title': item.title,
+      'artist': item.artist,
+      'duration': item.duration,
+      'artUri': item.artUri.toString(),
+      'extrasUri': item.extras!['uri'],
     };
 
-    _audioManager!.stop();
+    await _audioManager!.stop();
     await _audioManager!.init(MediaType.media, params);
   }
 
@@ -490,7 +525,13 @@ class _Media extends State<Media> {
       link,
       isFileExists,
     );
-    if (_audioManager!.queueNotifier.value.contains(tempMediaItem.title)) {
+
+    // Check against the actual MediaItem objects in the queue using ID
+    final alreadyExists = _audioManager!.queue.value.any(
+      (item) => item.id == tempMediaItem.id,
+    );
+
+    if (alreadyExists) {
       return false;
     } else {
       await _audioManager!.addQueueItem(tempMediaItem);
@@ -501,17 +542,21 @@ class _Media extends State<Media> {
   /// move the media item to the end of the queue
   ///
   /// Note: check if the item is already in queue before calling
-  Future<void> moveToLast(String name, String link, bool isFileExists) async {
-    if (_audioManager!.queueNotifier.value.length > 1) {
-      final tempMediaItem = await MediaHelper.generateMediaItem(
-        name,
-        link,
-        isFileExists,
-      );
-      await _audioManager!.removeQueueItemWithTitle(tempMediaItem.title);
-      return _audioManager!.addQueueItem(tempMediaItem);
+  Future<void> moveToLast(String name) async {
+    final currentQueue = _audioManager!.queue.value;
+
+    // Search the current active queue by title
+    final index = currentQueue.indexWhere((item) => item.title == name);
+
+    if (index != -1 && currentQueue.length > 1) {
+      final existingItem = currentQueue[index];
+
+      // Remove by index (very fast)
+      await _audioManager!.removeQueueItemAt(index);
+
+      // Re-add the same object to the end
+      await _audioManager!.addQueueItem(existingItem);
     }
-    return;
   }
 
   // ****************** //
