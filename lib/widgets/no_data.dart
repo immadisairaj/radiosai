@@ -39,20 +39,13 @@ class _NoData extends State<NoData> {
               child: Text(
                 widget.text,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 16,
-                ),
+                style: const TextStyle(fontSize: 16),
               ),
             ),
             ElevatedButton(
               onPressed: widget.onPressed as void Function()?,
-              child: const Text(
-                'Retry',
-                style: TextStyle(
-                  fontSize: 16,
-                ),
-              ),
-            )
+              child: const Text('Retry', style: TextStyle(fontSize: 16)),
+            ),
           ],
         ),
       ),

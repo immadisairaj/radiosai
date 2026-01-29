@@ -93,9 +93,9 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: Consumer<AppThemeBloc>(
-          // listen to change of app theme
-          builder: (context, appThemeBloc, child) {
-        return StreamBuilder<String?>(
+        // listen to change of app theme
+        builder: (context, appThemeBloc, child) {
+          return StreamBuilder<String?>(
             stream: appThemeBloc.appThemeStream as Stream<String?>?,
             builder: (context, snapshot) {
               String appTheme =
@@ -125,8 +125,10 @@ class MyApp extends StatelessWidget {
                   RadioSchedule.route: (context) => const RadioSchedule(),
                 },
               );
-            });
-      }),
+            },
+          );
+        },
+      ),
     );
   }
 }

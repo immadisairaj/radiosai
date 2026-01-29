@@ -5,7 +5,4 @@ class LoadingNotifier extends ValueNotifier<LoadingState> {
   static const _initialValue = LoadingState.done;
 }
 
-enum LoadingState {
-  loading,
-  done,
-}
+enum LoadingState { loading, done }

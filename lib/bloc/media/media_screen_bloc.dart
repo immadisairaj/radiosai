@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 
 // updates the media screen based on download state
@@ -25,7 +26,7 @@ class MediaScreenBloc {
   // call the function changeMediaScreenState.add(value) to change the value
   StreamSink get changeMediaScreenState => _actionController.sink;
 
-  void _changeStream(data) {
+  void _changeStream(dynamic data) {
     if (data == null) {
       _changed = false;
     } else {

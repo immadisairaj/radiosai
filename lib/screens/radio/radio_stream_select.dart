@@ -6,11 +6,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:radiosai/constants/constants.dart';
 
 class RadioStreamSelect extends StatefulWidget {
-  const RadioStreamSelect({
-    super.key,
-    this.panelController,
-    this.radius,
-  });
+  const RadioStreamSelect({super.key, this.panelController, this.radius});
 
   final PanelController? panelController;
   final Radius? radius;
@@ -72,13 +68,13 @@ class _RadioStreamSelect extends State<RadioStreamSelect> {
       itemBuilder: (context, widgetIndex) {
         // check if the radio selected index matches the widget
         bool isMatch = (widgetIndex == radioIndex);
-        String radioName = MyConstants.of(context)!
-            .radioStreamHttps
-            .keys
-            .toList()[widgetIndex];
+        String radioName = MyConstants.of(
+          context,
+        )!.radioStreamHttps.keys.toList()[widgetIndex];
         return Padding(
-          padding:
-              isBigScreen ? const EdgeInsets.all(4) : const EdgeInsets.all(2),
+          padding: isBigScreen
+              ? const EdgeInsets.all(4)
+              : const EdgeInsets.all(2),
           child: Card(
             elevation: 1.5,
             shadowColor: Theme.of(context).colorScheme.onSecondary,

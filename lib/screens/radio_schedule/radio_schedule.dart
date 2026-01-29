@@ -4,9 +4,7 @@ import 'package:radiosai/bloc/radio/radio_index_bloc.dart';
 import 'package:radiosai/screens/radio_schedule/schedule_data.dart';
 
 class RadioSchedule extends StatefulWidget {
-  const RadioSchedule({
-    super.key,
-  });
+  const RadioSchedule({super.key});
 
   static const String route = 'radioSchedule';
 
@@ -19,9 +17,9 @@ class _RadioSchedule extends State<RadioSchedule> {
   Widget build(BuildContext context) {
     // Consumers of all the providers to get the stream of data
     return Consumer<RadioIndexBloc>(
-        // listen to change of radio stream index
-        builder: (context, radioIndexBloc, child) {
-      return StreamBuilder<int?>(
+      // listen to change of radio stream index
+      builder: (context, radioIndexBloc, child) {
+        return StreamBuilder<int?>(
           stream: radioIndexBloc.radioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
             int radioStreamIndex = snapshot.data ?? -1;
@@ -31,10 +29,10 @@ class _RadioSchedule extends State<RadioSchedule> {
               radioStreamIndex = 0;
             }
 
-            return ScheduleData(
-              radioStreamIndex: radioStreamIndex,
-            );
-          });
-    });
+            return ScheduleData(radioStreamIndex: radioStreamIndex);
+          },
+        );
+      },
+    );
   }
 }

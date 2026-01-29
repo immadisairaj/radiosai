@@ -15,7 +15,7 @@ class MyConstants extends InheritedWidget {
     // 'America Stream': 'https://stream.sssmediacentre.org:8443/ameri',
     'Bhajan Stream': 'https://stream.sssmediacentre.org:8443/bhajan',
     'Discourse Stream': 'https://stream.sssmediacentre.org:8443/discourse',
-    'Telugu Stream': 'https://stream.sssmediacentre.org:8443/telugu'
+    'Telugu Stream': 'https://stream.sssmediacentre.org:8443/telugu',
   };
 
   final Map<String, String> radioStreamImages = const {
@@ -25,7 +25,8 @@ class MyConstants extends InheritedWidget {
         'https://radiosai.immadisairaj.dev/images/bhajanStream.png',
     'Discourse Stream':
         'https://radiosai.immadisairaj.dev/images/discourseStream.png',
-    'Telugu Stream': 'https://radiosai.immadisairaj.dev/images/teluguStream.png'
+    'Telugu Stream':
+        'https://radiosai.immadisairaj.dev/images/teluguStream.png',
   };
 
   /// The list of items in the top menu bar
@@ -130,11 +131,7 @@ class MyConstants extends InheritedWidget {
 
   /// list of app themes
   // Note: don't change or move the values
-  final List<String> appThemes = const [
-    'Light',
-    'Dark',
-    'System default',
-  ];
+  final List<String> appThemes = const ['Light', 'Dark', 'System default'];
 
   @override
   bool updateShouldNotify(MyConstants oldWidget) => false;

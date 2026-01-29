@@ -15,9 +15,7 @@ import 'package:radiosai/screens/media_player/media_player.dart';
 /// shows if the media player is playing.
 /// else, returns a empty (zero container) widget
 class TopMediaPlayer extends StatefulWidget {
-  const TopMediaPlayer({
-    super.key,
-  });
+  const TopMediaPlayer({super.key});
 
   @override
   State<TopMediaPlayer> createState() => _TopMediaPlayer();
@@ -36,73 +34,69 @@ class _TopMediaPlayer extends State<TopMediaPlayer> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<List<String>>(
-        valueListenable: _audioManager!.queueNotifier,
-        builder: (context, queueList, snapshot) {
-          final running = queueList.isNotEmpty &&
-              _audioManager!.mediaTypeNotifier.value != MediaType.radio;
-          // empty widget if the media player is not running
-          if (!running) {
-            return const SizedBox(
-              height: 0,
-              width: 0,
-            );
-          }
+      valueListenable: _audioManager!.queueNotifier,
+      builder: (context, queueList, snapshot) {
+        final running =
+            queueList.isNotEmpty &&
+            _audioManager!.mediaTypeNotifier.value != MediaType.radio;
+        // empty widget if the media player is not running
+        if (!running) {
+          return const SizedBox(height: 0, width: 0);
+        }
 
-          return StreamBuilder<List<MediaItem>>(
-              stream: _audioManager!.queue,
-              builder: (context, snapshot) {
-                final queueList = snapshot.data;
-                // empty widget if radio player is running
-                if (queueList == null || queueList.isEmpty) {
-                  return const SizedBox(
-                    height: 0,
-                    width: 0,
-                  );
-                }
+        return StreamBuilder<List<MediaItem>>(
+          stream: _audioManager!.queue,
+          builder: (context, snapshot) {
+            final queueList = snapshot.data;
+            // empty widget if radio player is running
+            if (queueList == null || queueList.isEmpty) {
+              return const SizedBox(height: 0, width: 0);
+            }
 
-                return ValueListenableBuilder<PlayButtonState>(
-                    valueListenable: _audioManager!.playButtonNotifier,
-                    builder: (context, playState, snapshot) {
-                      final playing = (playState == PlayButtonState.playing);
+            return ValueListenableBuilder<PlayButtonState>(
+              valueListenable: _audioManager!.playButtonNotifier,
+              builder: (context, playState, snapshot) {
+                final playing = (playState == PlayButtonState.playing);
 
-                      return Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                              top: MediaQuery.of(context).padding.top + 10,
-                              left: 5),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: Card(
-                              elevation: 8,
-                              shadowColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: InkWell(
-                                onTap: () {
-                                  getIt<NavigationService>()
-                                      .navigateTo(MediaPlayer.route);
-                                },
-                                borderRadius: BorderRadius.circular(10),
-                                child: Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(10, 5, 10, 5),
-                                  child: Text(
-                                    playing ? 'Playing..' : 'Paused..',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ),
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 10,
+                      left: 5,
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Card(
+                        elevation: 8,
+                        shadowColor: Theme.of(context).colorScheme.secondary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            getIt<NavigationService>().navigateTo(
+                              MediaPlayer.route,
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(10),
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+                            child: Text(
+                              playing ? 'Playing..' : 'Paused..',
+                              style: const TextStyle(fontSize: 18),
                             ),
                           ),
                         ),
-                      );
-                    });
-              });
-        });
+                      ),
+                    ),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      },
+    );
   }
 }

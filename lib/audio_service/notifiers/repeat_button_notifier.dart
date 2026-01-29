@@ -10,8 +10,4 @@ class RepeatButtonNotifier extends ValueNotifier<RepeatState> {
   }
 }
 
-enum RepeatState {
-  off,
-  repeatQueue,
-  repeatSong,
-}
+enum RepeatState { off, repeatQueue, repeatSong }

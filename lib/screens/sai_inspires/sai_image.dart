@@ -12,12 +12,7 @@ import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/scaffold_helper.dart';
 
 class SaiImage extends StatefulWidget {
-  const SaiImage({
-    super.key,
-    this.heroTag,
-    this.imageUrl,
-    this.fileName,
-  });
+  const SaiImage({super.key, this.heroTag, this.imageUrl, this.fileName});
 
   final String? heroTag;
   final String? imageUrl;
@@ -59,8 +54,10 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
   @override
   void dispose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-        overlays: SystemUiOverlay.values);
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: SystemUiOverlay.values,
+    );
     _controllerReset.dispose();
     _animationController.dispose();
     super.dispose();
@@ -100,16 +97,16 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                           ? const EdgeInsets.all(double.infinity)
                           : EdgeInsets.zero,
                       child: Hero(
-                          tag: widget.heroTag!,
-                          child: SizedBox(
-                            height: screenSize.height,
-                            width: screenSize.width,
-                            child: Image(
-                              image:
-                                  CachedNetworkImageProvider(widget.imageUrl!),
-                              fit: BoxFit.contain,
-                            ),
-                          )),
+                        tag: widget.heroTag!,
+                        child: SizedBox(
+                          height: screenSize.height,
+                          width: screenSize.width,
+                          child: Image(
+                            image: CachedNetworkImageProvider(widget.imageUrl!),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -122,9 +119,11 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
                         title: Text(widget.fileName!),
                         actions: [
                           IconButton(
-                            icon: Icon((Platform.isAndroid)
-                                ? Icons.download_outlined
-                                : CupertinoIcons.cloud_download),
+                            icon: Icon(
+                              (Platform.isAndroid)
+                                  ? Icons.download_outlined
+                                  : CupertinoIcons.cloud_download,
+                            ),
                             tooltip: 'Save image',
                             splashRadius: 24,
                             onPressed: () => _saveImage(),
@@ -154,8 +153,9 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
       var permission = await _canSave();
       if (!permission) {
         getIt<ScaffoldHelper>().showSnackBar(
-            'Accept manage storage permission to save image to gallery',
-            const Duration(seconds: 2));
+          'Accept manage storage permission to save image to gallery',
+          const Duration(seconds: 2),
+        );
         return;
       }
       await Directory(imageDirectoryPath).create(recursive: true);
@@ -173,13 +173,14 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
 
       final imageName = '${albumName}_${widget.fileName}';
       // save to gallery after saved to external file
-      ImageGallerySaverPlus.saveFile(
-        imageFilePath,
-        name: imageName,
-      ).then((isSave) {
+      ImageGallerySaverPlus.saveFile(imageFilePath, name: imageName).then((
+        isSave,
+      ) {
         if (isSave['isSuccess']) {
-          getIt<ScaffoldHelper>()
-              .showSnackBar('Saved to gallery', const Duration(seconds: 1));
+          getIt<ScaffoldHelper>().showSnackBar(
+            'Saved to gallery',
+            const Duration(seconds: 1),
+          );
         }
       });
     }
@@ -231,11 +232,15 @@ class _SaiImage extends State<SaiImage> with TickerProviderStateMixin {
   /// toggles the status bar visibility
   void _toogleStatusBar() {
     if (_fullScreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
-          overlays: []);
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.immersiveSticky,
+        overlays: [],
+      );
     } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
-          overlays: SystemUiOverlay.values);
+      SystemChrome.setEnabledSystemUIMode(
+        SystemUiMode.manual,
+        overlays: SystemUiOverlay.values,
+      );
     }
   }
 

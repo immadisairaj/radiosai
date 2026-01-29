@@ -5,7 +5,4 @@ class PlayButtonNotifier extends ValueNotifier<PlayButtonState> {
   static const _initialValue = PlayButtonState.paused;
 }
 
-enum PlayButtonState {
-  paused,
-  playing,
-}
+enum PlayButtonState { paused, playing }

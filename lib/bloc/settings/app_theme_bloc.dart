@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -36,7 +37,7 @@ class AppThemeBloc {
   // call the function changeAppTheme.add(value) to change the value
   StreamSink get changeAppTheme => _actionController.sink;
 
-  void _changeStream(data) async {
+  void _changeStream(dynamic data) async {
     if (data == null) {
       _theme = initialTheme;
     } else {

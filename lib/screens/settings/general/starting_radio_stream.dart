@@ -7,10 +7,7 @@ const String recentlyPlayed = 'Recently played';
 
 /// StartingRadioStream - Option to change the radio stream open on app start
 class StartingRadioStream extends StatefulWidget {
-  const StartingRadioStream({
-    super.key,
-    this.contentPadding,
-  });
+  const StartingRadioStream({super.key, this.contentPadding});
 
   final EdgeInsetsGeometry? contentPadding;
 
@@ -22,9 +19,9 @@ class _StartingRadioStream extends State<StartingRadioStream> {
   @override
   Widget build(BuildContext context) {
     return Consumer<InitialRadioIndexBloc>(
-        // listen to change of initial radio stream index
-        builder: (context, initialRadioIndexBloc, child) {
-      return StreamBuilder<int?>(
+      // listen to change of initial radio stream index
+      builder: (context, initialRadioIndexBloc, child) {
+        return StreamBuilder<int?>(
           stream:
               initialRadioIndexBloc.initialRadioIndexStream as Stream<int?>?,
           builder: (context, snapshot) {
@@ -40,10 +37,9 @@ class _StartingRadioStream extends State<StartingRadioStream> {
             }
 
             String subtitle = (initialRadioStreamIndex >= 0)
-                ? MyConstants.of(context)!
-                    .radioStreamHttps
-                    .keys
-                    .toList()[initialRadioStreamIndex]
+                ? MyConstants.of(
+                    context,
+                  )!.radioStreamHttps.keys.toList()[initialRadioStreamIndex]
                 : recentlyPlayed;
 
             return Tooltip(
@@ -54,65 +50,74 @@ class _StartingRadioStream extends State<StartingRadioStream> {
                 subtitle: Text(subtitle),
                 onTap: () async {
                   showDialog<void>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Starting radio stream'),
-                          contentPadding: const EdgeInsets.only(top: 10),
-                          content: SizedBox(
-                            width: MediaQuery.of(context).size.width * 0.6,
-                            child: Scrollbar(
-                              radius: const Radius.circular(8),
-                              thumbVisibility: true,
-                              child: SingleChildScrollView(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Starting radio stream'),
+                        contentPadding: const EdgeInsets.only(top: 10),
+                        content: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.6,
+                          child: Scrollbar(
+                            radius: const Radius.circular(8),
+                            thumbVisibility: true,
+                            child: SingleChildScrollView(
+                              child: RadioGroup(
+                                groupValue: initialRadioStreamIndex,
+                                onChanged: (dynamic value) {
+                                  initialRadioIndexBloc.changeInitialRadioIndex
+                                      .add(value);
+                                  Navigator.of(context).pop();
+                                },
                                 child: ListView.builder(
-                                    itemCount: MyConstants.of(context)!
-                                            .radioStreamHttps
-                                            .length +
-                                        1,
-                                    shrinkWrap: true,
-                                    primary: false,
-                                    itemBuilder: (context, index) {
-                                      int value = index - 1;
-                                      return RadioListTile(
-                                          activeColor: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          value: value,
-                                          selected:
-                                              value == initialRadioStreamIndex,
-                                          title: (value >= 0)
-                                              ? Text(MyConstants.of(context)!
+                                  itemCount:
+                                      MyConstants.of(
+                                        context,
+                                      )!.radioStreamHttps.length +
+                                      1,
+                                  shrinkWrap: true,
+                                  primary: false,
+                                  itemBuilder: (context, index) {
+                                    int value = index - 1;
+                                    return RadioListTile(
+                                      activeColor: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                      value: value,
+                                      selected:
+                                          value == initialRadioStreamIndex,
+                                      title: (value >= 0)
+                                          ? Text(
+                                              MyConstants.of(context)!
                                                   .radioStreamHttps
                                                   .keys
-                                                  .toList()[value])
-                                              : const Text(recentlyPlayed),
-                                          groupValue: initialRadioStreamIndex,
-                                          onChanged: (dynamic value) {
-                                            initialRadioIndexBloc
-                                                .changeInitialRadioIndex
-                                                .add(value);
-                                            Navigator.of(context).pop();
-                                          });
-                                    }),
+                                                  .toList()[value],
+                                            )
+                                          : const Text(recentlyPlayed),
+                                    );
+                                  },
+                                ),
                               ),
                             ),
                           ),
-                          buttonPadding: const EdgeInsets.all(4),
-                          actions: [
-                            TextButton(
-                              child: const Text('Cancel'),
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                            )
-                          ],
-                        );
-                      });
+                        ),
+                        buttonPadding: const EdgeInsets.all(4),
+                        actions: [
+                          TextButton(
+                            child: const Text('Cancel'),
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
               ),
             );
-          });
-    });
+          },
+        );
+      },
+    );
   }
 }

@@ -30,7 +30,9 @@ class DownloadHelper {
   /// also listens to the progress
   static void bindBackgroundIsolate() {
     bool isSuccess = IsolateNameServer.registerPortWithName(
-        port.sendPort, 'downloader_send_port');
+      port.sendPort,
+      'downloader_send_port',
+    );
     if (!isSuccess) {
       // unbindBackgroundIsolate();
       bindBackgroundIsolate();
@@ -43,8 +45,9 @@ class DownloadHelper {
       int? progress = data[2];
 
       if (downloadTasks.isNotEmpty) {
-        final task =
-            downloadTasks.firstWhere((element) => element.taskId == id);
+        final task = downloadTasks.firstWhere(
+          (element) => element.taskId == id,
+        );
 
         // task.status = status;
         task.progress = progress;

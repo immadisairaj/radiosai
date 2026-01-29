@@ -6,10 +6,7 @@ import 'package:flutter/material.dart';
 ///
 /// takes in [hasInternet] value (have to input with stream of data false/true)
 class InternetAlert extends StatefulWidget {
-  const InternetAlert({
-    super.key,
-    required this.hasInternet,
-  });
+  const InternetAlert({super.key, required this.hasInternet});
 
   final bool? hasInternet;
 
@@ -27,8 +24,9 @@ class _InternetAlert extends State<InternetAlert> {
       child: Align(
         alignment: Alignment.topCenter,
         child: Padding(
-          padding:
-              EdgeInsets.only(top: MediaQuery.of(context).padding.top + 20),
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).padding.top + 20,
+          ),
           child: Card(
             elevation: 1,
             shape: RoundedRectangleBorder(
@@ -42,10 +40,7 @@ class _InternetAlert extends State<InternetAlert> {
               padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               child: Text(
                 widget.hasInternet! ? 'Back Online' : 'No Internet connection',
-                style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.white,
-                ),
+                style: const TextStyle(fontSize: 15, color: Colors.white),
               ),
             ),
           ),

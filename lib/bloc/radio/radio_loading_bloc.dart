@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:rxdart/rxdart.dart';
 
 class RadioLoadingBloc {
@@ -19,7 +20,7 @@ class RadioLoadingBloc {
   // call the function changeLoadingState.add(value) to change the value
   StreamSink get changeLoadingState => _actionController.sink;
 
-  void _changeStream(data) {
+  void _changeStream(dynamic data) {
     if (data == null) {
       _loading = false;
     } else {

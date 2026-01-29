@@ -217,7 +217,8 @@ class _Settings extends State<Settings> {
   }
 
   /// launch the url from url_launcher
-  Future<void> _urlLaunch(urlString) async {
+  Future<void> _urlLaunch(String? urlString) async {
+    if (urlString == null) return;
     try {
       if (await canLaunchUrl(Uri.parse(urlString))) {
         await launchUrl(Uri.parse(urlString));

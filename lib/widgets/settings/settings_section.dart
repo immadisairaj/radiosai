@@ -35,10 +35,7 @@ class SettingsSection extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 10),
-              child: child,
-            ),
+            Padding(padding: const EdgeInsets.only(bottom: 10), child: child),
           ],
         ),
       ),
