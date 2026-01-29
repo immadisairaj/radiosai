@@ -103,7 +103,7 @@ class MyAudioHandler extends BaseAudioHandler {
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
-        queueIndex: event.currentIndex!,
+        queueIndex: _player.currentIndex ?? 0,
       );
     } else {
       return playbackState.value.copyWith(
@@ -116,6 +116,8 @@ class MyAudioHandler extends BaseAudioHandler {
           MediaAction.seek,
           MediaAction.seekForward,
           MediaAction.seekBackward,
+          MediaAction.skipToNext,
+          MediaAction.skipToPrevious,
         },
         androidCompactActionIndices: const [0, 1, 2],
         processingState: const {
@@ -137,41 +139,43 @@ class MyAudioHandler extends BaseAudioHandler {
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
-        queueIndex: event.currentIndex,
+        queueIndex: _player.currentIndex ?? 0,
       );
     }
   }
 
   void _listenForDurationChanges() {
     _player.durationStream.listen((duration) {
-      var index = _player.currentIndex;
-      final List<MediaItem?> newQueue = queue.value;
-      if (index == null || newQueue.isEmpty) return;
-      if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices[index];
+      final index = _player.currentIndex;
+      final newQueue = queue.value;
+      if (index == null || newQueue.isEmpty || duration == null) return;
+
+      final oldMediaItem = newQueue[index];
+      final newMediaItem = oldMediaItem.copyWith(duration: duration);
+
+      // 1. Update the queue list
+      final updatedQueue = List<MediaItem>.from(newQueue);
+      updatedQueue[index] = newMediaItem;
+      queue.add(updatedQueue);
+
+      // 2. ONLY update the mediaItem sink if the index we just updated
+      // is actually the one currently playing!
+      if (index == _player.currentIndex) {
+        mediaItem.add(newMediaItem);
       }
-      final oldMediaItem = newQueue[index]!;
-      final MediaItem newMediaItem = oldMediaItem.copyWith(
-        duration: duration ?? Duration.zero,
-      );
-      newQueue[index] = newMediaItem;
-      queue.add(newQueue as List<MediaItem>);
-      mediaItem.add(newMediaItem);
     });
   }
 
   void _listenForCurrentSongIndexChanges() {
     _player.currentIndexStream.listen((index) {
       final playlist = queue.value;
-      if (index == null || playlist.isEmpty) return;
-      if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices[index];
-      }
-      try {
+      if (index == null || playlist.isEmpty || index >= playlist.length) return;
+
+      // Source of Truth check:
+      // Only broadcast this as the "Now Playing" item if the player
+      // is actually supposed to be on this index.
+      if (mediaItem.value?.id != playlist[index].id) {
         mediaItem.add(playlist[index]);
-      } catch (_) {
-        // Do nothing when cached
-        // Error occurs when changing stream, but it works fine
       }
     });
   }
@@ -180,8 +184,13 @@ class MyAudioHandler extends BaseAudioHandler {
     _player.sequenceStateStream.listen((SequenceState? sequenceState) {
       final sequence = sequenceState?.effectiveSequence;
       if (sequence == null || sequence.isEmpty) return;
-      final items = sequence.map((source) => source.tag as MediaItem);
-      queue.add(items.toList());
+
+      final items = sequence.map((source) => source.tag as MediaItem).toList();
+      queue.add(items);
+
+      playbackState.add(
+        playbackState.value.copyWith(queueIndex: _player.currentIndex),
+      );
     });
   }
 
@@ -190,10 +199,6 @@ class MyAudioHandler extends BaseAudioHandler {
     // manage Just Audio
     final audioSource = mediaItems.map(_createAudioSource);
     _player.addAudioSources(audioSource.toList());
-
-    // notify system
-    final newQueue = queue.value..addAll(mediaItems);
-    queue.add(newQueue);
   }
 
   @override
@@ -201,10 +206,6 @@ class MyAudioHandler extends BaseAudioHandler {
     // manage Just Audio
     final audioSource = _createAudioSource(mediaItem);
     _player.addAudioSource(audioSource);
-
-    // notify system
-    final newQueue = queue.value..add(mediaItem);
-    queue.add(newQueue);
   }
 
   AudioSource _createAudioSource(MediaItem mediaItem) {
@@ -219,10 +220,6 @@ class MyAudioHandler extends BaseAudioHandler {
   Future<void> removeQueueItemAt(int index) async {
     // manage Just Audio
     _player.removeAudioSourceAt(index);
-
-    // notify system
-    final newQueue = queue.value..removeAt(index);
-    queue.add(newQueue);
   }
 
   @override
@@ -237,9 +234,10 @@ class MyAudioHandler extends BaseAudioHandler {
         break;
       // clear method is called when starting a new player
       case 'clear':
-        _player.pause();
+        _player.stop();
         await _player.clearAudioSources();
-        queue.add(queue.value..clear());
+        queue.add([]);
+        mediaItem.add(null);
         break;
       // init method is called when starting a new player
       case 'init':
@@ -264,9 +262,6 @@ class MyAudioHandler extends BaseAudioHandler {
   @override
   Future<void> skipToQueueItem(int index) async {
     if (index < 0 || index >= queue.value.length) return;
-    if (_player.shuffleModeEnabled) {
-      index = _player.shuffleIndices[index];
-    }
     _player.seek(Duration.zero, index: index);
   }
 
@@ -302,10 +297,10 @@ class MyAudioHandler extends BaseAudioHandler {
   @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     if (shuffleMode == AudioServiceShuffleMode.none) {
-      _player.setShuffleModeEnabled(false);
+      await _player.setShuffleModeEnabled(false);
     } else {
       await _player.shuffle();
-      _player.setShuffleModeEnabled(true);
+      await _player.setShuffleModeEnabled(true);
     }
   }
 

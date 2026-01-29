@@ -60,9 +60,7 @@ class AudioManager {
     await _loadRadio(radio);
     _listenToChangesInQueue();
     _listenToPlaybackState();
-    _listenToCurrentPosition();
-    _listenToBufferedPosition();
-    _listenToTotalDuration();
+    _listenToProgress();
     _listenToChangesInSong();
     return;
   }
@@ -109,9 +107,7 @@ class AudioManager {
     await _loadMediaItem(mediaItem);
     _listenToChangesInQueue();
     _listenToPlaybackState();
-    _listenToCurrentPosition();
-    _listenToBufferedPosition();
-    _listenToTotalDuration();
+    _listenToProgress();
     _listenToChangesInSong();
     pause();
     seek(Duration.zero);
@@ -135,7 +131,6 @@ class AudioManager {
 
   Future<void> _loadMediaItem(MediaItem mediaItem) async {
     _audioHandler.addQueueItem(mediaItem);
-    await load();
   }
 
   ValueStream<List<MediaItem>> get queue => _audioHandler.queue;
@@ -165,66 +160,66 @@ class AudioManager {
       }
 
       final isPlaying = playbackState.playing;
-      if (!isPlaying) {
+      if (processingState == AudioProcessingState.completed) {
+        // Only pause if we aren't supposed to move to the next item
+        // (e.g., end of playlist with repeat off)
         playButtonNotifier.value = PlayButtonState.paused;
-      } else if (processingState != AudioProcessingState.completed) {
-        playButtonNotifier.value = PlayButtonState.playing;
+      } else if (!isPlaying) {
+        playButtonNotifier.value = PlayButtonState.paused;
       } else {
-        _audioHandler.seek(Duration.zero);
-        _audioHandler.pause();
+        playButtonNotifier.value = PlayButtonState.playing;
       }
-    });
-  }
 
-  void _listenToCurrentPosition() {
-    AudioService.position.listen((position) {
-      final ProgressBarState oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: position,
-        buffered: oldState.buffered,
-        total: oldState.total,
-      );
-    });
-  }
-
-  void _listenToBufferedPosition() {
-    _audioHandler.playbackState.listen((playbackState) {
-      final ProgressBarState oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: oldState.current,
-        buffered: playbackState.bufferedPosition,
-        total: oldState.total,
-      );
-    });
-  }
-
-  void _listenToTotalDuration() {
-    _audioHandler.mediaItem.listen((mediaItem) {
-      final ProgressBarState oldState = progressNotifier.value;
-      progressNotifier.value = ProgressBarState(
-        current: oldState.current,
-        buffered: oldState.buffered,
-        total: mediaItem?.duration ?? Duration.zero,
-      );
-    });
-  }
-
-  void _listenToChangesInSong() {
-    _audioHandler.mediaItem.listen((mediaItem) {
-      currentSongTitleNotifier.value = mediaItem?.title ?? '';
       _updateSkipButtons();
     });
   }
 
+  void _listenToProgress() {
+    Rx.combineLatest3<Duration, PlaybackState, MediaItem?, ProgressBarState>(
+      AudioService.position,
+      _audioHandler.playbackState,
+      _audioHandler.mediaItem,
+      (position, state, item) => ProgressBarState(
+        current: position,
+        buffered: state.bufferedPosition,
+        total: item?.duration ?? Duration.zero,
+      ),
+    ).listen((state) => progressNotifier.value = state);
+  }
+
+  void _listenToChangesInSong() {
+    // Combine the media item and the playback state to ensure we are
+    // showing the item that matches the player's currentIndex.
+    CombineLatestStream.combine2<MediaItem?, PlaybackState, MediaItem?>(
+      _audioHandler.mediaItem,
+      _audioHandler.playbackState,
+      (item, state) => item,
+    ).listen((item) {
+      if (item != null) {
+        currentSongTitleNotifier.value = item.title;
+        _updateSkipButtons();
+      }
+    });
+  }
+
   void _updateSkipButtons() {
-    final mediaItem = _audioHandler.mediaItem.value;
+    // Use the values directly from the handler to avoid using
+    // potentially stale local Notifier values during the transition
     final playlist = _audioHandler.queue.value;
-    if (playlist.length < 2 || mediaItem == null) {
+    final state = _audioHandler.playbackState.value;
+    final currentIndex = state.queueIndex;
+
+    if (playlist.length < 2 || currentIndex == null) {
       isFirstSongNotifier.value = true;
       isLastSongNotifier.value = true;
     } else {
-      isFirstSongNotifier.value = playlist.first == mediaItem;
-      isLastSongNotifier.value = playlist.last == mediaItem;
+      isFirstSongNotifier.value = currentIndex == 0;
+      isLastSongNotifier.value = currentIndex == playlist.length - 1;
+
+      // Safety check: ensure current title matches the index
+      if (currentIndex < playlist.length) {
+        currentSongTitleNotifier.value = playlist[currentIndex].title;
+      }
     }
   }
 
@@ -232,6 +227,9 @@ class AudioManager {
 
   Future<void> addQueueItem(MediaItem mediaItem) =>
       _audioHandler.addQueueItem(mediaItem);
+
+  Future<void> addQueueItems(List<MediaItem> mediaItems) =>
+      _audioHandler.addQueueItems(mediaItems);
 
   Future<void> removeQueueItemWithTitle(String mediaTitle) async {
     final index = queueNotifier.value.indexOf(mediaTitle);
