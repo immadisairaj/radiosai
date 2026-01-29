@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
@@ -57,6 +58,8 @@ class _SaiInspires extends State<SaiInspires> {
 
   /// audio url for the sai inspires; fetch data from this to get mp3 url
   String? audioFinalUrl = '';
+  String? finalAudioName;
+  String? finalAudioMp3Url;
 
   /// hero tag for the hero widgets (2 screen widget animation)
   final String heroTag = 'SaiInspiresImage';
@@ -271,7 +274,7 @@ class _SaiInspires extends State<SaiInspires> {
     _getData();
   }
 
-  /// get data of date before Jul 15 2011
+  /// get data of date after Jul 15 2011
   ///
   /// retrieve the data from finalUrl and set the image url
   ///
@@ -363,6 +366,8 @@ class _SaiInspires extends State<SaiInspires> {
       returnedAudioUrl = '$audioBaseUrl/${mainBody['relatedItems'][0]['id']}';
     }
 
+    await _getAudioMp3Url(url: returnedAudioUrl);
+
     setState(() {
       // set the data
       _dateText = dateText;
@@ -452,28 +457,36 @@ class _SaiInspires extends State<SaiInspires> {
       textData =
           '$_dateText\n\n$_thoughtOfTheDay\n'
           '\n$_contentText\n\n$_byBaba\n\n$_quote';
-      textData = 'Sai Inspires - $textData';
-      // currently downloading image from old api and sharing it
-      // will send only text when old api fails
-      String imageFormattedDate = DateFormat('yyyyMMdd').format(selectedDate!);
-      const String imageBaseUrl =
-          'https://archive.sssmediacentre.org/sai_inspires';
-      String imageUrl =
-          '$imageBaseUrl/${selectedDate!.year}/uploadimages/SI_$imageFormattedDate.jpg';
-      final response = await http.head(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
-        // share with image if old api is working
-        File? imageFile;
-        try {
-          imageFile = await DefaultCacheManager()
-              .getSingleFile(imageUrl)
-              .timeout(const Duration(seconds: 20));
-        } on Exception catch (_) {
-          // do nothing
+      textData =
+          '$textData\n\nListen to Audio: $finalAudioMp3Url'
+          '\n\nShared from Sai Voice App\n'
+          'https://radiosai.immadisairaj.dev';
+      if (imageFinalUrl != null && imageFinalUrl != '') {
+        final response = await http.head(Uri.parse(imageFinalUrl!));
+        if (response.statusCode == 200) {
+          // share with image if old api is working
+          File? imageFile;
+          try {
+            imageFile = await DefaultCacheManager()
+                .getSingleFile(imageFinalUrl!)
+                .timeout(const Duration(seconds: 20));
+          } on Exception catch (_) {
+            // do nothing
+          }
+
+          final String fileName = Uri.parse(imageFinalUrl!).pathSegments.last;
+          final Uint8List bytes = await imageFile!.readAsBytes();
+
+          SharePlus.instance.share(
+            ShareParams(
+              text: textData,
+              files: [XFile.fromData(bytes)],
+              fileNameOverrides: [fileName],
+            ),
+          );
+        } else {
+          SharePlus.instance.share(ShareParams(text: textData));
         }
-        SharePlus.instance.share(
-          ShareParams(text: textData, files: [XFile(imageFile!.path)]),
-        );
       } else {
         // TODO: change from binary to image before sharing for new links
         // share only text if old api is not working
@@ -488,12 +501,12 @@ class _SaiInspires extends State<SaiInspires> {
     }
   }
 
-  /// play the audio of Sai Inspires if the url is present
-  Future<void> _playAudio(BuildContext context) async {
+  Future<void> _getAudioMp3Url({String? url}) async {
+    final audioUrl = url ?? audioFinalUrl;
     File file;
     try {
       file = await DefaultCacheManager()
-          .getSingleFile(audioFinalUrl!)
+          .getSingleFile(audioUrl!)
           .timeout(const Duration(seconds: 40));
     } on SocketException catch (_) {
       setState(() {
@@ -528,8 +541,15 @@ class _SaiInspires extends State<SaiInspires> {
 
     final mainBody = body['result'];
 
-    final name = mainBody['title'];
-    final audioMP3Url = mainBody['actualAudioUrl'];
+    finalAudioName = mainBody['title'];
+    finalAudioMp3Url = mainBody['actualAudioUrl'];
+  }
+
+  /// play the audio of Sai Inspires if the url is present
+  Future<void> _playAudio(BuildContext context) async {
+    if (finalAudioMp3Url == null) await _getAudioMp3Url();
+
+    if (finalAudioMp3Url == null) return;
 
     bool hasInternet = false;
     if (context.mounted) {
@@ -540,7 +560,7 @@ class _SaiInspires extends State<SaiInspires> {
     // No download option. So,
     // everything is considered to use internet
     if (hasInternet) {
-      await startPlayer(name, audioMP3Url, false);
+      await startPlayer(finalAudioName!, finalAudioMp3Url!, false);
     } else {
       getIt<ScaffoldHelper>().showSnackBar(
         'Connect to the Internet and try again',
