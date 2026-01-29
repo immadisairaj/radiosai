@@ -610,12 +610,12 @@ class _MediaPlayer extends State<MediaPlayer> {
   ///
   /// pass the url [fileLink] to where it is in the internet
   void _shareMediaFileLink(String fileLink) {
-    String subject = 'Checkout this audio from radiosai!';
+    String subject = 'Check out this audio from radiosai!';
     String text =
         '$fileLink'
         '\n\nShared from Sai Voice App\n'
         'https://radiosai.immadisairaj.dev';
-    Share.share(text, subject: subject);
+    SharePlus.instance.share(ShareParams(text: text, subject: subject));
   }
 
   /// returns if the app has permission to save in external path

@@ -1,13 +1,8 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-// import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:html/parser.dart';
-import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 // import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
@@ -21,13 +16,12 @@ import 'package:radiosai/helper/navigator_helper.dart';
 import 'package:radiosai/helper/scaffold_helper.dart';
 import 'package:radiosai/screens/media_player/media_player.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
-import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
 
 class Media extends StatefulWidget {
-  const Media({super.key, required this.fids, this.title});
+  const Media({super.key, required this.mediaFiles, this.title});
 
-  final String? fids;
+  final List<String>? mediaFiles;
   final String? title;
 
   @override
@@ -38,12 +32,12 @@ class _Media extends State<Media> {
   /// variable to show the loading screen
   bool _isLoading = true;
 
-  /// contains the base url of the downloads page
-  final String baseUrl =
-      'https://schedule.sssmediacentre.org/program/Download.php';
+  // /// contains the base url of the downloads page
+  // final String baseUrl =
+  //     'https://schedule.sssmediacentre.org/program/Download.php';
 
-  /// the url with all the parameters (a unique url)
-  String finalUrl = '';
+  // /// the url with all the parameters (a unique url)
+  // String finalUrl = '';
 
   /// final data retrieved from the net
   ///
@@ -77,7 +71,7 @@ class _Media extends State<Media> {
     _isLoading = true;
     super.initState();
     _getDirectoryPath();
-    _updateURL();
+    _parseData();
 
     // _downloadTasks = DownloadHelper.getDownloadTasks();
   }
@@ -149,31 +143,6 @@ class _Media extends State<Media> {
                       ),
                     ],
                   ),
-                ),
-              // show when no data is retrieved
-              if (_finalMediaData[0] == 'null')
-                NoData(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  text: 'No Data Available,\ncheck your internet and try again',
-                  onPressed: () {
-                    setState(() {
-                      _isLoading = true;
-                      _updateURL();
-                    });
-                  },
-                ),
-              // show when no data is retrieved and timeout
-              if (_finalMediaData[0] == 'timeout')
-                NoData(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  text:
-                      'No Data Available,\nURL timeout, try again after some time',
-                  onPressed: () {
-                    setState(() {
-                      _isLoading = true;
-                      _updateURL();
-                    });
-                  },
                 ),
             ],
           ),
@@ -258,51 +227,11 @@ class _Media extends State<Media> {
                               splashRadius: 24,
                               tooltip: 'Add to playing queue',
                               onPressed: () async {
-                                // Change in radio_home.dart if changed here
-                                bool hasInternet =
-                                    Provider.of<InternetStatus>(
-                                      context,
-                                      listen: false,
-                                    ) ==
-                                    InternetStatus.connected;
-                                // No download option. So,
-                                // everything is considered to use internet
-                                if (hasInternet) {
-                                  if (!(_audioManager!
-                                          .queueNotifier
-                                          .value
-                                          .isNotEmpty &&
-                                      _audioManager!.mediaTypeNotifier.value ==
-                                          MediaType.media)) {
-                                    startPlayer(
-                                      mediaName,
-                                      _finalMediaLinks[index],
-                                      isFileExists,
-                                    );
-                                  } else {
-                                    bool added = await addToQueue(
-                                      mediaName,
-                                      _finalMediaLinks[index],
-                                      isFileExists,
-                                    );
-                                    if (added) {
-                                      getIt<ScaffoldHelper>().showSnackBar(
-                                        'Added to queue',
-                                        const Duration(seconds: 1),
-                                      );
-                                    } else {
-                                      getIt<ScaffoldHelper>().showSnackBar(
-                                        'Already in queue',
-                                        const Duration(seconds: 1),
-                                      );
-                                    }
-                                  }
-                                } else {
-                                  getIt<ScaffoldHelper>().showSnackBar(
-                                    'Connect to the Internet and try again',
-                                    const Duration(seconds: 2),
-                                  );
-                                }
+                                mediaPlusClick(
+                                  mediaName,
+                                  _finalMediaLinks[index],
+                                  isFileExists,
+                                );
                               },
                             ),
                           ],
@@ -321,87 +250,58 @@ class _Media extends State<Media> {
     );
   }
 
-  // ****************** //
-  //   Retrieve Data    //
-  // ****************** //
-
-  /// sets the [finalUrl]
-  ///
-  /// called when initState
-  ///
-  /// continues the process by retrieving the data
-  void _updateURL() {
-    var data = <String, dynamic>{};
-    data['allfids'] = widget.fids;
-
-    String url = '$baseUrl?allfids=${data['allfids']}';
-    finalUrl = url;
-    _getData(data);
-  }
-
-  /// retrieve the data from finalUrl
-  ///
-  /// continues the process by sending it to parse
-  /// if the data is retrieved
-  Future<void> _getData(Map<String, dynamic> formData) async {
-    String tempResponse = '';
-    // checks if the file exists in cache
-    FileInfo? fileInfo = await DefaultCacheManager().getFileFromCache(finalUrl);
-    if (fileInfo == null) {
-      // get data from online if not present in cache
-      http.Response response;
-      try {
-        response = await http
-            .post(Uri.parse(baseUrl), body: formData)
-            .timeout(const Duration(seconds: 40));
-      } on SocketException catch (_) {
-        setState(() {
-          // if there is no internet
-          _finalMediaData = ['null'];
-          finalUrl = '';
-          _isLoading = false;
-        });
-        return;
-      } on TimeoutException catch (_) {
-        setState(() {
-          // if timeout
-          _finalMediaData = ['timeout'];
-          finalUrl = '';
-          _isLoading = false;
-        });
-        return;
+  void mediaPlusClick(
+    String mediaName,
+    String mediaLink,
+    bool isFileExists,
+  ) async {
+    // Change in radio_home.dart if changed here
+    bool hasInternet =
+        Provider.of<InternetStatus>(context, listen: false) ==
+        InternetStatus.connected;
+    // No download option. So,
+    // everything is considered to use internet
+    if (hasInternet) {
+      if (!(_audioManager!.queueNotifier.value.isNotEmpty &&
+          _audioManager!.mediaTypeNotifier.value == MediaType.media)) {
+        startPlayer(mediaName, mediaLink, isFileExists);
+      } else {
+        bool added = await addToQueue(mediaName, mediaLink, isFileExists);
+        if (added) {
+          getIt<ScaffoldHelper>().showSnackBar(
+            'Added to queue',
+            const Duration(seconds: 1),
+          );
+        } else {
+          getIt<ScaffoldHelper>().showSnackBar(
+            'Already in queue',
+            const Duration(seconds: 1),
+          );
+        }
       }
-      tempResponse = response.body;
-
-      // put data into cache after getting from internet
-      List<int> list = tempResponse.codeUnits;
-      Uint8List fileBytes = Uint8List.fromList(list);
-      DefaultCacheManager().putFile(finalUrl, fileBytes);
     } else {
-      // get data from file if present in cache
-      tempResponse = fileInfo.file.readAsStringSync();
+      getIt<ScaffoldHelper>().showSnackBar(
+        'Connect to the Internet and try again',
+        const Duration(seconds: 2),
+      );
     }
-    _parseData(tempResponse);
   }
 
-  /// parses the data retrieved from url.
+  /// parses the data retrieved from schedule.
   /// sets the final data to display
-  Future<void> _parseData(String response) async {
-    var document = parse(response);
-    var mediaTags = document.getElementsByTagName('a');
-
+  Future<void> _parseData() async {
     List<String> mediaFiles = [];
     List<String> mediaLinks = [];
-    int length = mediaTags.length;
-    for (int i = 0; i < length; i++) {
-      var temp = mediaTags[i].text;
+
+    for (var media in widget.mediaFiles!) {
+      var temp = media;
       // remove the mp3 tags (add later when playing)
       temp = temp.replaceAll('.mp3', '');
       mediaFiles.add(temp);
 
       // append string to get media link
       mediaLinks.add(
-        '${MediaHelper.mediaBaseUrl}${mediaFiles[i]}${MediaHelper.mediaFileType}',
+        '${MediaHelper.mediaBaseUrl}/$temp${MediaHelper.mediaFileType}',
       );
     }
 
@@ -570,6 +470,7 @@ class _Media extends State<Media> {
       'album': tempMediaItem.album,
       'title': tempMediaItem.title,
       'artist': tempMediaItem.artist,
+      'duration': tempMediaItem.duration,
       'artUri': tempMediaItem.artUri.toString(),
       'extrasUri': tempMediaItem.extras!['uri'],
     };

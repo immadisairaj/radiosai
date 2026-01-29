@@ -11,7 +11,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/scaffold_helper.dart';
-import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
 import 'package:shimmer/shimmer.dart';
@@ -383,12 +382,13 @@ class _Search extends State<Search> {
                   borderRadius: BorderRadius.circular(8.0),
                   onTap: () {
                     if (fids != '') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Media(fids: fids),
-                        ),
-                      );
+                      // TODO: commented this because there is no search available
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     builder: (context) => Media(fids: fids),
+                      //   ),
+                      // );
                     } else {
                       getIt<ScaffoldHelper>().showSnackBar(
                         'No media found!',

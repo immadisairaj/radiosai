@@ -471,11 +471,13 @@ class _SaiInspires extends State<SaiInspires> {
         } on Exception catch (_) {
           // do nothing
         }
-        Share.shareXFiles([XFile(imageFile!.path)], text: textData);
+        SharePlus.instance.share(
+          ShareParams(text: textData, files: [XFile(imageFile!.path)]),
+        );
       } else {
         // TODO: change from binary to image before sharing for new links
         // share only text if old api is not working
-        Share.share(textData);
+        SharePlus.instance.share(ShareParams(text: textData));
       }
     } else {
       // if there is no data, show snackbar that no data is available
@@ -633,6 +635,7 @@ class _SaiInspires extends State<SaiInspires> {
       'album': tempMediaItem.album,
       'title': tempMediaItem.title,
       'artist': tempMediaItem.artist,
+      'duration': tempMediaItem.duration,
       'artUri': tempMediaItem.artUri.toString(),
       'extrasUri': tempMediaItem.extras!['uri'],
     };

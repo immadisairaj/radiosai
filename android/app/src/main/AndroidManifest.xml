@@ -45,10 +45,10 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with https://dl.radiosai.org -->
+                <!-- Accepts URIs that begin with https://dl.sssmediacentre.org -->
                 <data
                 android:scheme="https"
-                android:host="dl.radiosai.org" />
+                android:host="dl.dl.sssmediacentre.org" />
             </intent-filter>
 
         </activity>

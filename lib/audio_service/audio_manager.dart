@@ -7,7 +7,7 @@ import 'package:radiosai/audio_service/notifiers/progress_notifier.dart';
 import 'package:radiosai/audio_service/notifiers/repeat_button_notifier.dart';
 import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/helper/media_helper.dart';
-import 'package:rxdart/src/streams/value_stream.dart';
+import 'package:rxdart/rxdart.dart';
 
 class AudioManager {
   // Listeners: Updates going to the UI
@@ -127,6 +127,7 @@ class AudioManager {
       album: params['album'],
       title: params['title'],
       artist: params['artist'],
+      duration: params['duration'],
       artUri: Uri.parse(params['artUri']),
       extras: {'uri': params['extrasUri']},
     );

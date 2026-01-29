@@ -1,19 +1,19 @@
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:mp3_info/mp3_info.dart';
 import 'package:path_provider/path_provider.dart';
 
 /// mentions if the media type is either radio/media
-enum MediaType {
-  radio,
-  media,
-}
+enum MediaType { radio, media }
 
 // Media Helper is useful to handle common methods used by media/media player
 class MediaHelper {
-  /// returns a constant url for media - https://dl.radiosai.org/
-  static String mediaBaseUrl = 'https://dl.radiosai.org/';
+  /// returns a constant url for media - https://dl.sssmediacentre.org/
+  static String mediaBaseUrl = 'https://dl.sssmediacentre.org';
 
   /// returns a file type ".mp3"
   static String mediaFileType = '.mp3';
@@ -32,20 +32,25 @@ class MediaHelper {
   ///
   /// isFileExists - mention if the file exists to set uri for audio
   static Future<MediaItem> generateMediaItem(
-      String name, String? link, bool isFileExists) async {
+    String name,
+    String? link,
+    bool isFileExists,
+  ) async {
     // Get the path of image for artUri in notification
     String path = await getDefaultNotificationImage();
+
+    Duration? duration;
 
     // if file exists, then add file uri
     if (isFileExists) {
       link = await changeLinkToFileUri(link!);
+    } else if (link != null) {
+      duration = await estimateDuration(link);
     }
 
     String fileId = await getFileIdFromUri(link!);
 
-    Map<String, dynamic> extras = {
-      'uri': link,
-    };
+    Map<String, dynamic> extras = {'uri': link};
 
     // Set media item to tell the clients what is playing
     // extras['uri'] contains the audio source
@@ -56,6 +61,7 @@ class MediaHelper {
       // name of the file without '_' or extensions
       title: name,
       artist: 'Radio Sai',
+      duration: duration,
       // art of the media
       artUri: Uri.parse('file://$path'),
       // extras['uri'] contain the uri of the media
@@ -65,6 +71,37 @@ class MediaHelper {
     return tempMediaItem;
   }
 
+  static Future<Duration?> estimateDuration(String url) async {
+    try {
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {'Range': 'bytes=0-200000'},
+      );
+      final bytes = int.tryParse(response.headers['content-length'] ?? '');
+      if (bytes == null) return null;
+
+      if (response.statusCode == 206) {
+        // 1. Get the TOTAL size from the "content-range" header (e.g., "bytes 0-200000/1545874")
+        final rangeHeader = response.headers['content-range'] ?? '';
+        final totalSize = int.parse(rangeHeader.split('/').last);
+
+        // 2. Parse the small chunk to get the bitrate
+        final mp3 = MP3Processor.fromBytes(response.bodyBytes);
+        final bitrateBps = mp3.bitrate * 1000; // Convert kbps to bps
+
+        // 3. Calculate total duration
+        if (bitrateBps > 0) {
+          final totalSeconds = (totalSize * 8) / bitrateBps;
+          return Duration(seconds: totalSeconds.toInt());
+        }
+      }
+    } catch (e) {
+      // Handle any errors that occur during the HTTP request or parsing
+      debugPrint('Error estimating duration: $e');
+    }
+    return null;
+  }
+
   /// returns the link for file when provided file id.
   /// Fild Id is "something.mp3"
   static String getLinkFromFileId(String id) {
@@ -72,7 +109,7 @@ class MediaHelper {
   }
 
   /// returns the name of file from the given link
-  /// Example returns "TEST A" when given "https:dl.radiosai.org/TEST_A.mp3"
+  /// Example returns "TEST A" when given "https://dl.sssmediacentre.org/TEST_A.mp3"
   static String getNameFromLink(String link) {
     link = link.replaceAll(mediaBaseUrl, '');
     link = link.replaceAll(mediaFileType, '');
@@ -158,8 +195,9 @@ class MediaHelper {
     // if the image already exists, return the path
     if (fileExists) return path;
     // store the image into path from assets then return the path
-    final byteData =
-        await rootBundle.load('assets/sai_listens_notification.jpg');
+    final byteData = await rootBundle.load(
+      'assets/sai_listens_notification.jpg',
+    );
     // if file is not created, create to write into the file
     file.create(recursive: true);
     await file.writeAsBytes(byteData.buffer.asUint8List());

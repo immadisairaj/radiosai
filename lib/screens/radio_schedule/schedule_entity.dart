@@ -4,7 +4,7 @@ class ScheduleEntity {
     required this.category,
     required this.content,
     required this.durationMin,
-    required this.relatedLink,
+    required this.relatedMediaFiles,
     required this.newFlag,
     required this.firstBroadcastOn,
   });
@@ -12,7 +12,7 @@ class ScheduleEntity {
   String category;
   String content;
   int durationMin;
-  String relatedLink;
+  List<String> relatedMediaFiles;
   bool newFlag;
   String firstBroadcastOn;
 }

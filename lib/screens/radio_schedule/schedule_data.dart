@@ -10,7 +10,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:html/parser.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:radiosai/audio_service/service_locator.dart';
 import 'package:radiosai/constants/constants.dart';
+import 'package:radiosai/helper/scaffold_helper.dart';
+import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/screens/radio_schedule/schedule_entity.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:radiosai/widgets/no_data.dart';
@@ -314,6 +317,7 @@ class _ScheduleData extends State<ScheduleData> {
         String duration = '${rowData.durationMin} min';
         String category = rowData.category;
         String programe = rowData.content;
+        List<String> mediaFiles = rowData.relatedMediaFiles;
         // String fids = mainRowData[2].substring(1, mainRowData[2].length - 1);
         return Column(
           children: [
@@ -328,16 +332,20 @@ class _ScheduleData extends State<ScheduleData> {
                 child: InkWell(
                   borderRadius: BorderRadius.circular(8.0),
                   onTap: () {
-                    // TODO: implement this later
-                    // if (fids != '') {
-                    //   Navigator.push(
-                    //       context,
-                    //       MaterialPageRoute(
-                    //           builder: (context) => Media(fids: fids)));
-                    // } else {
-                    //   getIt<ScaffoldHelper>().showSnackBar(
-                    //       'No media found!', const Duration(seconds: 1));
-                    // }
+                    if (mediaFiles.isNotEmpty) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              Media(mediaFiles: mediaFiles, title: programe),
+                        ),
+                      );
+                    } else {
+                      getIt<ScaffoldHelper>().showSnackBar(
+                        'No media found!',
+                        const Duration(seconds: 1),
+                      );
+                    }
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 4),
@@ -536,7 +544,7 @@ class _ScheduleData extends State<ScheduleData> {
           category: row[2],
           content: content,
           durationMin: int.parse(row[4]),
-          relatedLink: row[5],
+          relatedMediaFiles: (row[5] as String).split(','),
           newFlag: row[6] == '1',
           firstBroadcastOn: row[7],
         ),

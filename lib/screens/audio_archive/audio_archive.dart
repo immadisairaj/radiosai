@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:radiosai/constants/constants.dart';
-import 'package:radiosai/screens/media/media.dart';
 import 'package:radiosai/screens/search/search.dart';
 import 'package:radiosai/widgets/bottom_media_player.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -74,16 +73,17 @@ class _AudioArchive extends State<AudioArchive> {
   void _navigateAudioArchive(String? title) {
     bool isMedia = MyConstants.of(context)!.audioArchiveFids.containsKey(title);
     if (isMedia) {
+      // TODO: commented this because there is no audio archive available
       // if contains media, navigate to media screen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => Media(
-            fids: MyConstants.of(context)!.audioArchiveFids[title!],
-            title: title,
-          ),
-        ),
-      );
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => Media(
+      //       fids: MyConstants.of(context)!.audioArchiveFids[title!],
+      //       title: title,
+      //     ),
+      //   ),
+      // );
     } else {
       bool isLink = MyConstants.of(
         context,
@@ -114,7 +114,8 @@ class _AudioArchive extends State<AudioArchive> {
   }
 
   /// launch the url from url_launcher
-  Future<void> _urlLaunch(urlString) async {
+  Future<void> _urlLaunch(String? urlString) async {
+    if (urlString == null) return;
     try {
       if (await canLaunchUrl(Uri.parse(urlString))) {
         await launchUrl(Uri.parse(urlString));
