@@ -152,6 +152,7 @@ class AudioManager {
   void _listenToPlaybackState() {
     _audioHandler.playbackState.listen((playbackState) {
       final processingState = playbackState.processingState;
+
       if (processingState == AudioProcessingState.loading ||
           processingState == AudioProcessingState.buffering) {
         loadingNotifier.value = LoadingState.loading;
@@ -161,13 +162,27 @@ class AudioManager {
 
       final isPlaying = playbackState.playing;
       if (processingState == AudioProcessingState.completed) {
-        // Only pause if we aren't supposed to move to the next item
-        // (e.g., end of playlist with repeat off)
         playButtonNotifier.value = PlayButtonState.paused;
       } else if (!isPlaying) {
         playButtonNotifier.value = PlayButtonState.paused;
       } else {
         playButtonNotifier.value = PlayButtonState.playing;
+      }
+
+      isShuffleModeEnabledNotifier.value =
+          playbackState.shuffleMode == AudioServiceShuffleMode.all;
+
+      switch (playbackState.repeatMode) {
+        case AudioServiceRepeatMode.none:
+          repeatButtonNotifier.value = RepeatState.off;
+          break;
+        case AudioServiceRepeatMode.one:
+          repeatButtonNotifier.value = RepeatState.repeatSong;
+          break;
+        case AudioServiceRepeatMode.all:
+        case AudioServiceRepeatMode.group:
+          repeatButtonNotifier.value = RepeatState.repeatQueue;
+          break;
       }
 
       _updateSkipButtons();
